@@ -2,6 +2,14 @@
 
 ## Sin publicar
 
+### Contexto, maquetas y contratos de desarrollo
+
+- Índice de contexto, método de Figma sobre componentes/tokens actuales y plantilla de especificación con permisos, datos, cálculos, persistencia, estados y aceptación.
+- Contratos ampliados de presupuestos y maestros, con límites reales de auditoría/concurrencia y fuentes de código/pruebas.
+- Laboratorio informado y plan Nginx/Cloudflare documentados, distinguiendo controles implementados y pendientes de producción. Sin cambios a aplicación, esquema o configuración activa.
+- Reglas de continuidad con IA, compatibilidad y protección de datos incorporadas a AGENTS; referencias obsoletas del ZIP y roadmap corregidas.
+
+
 ### Presupuestos operativos · base visual aprobada
 
 - Cabecera grafito, superficies neutras en claro/oscuro, iconografía mini en navegación y acento moderado; render y reglas registrados en diseño.

@@ -45,3 +45,11 @@ Las imágenes de app/web se construyen juntas desde el mismo árbol. No ejecutar
 | Necesidad comercial de SaaS compartido | ADR específico de aislamiento, migración y pruebas entre empresas |
 
 Separar un servicio requiere una razón operativa concreta; la existencia de otro módulo no es motivo suficiente.
+
+## Contratos, diseño y crecimiento
+
+Cada módulo declara sus operaciones, persistencia, cálculo y permisos en `docs/modulos`; los consumidores no esquivan sus servicios para escribir directamente sus tablas. El contrato de presupuestos identifica operaciones PPT-01…PPT-06 y reglas de conservación. La especificación de nuevas funciones usa [plantilla](plantillas/funcionalidad.md).
+
+Figma es una herramienta propuesta de diseño y revisión, según [maquetación](maquetacion.md). Los tokens y componentes de la aplicación siguen siendo la implementación efectiva; no hay generación/sincronización automática adoptada. Cambios de reglas requieren actualizar especificación y pruebas; cambios de estructura requieren ADR.
+
+Los límites de confianza y requisitos para laboratorio/publicación están en [entornos](entornos-publicacion.md). El Nginx interno de Compose y el proxy de publicación cumplen roles distintos. La publicación por Cloudflare no convierte el monolito en multiempresa ni resuelve autorización a nivel de registro.

@@ -2,7 +2,7 @@
 
 ## Contexto y lectura
 
-Este es el producto modular de Solvet-IT; primero presupuestos y después módulos operativos. Antes de trabajar, leer `README.md`, `docs/arquitectura.md`, `docs/diseno.md` y la especificación del módulo afectado. Para cambios de acceso, datos, archivos o despliegue, leer también `docs/seguridad.md` y `docs/operacion.md`.
+Este es el producto modular de Solvet-IT; primero presupuestos y después módulos operativos. Antes de trabajar, leer `README.md`, `docs/README.md`, `docs/contexto-proyecto.md`, `docs/arquitectura.md`, `docs/diseno.md` y la especificación del módulo afectado. Usar el índice para cargar solo documentos pertinentes. Para cambios de acceso, datos, archivos o despliegue, leer también `docs/seguridad.md`, `docs/entornos-publicacion.md` y `docs/operacion.md`.
 
 La documentación expresa decisiones y alcance; verificar siempre el código y las versiones reales. Si hay discrepancia, resolverla explícitamente y actualizar la documentación correspondiente. No inventar funcionalidad existente ni informar una comprobación que no se ejecutó.
 
@@ -34,6 +34,14 @@ El listado de presupuestos y su detalle son la referencia operativa aprobada; ve
 Aplicar la escala de espaciado/radios de `public/css/solvet.css`. Una acción principal por encabezado; las acciones de cada fila son secundarias. Formularios agrupados en secciones con título, descripción útil y etiquetas visibles. Los listados nativos se apilan en móvil. Comprobar que los cambios visuales no suman dos veces el espaciado nativo de Filament y no ocultan anillos de error, estados deshabilitados ni menús.
 
 Toda nueva pantalla debe funcionar en claro y oscuro usando los tokens semánticos existentes. No fijar fondos blancos ni texto oscuro en las vistas de aplicación. El selector comparte la preferencia nativa de Filament y ofrece claro, oscuro y sistema. Verificar texto principal/secundario, placeholders, estados, errores, menús y ventanas en ambos modos. Los PDF mantienen su paleta de documento y no heredan el tema del navegador. El logo entregado se conserva sin redibujarlo y se muestra sin placas ni fondos propios en ambos temas mediante el componente `components.brand`. No sustituirlo por el logo distinto que aparece en la referencia cromática.
+
+## Especificación, maquetas y compatibilidad
+
+- Usar `docs/maquetacion.md` para diseño previo. Los futuros frames Figma se vinculan con ID/versión desde la especificación; no hay integración automática configurada. Mantener los tokens y componentes actuales, no importar un frontend paralelo.
+- Para nuevas funciones, usar `docs/plantillas/funcionalidad.md`: declarar permisos, entradas, validaciones, qué se calcula/guarda, transiciones, efectos, errores, auditoría y aceptación. Distinguir implementado de propuesto.
+- Revisar consumidores y pruebas de un contrato antes de cambiarlo. Conservar compatibilidad con snapshots/datos anteriores y migraciones aplicadas. No mezclar refactors ajenos o actualizaciones globales de dependencias.
+- El laboratorio informado es `http://192.168.112.22:8088/`. Producción con dominio/Nginx/Cloudflare es prevista; no asumir que proxies confiables, TLS, host/caché o controles pendientes ya están activos. Cloudflare no sustituye permisos internos.
+- No modificar configuración del servidor ni implementar funciones pendientes como efecto incidental de documentarlas. Una edición solo documental se valida por coherencia, referencias y diff, sin inventar pruebas de ejecución.
 
 ## Flujo por tarea
 
