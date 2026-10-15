@@ -59,7 +59,7 @@ Construye primero, pone en mantenimiento, respalda, migra, recrea app/web y limp
 
 ## HTTPS y proxy
 
-Puerto de muestra: `127.0.0.1:8088`. Para un dominio, colocar un proxy TLS delante y establecer APP_URL con HTTPS, cookies seguras y entorno production. Laravel debe confiar solo en el proxy utilizado para interpretar correctamente el protocolo. `bootstrap/app.php` permite configurar `trustProxies` con direcciones/red reales, sin abrir confianza global por comodidad.
+Puerto de muestra: `127.0.0.1:8088`. Para un dominio, colocar un proxy TLS delante y establecer APP_URL con HTTPS, cookies seguras y entorno production. Laravel debe confiar solo en el proxy utilizado para interpretar correctamente el protocolo. `bootstrap/app.php` todavía no configura `trustProxies`: implementar y comprobar la cadena de proxies/hosts reales antes de publicar. Ver [entornos y publicación](entornos-publicacion.md); no abrir confianza global por comodidad.
 
 No cambiar BIND_ADDRESS a `0.0.0.0` sin decidir qué red tendrá acceso. Los puertos de base y PHP-FPM permanecen internos.
 

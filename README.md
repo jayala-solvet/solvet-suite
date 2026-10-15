@@ -2,7 +2,7 @@
 
 Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, clientes, presupuestos, PDF conservado e historial de decisiones. Incluye una identidad visual propia basada en el logo entregado y la referencia azul de Solvet.
 
-**Empezar aquí:** [INICIO_RAPIDO.md](INICIO_RAPIDO.md). Desarrollo asistido por IA: [AGENTS.md](AGENTS.md).
+**Empezar aquí:** [INICIO_RAPIDO.md](INICIO_RAPIDO.md). Desarrollo asistido por IA: [AGENTS.md](AGENTS.md). Contexto y especificaciones: [índice de documentación](docs/README.md).
 
 ## Qué funciona
 

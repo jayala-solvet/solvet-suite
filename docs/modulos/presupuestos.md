@@ -66,3 +66,65 @@ Revisiones vinculadas con referencia de documento/revisión, aprobación interna
 - No se agregan notificaciones ficticias, soporte ni órdenes de trabajo sin módulo implementado.
 
 Los PDFs ya emitidos y la numeración de la instalación se conservan. No se necesitan migraciones ni carga de demostración para esta actualización.
+
+## Contrato de datos para desarrollo
+
+Identificadores estables: `PPT-01` guardar borrador, `PPT-02` calcular, `PPT-03` emitir, `PPT-04` consultar/PDF, `PPT-05` decidir y `PPT-06` listar. Un nuevo cambio debe declarar cuál modifica y conservar los demás.
+
+| Campo / conjunto | Origen y validación actual | Se conserva en |
+|---|---|---|
+| customer_id | Formulario; cliente existente obligatorio | `quotes.customer_id`, FK con borrado restringido |
+| subject | Formulario; texto obligatorio hasta 200 | `quotes.subject` |
+| currency | Formulario; PYG o USD | `quotes.currency` |
+| valid_until | Formulario; fecha igual o posterior a hoy al guardar; se revisa al emitir | `quotes.valid_until` |
+| terms | Formulario; opcional hasta 5000 | `quotes.terms` |
+| lines | 1 a 100 ítems válidos; normalizados por calculador | `quotes.lines`, JSON |
+| Descripción | Obligatoria hasta 1000 por ítem | Dentro de lines |
+| Cantidad | Decimal textual positivo, hasta 6 enteros y 3 decimales | Dentro de lines |
+| Precio unitario | No negativo, hasta 9 enteros y 2 decimales; PYG debe ser entero | Dentro de lines |
+| Descuento | 0 a 100%, hasta 2 decimales | Dentro de lines |
+| IVA | Solo 0, 5 o 10, incluido en precio | Dentro de lines |
+| Totales | Servidor; subtotal/discount/tax/total en unidades menores, decimal(20,0) | Columnas `*_minor` y neto/IVA por línea |
+| Actor / estado / correlativo | Servidor; no editables por formulario | created_by, status, number; secuencia `quote` |
+| Emisión y snapshot | Servidor; fecha y copia de datos actuales del emisor/destinatario | issued_at, snapshot JSON |
+| PDF y huella | Servidor; UUID privado y SHA-256 de bytes emitidos | pdf_path, pdf_sha256; archivo en disco local privado |
+| Evidencia de decisión | Formulario; texto obligatorio 10 a 2000 | metadata de `audit_events`, no una columna de Quote |
+
+El estado de negocio vive en `quotes.status`; la evidencia y el actor de decisión viven en eventos. No confundir `created_by` con quien emite o registra una respuesta: esos actores se consultan en auditoría. El esquema no define un enum SQL de estados; los servicios actuales validan las transiciones.
+
+## Contrato por operación
+
+| ID | Entrada / permiso | Proceso y escrituras | Salida y errores |
+|---|---|---|---|
+| PPT-01 | Cabecera/ítems; admin o commercial activo | Valida, recalcula, crea o bloquea borrador existente; guarda Quote y `draft.saved` en transacción | Detalle del borrador; inválido o emitido no se guarda |
+| PPT-02 | Ítems y moneda | `QuoteCalculator`; el resumen de interfaz no escribe datos | Totales o aviso de completar valores; el guardado vuelve a validar |
+| PPT-03 | ID de borrador; admin/commercial activo | Bloquea Quote y secuencia, revisa vigencia, asigna correlativo, snapshot y fecha, genera/guarda PDF, incrementa secuencia y registra `quote.issued` con número/hash | Detalle emitido; segundo intento se rechaza y no consume otro número; no envía correo |
+| PPT-04 | ID; sesión activa de cualquiera de los tres roles | Consulta detalle/historial; emitido usa snapshot y archivo original; preview de borrador se genera con datos actuales | Preview inline o descarga; sesión ausente redirige a login, usuario inactivo denegado, archivo/ID inexistente 404 |
+| PPT-05 | ID emitido, accepted/rejected/cancelled y evidencia; admin/commercial activo | Valida, bloquea Quote, modifica estado y registra evento con actor/evidencia | Detalle actualizado; falta de evidencia/estado previo inválido se rechaza |
+| PPT-06 | Búsqueda/filtros/paginación; sesión activa | Solo consulta; conteos de pestañas globales, filtro de emisión excluye borradores sin issued_at | Filas y vacío; no altera estado ni documento |
+
+Decisión posterior a vencimiento está permitida hoy. Vencido es una advertencia derivada para emitidos sin respuesta; no un nuevo estado persistido. Los estados finales no admiten una segunda decisión ni se vuelven a borrador. Una revisión requiere una operación nueva que preserve el documento de origen.
+
+## Ejemplos de cálculo comprobables
+
+| Entrada | Bruto | Descuento | Neto / total | IVA incluido |
+|---|---|---|---|---|
+| PYG: cantidad 2, precio 110000, descuento 10%, IVA 10% | ₲ 220.000 | ₲ 22.000 | ₲ 198.000 | ₲ 18.000 |
+| USD: cantidad 3, precio 0.10, descuento 0%, IVA 0% | US$ 0,30 | US$ 0,00 | US$ 0,30 | US$ 0,00 |
+
+Guardar USD 0,30 como 30 unidades menores, no 0.30 en una variable float. Redondear por línea con half-up antes de sumar; no redondear solo la suma global. PYG 1.50 se rechaza, no se convierte silenciosamente en 2. No sumar importes de monedas distintas ni inventar conversión cambiaria.
+
+## Concurrencia, fallos y compatibilidad
+
+- Emisión usa bloqueo de fila y secuencia en una transacción, y unicidad SQL del número. La segunda emisión del mismo documento devuelve validación, no una segunda emisión exitosa. Validar bloqueo real con PostgreSQL antes de producción; SQLite no lo demuestra.
+- Guardado de borrador no tiene clave de idempotencia para creación: reenviar una creación puede crear otro borrador. El bloqueo de edición serializa escrituras, pero no detecta que dos pestañas editaron versiones diferentes; la última escritura puede sustituir cambios del borrador. El control de versión optimista está pendiente.
+- Generación y guardado de archivo se hacen dentro del flujo de emisión, pero el disco no participa en el rollback SQL. Una falla posterior a escribir puede dejar un PDF huérfano, no visible como emitido sin confirmación en base. No hay limpieza automática de huérfanos implementada.
+- El historial registra guardados, emisión y decisiones; no conserva diferencias de cada campo ni todas las consultas/descargas. No presentar el hash como firma digital ni la auditoría local como inalterable.
+- Mantener lectura de snapshots antiguos con campos opcionales y el archivo original al cambiar marca, PDF o datos maestros. Agregar campos mediante migraciones compatibles; actualizar este contrato y pruebas del módulo.
+- Permisos de servidor son obligatorios para cada nuevo punto de entrada. No exponer Eloquent directo desde una API o acción que permita esquivar QuoteService.
+
+## Trazabilidad hacia verificación
+
+`QuotesTest` cubre cálculo, precisión, PDF conservado, escritura bloqueada/segunda emisión, permisos, evidencia y persistencia Livewire. `QuoteWorkspaceTest` cubre pestañas/filtros/búsqueda, selección, emisión/decisión desde detalle, preview original, reader y vencimiento. `AppearanceTest`/`ThemeContrastTest` cubren apariencia compartida y pares de contraste. Ver ejecución y límites en [validación](../validacion.md).
+
+Pendientes identificados no se consideran implementados por estar descritos en este contrato. Cada uno debe tener tarea propia, criterio de aceptación y prueba antes de declararse disponible.

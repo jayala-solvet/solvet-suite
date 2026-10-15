@@ -33,3 +33,17 @@ La auditoría comercial es una tabla de la misma base: un administrador de base 
 En producción: HTTPS, `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, APP_URL correcto y proxy confiable acotado. No publicar PostgreSQL. Los respaldos contienen datos y secretos: permisos restringidos, cifrado en el destino y almacenamiento fuera del host. La muestra no configura automáticamente una tarea de backup.
 
 Los datos fiscales y tasas incluidos son configuración técnica de ejemplo; la adaptación a documentos legales/fiscales de cada país corresponde a un módulo posterior validado.
+
+## Contexto de laboratorio y publicación prevista
+
+El laboratorio informado por José es `http://192.168.112.22:8088/`. La publicación futura mediante Nginx y Cloudflare se especifica en [entornos y publicación](entornos-publicacion.md), con controles existentes, brechas y criterios para promover. No se modificó configuración de red/proxy desde esa documentación.
+
+La aplicación ya define `America/Asuncion` como zona de negocio. Revisar correctamente fechas/hoy al agregar vencimientos programados. Proxy confiable, validación de host y restricciones del origen aún requieren implementación/validación en la cadena real. APP_URL y un WAF no habilitan esos controles por sí solos.
+
+## Reglas para cada nueva funcionalidad
+
+Declarar permisos, alcance por registro y datos controlados por servidor en la [plantilla](plantillas/funcionalidad.md). Comprobar acceso directo/Livewire y puntos de entrada nuevos, no solo visibilidad. Toda integración usa credenciales acotadas y evita URLs arbitrarias o ejecución de comandos derivados de datos del usuario.
+
+Si se incorpora carga de archivos, definir límites de contenido/tamaño, nombres generados, almacenamiento privado, validación de descarga y tratamiento de archivos activos. Actualmente no hay carga de evidencia adjunta en presupuestos: solo texto. Si se incorpora API/portal, especificar autenticación, alcance de tokens, expiración, revocación y límites; no publicar automáticamente los recursos internos.
+
+El historial de clientes/emisor, control de versiones concurrentes de borradores, límites específicos de generación PDF y verificación periódica de integridad son pendientes, no capacidades instaladas. Priorizarlos por riesgo y operación, con pruebas propias; no suponer que el documento de contexto evita esos problemas.
