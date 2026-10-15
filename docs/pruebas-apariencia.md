@@ -27,6 +27,12 @@ Fecha: 2026-10-15. Cambio: selector de claro, oscuro y sistema.
 
 Las capturas utilizan datos ficticios y son materiales internos de comprobación. No se publican ni se incluyen secretos o archivos de entorno.
 
+## Corrección de integración del logo · 2026-10-15
+
+- PNG original transparente conservado sin modificar; encuadre SVG del contenido visible y sin placa de fondo.
+- Seis estados revisados en Chromium: acceso, cabecera de escritorio y menú móvil, cada uno en claro y oscuro. Contenedor transparente y proporción 102 × 62 px comprobados; máscaras únicas y sin errores JavaScript.
+- Inspección visual de cabeceras, acceso y menú móvil. Pruebas existentes de apariencia aprobadas: 2 pruebas / 21 aserciones.
+
 ## Pruebas repetibles
 
 ```bash

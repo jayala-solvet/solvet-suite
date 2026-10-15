@@ -54,7 +54,7 @@ No usar tarjetas gigantes ni grandes espacios vacíos donde se necesita una tabl
 
 ## Estructura de pantalla
 
-Cabecera de 72 px y barra lateral de 256 px en escritorio, colapsable mediante el control nativo de Filament. El logo conserva el archivo original: se ajusta la ventana CSS y la escala, sin redibujarlo. En oscuro usa una base clara proporcionada al tamaño del logo.
+Cabecera de 72 px y barra lateral de 256 px en escritorio, colapsable mediante el control nativo de Filament. El logo conserva el PNG original con transparencia. Un encuadre SVG toma sus límites visibles con un margen de seguridad, sin posiciones negativas ni deformación. Su contenedor no tiene placa ni fondo propio en ningún tema. En oscuro, solo la tinta del subtítulo se adapta mediante su máscara alfa original; el isotipo y SOLVET-IT conservan sus colores. Usar el mismo componente en cabecera, menú móvil y acceso.
 
 Contenido limitado a 1440 px, con márgenes adaptados al ancho disponible. Aplicar el espaciado vertical a `.fi-page-header-main-ctn`, no también a `.fi-page`: el segundo duplicaría la separación nativa. Usar un título claro, una descripción breve si aporta contexto y una acción principal en el encabezado.
 
@@ -89,7 +89,7 @@ Reutilizar los componentes existentes. Preferir hooks CSS estables de Filament. 
 
 ## Apariencia clara, oscura y del sistema
 
-Se conserva el diseño claro aprobado: navegación, densidad, tipografía, componentes y marca. El modo oscuro adapta roles de color mediante `:root.dark`; no invierte la página ni aplica filtros al logo. El logo original usa un soporte claro en oscuro para mantener visible su subtítulo.
+Se conserva el diseño claro aprobado: navegación, densidad, tipografía, componentes y marca. El modo oscuro adapta roles de color mediante `:root.dark`; no invierte la página ni aplica filtros al logo. La marca se integra sin fondo; el subtítulo adapta su tinta en oscuro sin cambiar las formas originales.
 
 | Rol | Claro | Oscuro |
 |---|---|---|
