@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Workspace;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Support\LocalAvatarProvider;
+use Filament\Enums\ThemeMode;
 use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -13,6 +14,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -27,7 +29,14 @@ class OperationsPanelProvider extends PanelProvider
         return $panel->default()->id('operations')->path('app')->login()
             ->brandName('SOLVET · Gestión')->brandLogo(fn () => view('components.brand'))->brandLogoHeight('3rem')
             ->favicon(asset('brand/solvet-it-logo.png'))->colors(['primary' => Color::hex('#1769AA')])->font('Inter', url: asset('fonts/filament/filament/inter/index.css'), provider: LocalFontProvider::class)
-            ->defaultAvatarProvider(LocalAvatarProvider::class)->navigationGroups(['Comercial', 'Configuración'])->darkMode(false)->sidebarCollapsibleOnDesktop()->maxContentWidth('full')
+            ->defaultAvatarProvider(LocalAvatarProvider::class)
+            ->navigationGroups(['Comercial', 'Configuración'])
+            ->darkMode()
+            ->defaultThemeMode(ThemeMode::Light)
+            ->themeSwitcher(false)
+            ->renderHook(PanelsRenderHook::TOPBAR_END, fn () => view('components.theme-switcher'))
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, fn () => view('components.theme-switcher'))
+            ->sidebarCollapsibleOnDesktop()->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->pages([Workspace::class])
             ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])

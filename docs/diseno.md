@@ -58,3 +58,36 @@ Formato A4, logo, número, emisión, vigencia, emisor, destinatario, referencia,
 ## Cambios visuales
 
 Reutilizar los componentes existentes. Preferir hooks CSS estables de Filament. No modificar archivos de `vendor`. Publicar los recursos tras cambios de CSS: `php artisan filament:assets`, o reconstruir imagen. Validar escritorio y ancho móvil de 390 px. Conservar una captura de referencia solo cuando sea entregable solicitado; no sustituir la prueba de interfaz por un mockup.
+
+
+## Apariencia clara, oscura y del sistema
+
+Se conserva el diseño claro aprobado: navegación, densidad, tipografía, componentes y marca. El modo oscuro adapta roles de color mediante `:root.dark`; no invierte la página ni aplica filtros al logo. El logo original usa un soporte claro en oscuro para mantener visible su subtítulo.
+
+| Rol | Claro | Oscuro |
+|---|---|---|
+| Fondo | #F3F6FA | #0B1220 |
+| Superficie | #FFFFFF | #111F31 |
+| Cabecera de tabla | #F6F8FB | #182B43 |
+| Texto | #183149 | #E4EDF8 |
+| Título | #102F4F | #F4F8FF |
+| Secundario y placeholder | #5B6D82 | #A8B8CE |
+| Enlace y selección | #1769AA | #8FCBFF |
+| Botón principal | #1769AA | #62B1FA |
+| Texto del botón | #FFFFFF | #08213A |
+
+El selector accesible ofrece claro/oscuro/sistema y utiliza el evento nativo `theme-changed` de Filament. Filament conserva `filament:theme:mode` en almacenamiento local y aplica el tema antes del primer pintado. El primer acceso sin preferencia utiliza claro. Sistema sigue cambios del sistema operativo en tiempo real; una elección explícita permanece al recargar.
+
+El historial HTML comparte la preferencia, aplica su clase antes de cargar los estilos y escucha cambios de sistema y almacenamiento desde otras pestañas. No se agrega una librería de temas ni una preferencia en la base de datos.
+
+### Contraste y nuevas pantallas
+
+Los tokens se validan para texto normal con una razón mínima de 4.5:1 y para foco con 3:1 frente a sus superficies. La fórmula corresponde a luminancia relativa sRGB; ver [W3C, contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). Las pruebas comparan los valores sin redondear antes de decidir si cumplen. Esto comprueba estas combinaciones y no representa una auditoría integral de accesibilidad de toda la aplicación.
+
+No usar colores literales para texto/superficies de nuevas vistas. Usar `--solvet-text`, `--solvet-heading`, `--solvet-muted`, `--solvet-surface`, `--solvet-bg` y pares de estado. Conservar etiquetas junto al color. Los bordes decorativos y el logo no se tratan como texto normal. No sobrescribir estados inválidos/deshabilitados ni anillos de validación nativos de Filament.
+
+Los PDF son documentos independientes con paleta clara estable: una elección de tema no cambia un documento comercial ni modifica sus copias emitidas.
+
+Antes de aprobar cambios, comprobar login, vista general, listas, creación/edición, placeholders, validación, menús, confirmaciones e historial, además del ancho móvil. Ver `pruebas-apariencia.md`.
+
+La hoja de aplicación y la de historial incluyen una versión derivada del contenido CSS en la URL. Mantener ese mecanismo al publicar cambios; evita mezclar un selector nuevo con colores de una hoja anterior almacenada en caché.
