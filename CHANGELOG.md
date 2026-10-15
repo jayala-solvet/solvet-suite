@@ -2,6 +2,13 @@
 
 ## Sin publicar
 
+### Refinamiento visual con referencia Supabase / Refero
+
+- Modo oscuro con grises neutros por niveles, cabecera oscura integrada, separadores finos y superficies sin sombra decorativa. Se conserva el acento Solvet y la densidad operativa.
+- Adaptación documentada: tipografía/iconografía existentes, foco visible y colores semánticos; sin incorporar estructura promocional ni CSS externo.
+- Sin cambios de reglas, documentos PDF, datos, permisos o dependencias.
+
+
 ### Contexto, maquetas y contratos de desarrollo
 
 - Índice de contexto, método de Figma sobre componentes/tokens actuales y plantilla de especificación con permisos, datos, cálculos, persistencia, estados y aceptación.

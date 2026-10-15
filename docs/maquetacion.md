@@ -26,6 +26,10 @@ Nombre: `Solvet Suite · Sistema de diseño y módulos`.
 
 Nombre de frame: `PPT-03 · Emitir · Confirmación · Oscuro · Escritorio`. Usar el mismo ID de función en Figma, especificación, pruebas y descripción del PR. Referenciar un frame concreto y una versión/fecha, no solo la portada de un archivo que cambia.
 
+## Referencia secundaria de Supabase
+
+Usar la [adaptación para Solvet](referencias/supabase-adaptacion.md): superficies oscuras neutras y bordes finos sobre la estructura operativa existente. No copiar los bloques promocionales, la marca verde ni el CSS del estudio. Crear el modo oscuro con los tokens Solvet vigentes y mantener el modo claro.
+
 ## Componentes y tokens
 
 Usar Auto Layout y componentes con variantes cuando corresponda. Replicar los componentes nativos de Filament a nivel visual, sin diseñar comportamientos que exijan sustituirlos sin una necesidad de producto concreta.
