@@ -1,4 +1,3 @@
 <div class="sv-workspace-label">
-    <strong>Gestión</strong>
-    <span>Espacio de trabajo</span>
+    <strong>Gestión empresarial</strong>
 </div>

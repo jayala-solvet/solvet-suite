@@ -23,8 +23,8 @@
                         @foreach($events as $event)
                             <tr>
                                 <td>{{ $event->created_at->format('d/m/Y H:i:s') }}</td>
-                                <td>{{ ['draft.saved'=>'Borrador guardado','quote.issued'=>'Presupuesto emitido','quote.accepted'=>'Aceptación registrada','quote.rejected'=>'Rechazo registrado','quote.cancelled'=>'Anulación registrada'][$event->action] ?? $event->action }}</td>
-                                <td>{{ \App\Models\User::find($event->actor_id)?->name ?? 'Sistema' }}</td>
+                                <td>{{ $event->label() }}</td>
+                                <td>{{ $event->actor?->name ?? 'Sistema' }}</td>
                                 <td class="sv-history-evidence">{{ $event->metadata['evidence'] ?? ($event->metadata['number'] ?? '—') }}</td>
                             </tr>
                         @endforeach

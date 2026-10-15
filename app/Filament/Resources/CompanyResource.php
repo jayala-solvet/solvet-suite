@@ -20,9 +20,9 @@ class CompanyResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Mi empresa';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Configuración';
+    protected static string|\UnitEnum|null $navigationGroup = 'Administración';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-building-office-2';
 
     public static function canViewAny(): bool
     {

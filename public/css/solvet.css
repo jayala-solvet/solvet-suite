@@ -2,31 +2,31 @@
    Source of truth: this file. See docs/diseno.md before adding a visual rule. */
 :root {
     color-scheme: light;
-    --solvet-navy: #102f4f;
-    --solvet-blue: #1769aa;
-    --solvet-sky: #4a9fe8;
+    --solvet-navy: #292e32;
+    --solvet-blue: #3b647f;
+    --solvet-sky: #3b647f;
     --solvet-logo: #78a5bb;
     --solvet-sage: #82a6a6;
     --solvet-green: #16845c;
     --solvet-orange: #c56822;
-    --solvet-bg: #f3f6fa;
+    --solvet-bg: #f3f3f0;
     --solvet-surface: #ffffff;
-    --solvet-subtle: #f8fafc;
-    --solvet-table-header: #f6f8fb;
-    --solvet-hover: #f9fbfd;
-    --solvet-border: #dfe6ef;
-    --solvet-divider: #edf1f6;
-    --solvet-text: #183149;
-    --solvet-heading: #102f4f;
-    --solvet-muted: #5b6d82;
-    --solvet-link: #1769aa;
-    --solvet-nav-active: #e8f2fc;
-    --solvet-primary-bg: #1769aa;
-    --solvet-primary-hover: #12558b;
+    --solvet-subtle: #f7f7f5;
+    --solvet-table-header: #f0f1ef;
+    --solvet-hover: #f4f4f1;
+    --solvet-border: #d9dddc;
+    --solvet-divider: #e6e8e5;
+    --solvet-text: #292e32;
+    --solvet-heading: #292e32;
+    --solvet-muted: #5d666b;
+    --solvet-link: #3b647f;
+    --solvet-nav-active: #e7e9e7;
+    --solvet-primary-bg: #3b647f;
+    --solvet-primary-hover: #2f5067;
     --solvet-primary-text: #ffffff;
-    --solvet-focus: #1769aa;
-    --solvet-info-bg: #eaf3fd;
-    --solvet-info-text: #1769aa;
+    --solvet-focus: #3b647f;
+    --solvet-info-bg: #edf1f3;
+    --solvet-info-text: #3b647f;
     --solvet-success-bg: #e8f6ee;
     --solvet-success-text: #13734f;
     --solvet-warning-bg: #fff1e5;
@@ -44,12 +44,12 @@
     --solvet-space-5: 20px;
     --solvet-space-6: 24px;
     --solvet-space-8: 32px;
-    --solvet-radius-sm: 6px;
-    --solvet-radius-control: 8px;
-    --solvet-radius: 12px;
-    --solvet-shadow: 0 2px 8px #102f4f06;
-    --solvet-overlay-shadow: 0 12px 36px #102f4f1f;
-    --solvet-content-width: 1440px;
+    --solvet-radius-sm: 3px;
+    --solvet-radius-control: 4px;
+    --solvet-radius: 5px;
+    --solvet-shadow: 0 2px 8px #292e3206;
+    --solvet-overlay-shadow: 0 12px 36px #292e321f;
+    --solvet-content-width: 1600px;
     --solvet-control-height: 40px;
     --solvet-motion: 120ms ease;
     --font-sans:
@@ -60,34 +60,34 @@
 /* No filters or colour inversion: each role has a legible dark counterpart. */
 :root.dark {
     color-scheme: dark;
-    --solvet-bg: #0b1220;
-    --solvet-surface: #111f31;
-    --solvet-subtle: #182b43;
-    --solvet-table-header: #182b43;
-    --solvet-hover: #1b304a;
-    --solvet-border: #2d415b;
-    --solvet-divider: #24364d;
-    --solvet-text: #e4edf8;
-    --solvet-heading: #f4f8ff;
-    --solvet-muted: #a8b8ce;
-    --solvet-link: #8fcbff;
-    --solvet-nav-active: #183b5a;
-    --solvet-primary-bg: #62b1fa;
-    --solvet-primary-hover: #87c6ff;
-    --solvet-primary-text: #08213a;
-    --solvet-focus: #8fcbff;
-    --solvet-info-bg: #163b5d;
-    --solvet-info-text: #97d1ff;
+    --solvet-bg: #181c20;
+    --solvet-surface: #22272b;
+    --solvet-subtle: #2b3136;
+    --solvet-table-header: #2b3136;
+    --solvet-hover: #30373d;
+    --solvet-border: #434c52;
+    --solvet-divider: #394148;
+    --solvet-text: #e4e8eb;
+    --solvet-heading: #f2f4f5;
+    --solvet-muted: #b5bfc5;
+    --solvet-link: #b0d0e4;
+    --solvet-nav-active: #343e45;
+    --solvet-primary-bg: #a0bfd2;
+    --solvet-primary-hover: #bad2df;
+    --solvet-primary-text: #182a35;
+    --solvet-focus: #b0d0e4;
+    --solvet-info-bg: #303e48;
+    --solvet-info-text: #b0d0e4;
     --solvet-success-bg: #123e32;
     --solvet-success-text: #7ee3b4;
     --solvet-warning-bg: #49331a;
     --solvet-warning-text: #ffc68b;
     --solvet-danger-bg: #472831;
     --solvet-danger-text: #ffadb1;
-    --solvet-neutral-bg: #2a3c53;
-    --solvet-neutral-text: #d4e0ee;
-    --solvet-field: #0b1728;
-    --solvet-control-border: #7086a2;
+    --solvet-neutral-bg: #39434a;
+    --solvet-neutral-text: #d4dde2;
+    --solvet-field: #1d2327;
+    --solvet-control-border: #7e909c;
     --solvet-green: #7ee3b4;
     --solvet-orange: #ffc68b;
     --solvet-shadow: 0 2px 8px #0000000d;
@@ -100,7 +100,7 @@ body {
     color: var(--solvet-text);
 }
 .fi-body {
-    --topbar-height: 4.5rem;
+    --topbar-height: 4.25rem;
     background: var(--solvet-bg);
     color: var(--solvet-text);
     font-size: 14px;
@@ -110,7 +110,7 @@ body {
     max-width: var(--solvet-content-width);
 }
 .fi-page-header-main-ctn {
-    padding-block: 28px 40px;
+    padding-block: 24px 32px;
     row-gap: var(--solvet-space-6);
 }
 .fi-sidebar {
@@ -291,7 +291,7 @@ body {
     color: var(--solvet-warning-text);
 }
 .fi-ta-text:not(.fi-inline) {
-    padding-block: 15px;
+    padding-block: 12px;
 }
 .fi-ta-table > tbody > tr:not(.fi-selected):hover {
     background: var(--solvet-hover);
@@ -981,3 +981,51 @@ button:focus-visible {
         transition: none;
     }
 }
+
+/* Approved operational direction: graphite shell, quiet navigation, document register. */
+.fi-topbar, .fi-sidebar-header { background: #29333c; border-color: #46515a; }
+.fi-topbar .fi-icon-btn, .fi-topbar .fi-icon-btn .fi-icon { color: #e4e8eb; }
+.fi-topbar .sv-workspace-label { border-color: #66737c; }
+.fi-topbar .sv-workspace-label strong { color: #f2f4f5; font-weight: 500; }
+.fi-topbar .sv-workspace-label span { color: #c1cbd2; }
+.fi-topbar .sv-theme-switcher { background: #29333c; border-color: #76838c; }
+.fi-topbar .sv-theme-option { color: #c1cbd2; }
+.fi-topbar .sv-theme-option:hover, .fi-topbar .sv-theme-option[aria-pressed="true"] { color: #fff; background: #46535d; }
+.fi-topbar .sv-brand-tagline, .fi-sidebar-header .sv-brand-tagline { display: block; fill: #c1cbd2; }
+.fi-sidebar { background: var(--solvet-bg); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-label, .fi-sidebar-item.fi-active .fi-icon { color: var(--solvet-heading); }
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn { border-inline-start-color: var(--solvet-muted); }
+.fi-sidebar-item-btn > .fi-icon { width: 18px; height: 18px; }
+.fi-section > .fi-section-header > .fi-icon { color: var(--solvet-muted); }
+.fi-tabs { background: transparent; box-shadow: none; border-radius: 0; border-bottom: 1px solid var(--solvet-border); padding: 0; }
+.fi-tabs-item { border-radius: 0; border-bottom: 2px solid transparent; color: var(--solvet-muted); }
+.fi-tabs-item.fi-active { background: transparent; border-bottom-color: var(--solvet-heading); color: var(--solvet-heading); }
+.fi-tabs-item .fi-badge { background: transparent; color: var(--solvet-muted); box-shadow: none; }
+.fi-ta-table > tbody > tr.fi-selected { background: var(--solvet-nav-active); }
+.sv-status { background: transparent !important; padding-inline: 0; border-radius: 0; }
+.sv-document { display: grid; gap: 20px; min-width: 0; }
+.sv-document-meta { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; font-size: 13px; color: var(--solvet-muted); }
+.sv-document-notice { font-size: 13px; color: var(--solvet-muted); padding-inline-start: 12px; border-inline-start: 2px solid var(--solvet-border); }
+.sv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px; border-bottom: 1px solid var(--solvet-border); }
+.sv-parties h2, .sv-document-terms h2 { font-size: 14px; font-weight: 600; color: var(--solvet-heading); margin-block: 6px; }
+.sv-parties p { font-size: 13px; color: var(--solvet-muted); overflow-wrap: anywhere; }
+.sv-line-description { white-space: pre-wrap; min-width: 180px; overflow-wrap: anywhere; max-width: 52ch; }
+.sv-totals { margin: 20px 24px 20px auto; width: min(340px, calc(100% - 48px)); font-size: 13px; }
+.sv-totals > div { display: flex; justify-content: space-between; gap: 20px; padding: 7px 0; }
+.sv-totals dd { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sv-totals .sv-total { border-top: 1px solid var(--solvet-border); font-weight: 650; font-size: 16px; padding-top: 12px; }
+.sv-document-terms { padding: 20px 24px; border-top: 1px solid var(--solvet-border); }
+.sv-document-terms p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+.sv-expired { color: var(--solvet-danger-text); }
+.sv-live-totals { background: var(--solvet-subtle); border: 1px solid var(--solvet-border); border-radius: var(--solvet-radius-control); padding: 16px; }
+.sv-live-totals .sv-totals { margin: 0 0 0 auto; width: min(100%, 340px); }
+.sv-live-totals p { font-size: 12px; color: var(--solvet-muted); }
+@media (max-width: 639px) { .sv-parties { grid-template-columns: 1fr; padding: 16px; } .sv-document-meta { gap: 8px 16px; } }
+
+.fi-ta-text-item.fi-color-danger { color: var(--solvet-danger-text); }
+.fi-ta-text-item.fi-color-success { color: var(--solvet-success-text); }
+.fi-ta-text-item.fi-color-gray { color: var(--solvet-neutral-text); }
+.fi-tabs-item.fi-active .fi-tabs-item-label { color: var(--solvet-heading); }
+
+.fi-tabs-item .fi-tabs-item-label { color: var(--solvet-muted); }
+.fi-tabs-item.fi-active .fi-tabs-item-label { color: var(--solvet-heading); }

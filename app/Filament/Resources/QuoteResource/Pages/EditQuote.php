@@ -20,6 +20,6 @@ class EditQuote extends EditRecord
 
     protected function getRedirectUrl(): string
     {
-        return static::$resource::getUrl('index');
+        return static::$resource::getUrl('view', ['record' => $this->getRecord()]);
     }
 }

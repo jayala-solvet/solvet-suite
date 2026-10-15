@@ -11,7 +11,7 @@ Esta es la base para extender el sistema manteniendo el diseño aprobado. Las pa
 | Navegación, ancho lateral, fuente y hooks | `app/Providers/Filament/OperationsPanelProvider.php` |
 | Componentes propios | `resources/views/components/ui` |
 | Apariencia y persistencia | `components/theme-switcher.blade.php` y mecanismo nativo de Filament |
-| Vista de referencia | `resources/views/filament/pages/workspace.blade.php` |
+| Vista de referencia | `QuoteResource` y `resources/views/filament/quotes/view.blade.php` |
 
 La hoja está organizada en tokens, estructura, adaptadores de Filament, componentes e historial. Editar las reglas existentes antes de agregar sobrescrituras al final. No modificar la copia publicada a mano.
 
@@ -20,7 +20,7 @@ La hoja está organizada en tokens, estructura, adaptadores de Filament, compone
 | Componente | Parámetros | Uso existente |
 |---|---|---|
 | `x-ui.panel` | `title`, `description` opcional; contenido y slot `actions` | Panel e historial |
-| `x-ui.stat-card` | `label`, `value`, `note`, `icon`, `tone` | Indicadores con conteos reales |
+| `x-ui.stat-card` | Componente heredado | No usar en nuevas pantallas operativas |
 | `x-ui.status` | `state`, `label` | Estado con texto y punto de color |
 | `x-ui.empty-state` | `title`, `description`, `icon` opcional; contenido opcional | Panel sin presupuestos |
 
@@ -51,8 +51,8 @@ ActionGroup::make($actions)
     ->label('Acciones')
     ->icon('heroicon-o-ellipsis-horizontal')
     ->color('gray')
-    ->button()
-    ->outlined();
+    ->iconButton()
+    ->tooltip('Acciones del presupuesto');
 ```
 
 No retirar comprobaciones de `visible()`, `canCreate()`, `canEdit()` ni las del servicio para simplificar una vista. El estilo nunca determina autorización.
@@ -85,3 +85,9 @@ Los valores de marca originales se conservan como constantes. No todos sirven pa
 6. El foco es visible, los campos tienen etiqueta y el cambio de tema conserva el formulario.
 7. Las acciones siguen guardando datos por los servicios existentes y respetan permisos.
 8. Se publican los recursos y se ejecutan las comprobaciones pertinentes de [apariencia](pruebas-apariencia.md).
+
+## Presupuestos como base
+
+Pestañas nativas con conteos reales, selección máxima de un registro, acciones contextuales nativas y selector de columnas. La selección abre el detalle o sus acciones; en móvil se conserva el listado apilado. No copiar posiciones exactas del render por encima de accesibilidad o comportamiento del framework.
+
+El resumen de edición (`filament/quotes/live-totals`) usa `QuoteCalculator`, sin persistir nada hasta guardar. El detalle consulta los snapshots de documentos emitidos y muestra actividad con actor precargado.

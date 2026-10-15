@@ -1,128 +1,85 @@
 # Sistema de diseño · Solvet
 
-## Referencias y dirección
+## Base aprobada
 
-Identidad base: `public/brand/solvet-it-logo.png`, logo aportado por José, conservado íntegro. Referencia cromática: `referencias/referencia-color.png`, lámina Solvet/Encina aportada por José. La lámina sirve para colores y tono; no es un diseño de interfaz ni reemplaza el logo entregado.
+El 15/10/2026 José aprobó una dirección operativa sobria para presupuestos. La referencia es [presupuestos-base.png](referencias/presupuestos-base.png). Es un render conceptual con datos ficticios; el código y las reglas de negocio determinan las funciones y datos reales. No copiar sus inconsistencias: un borrador no lleva correlativo comercial, los conteos se calculan en base y los módulos pendientes no aparecen como enlaces operativos.
 
-Referencias de patrones ERP consolidados:
+El listado real de `QuoteResource` y el detalle `filament/quotes/view.blade.php` son la referencia de implementación para nuevos módulos. El acceso inicial abre Presupuestos. Se conserva `/app/workspace` para marcadores anteriores, sin tarjetas promocionales ni módulos futuros.
 
-- ERPNext/Frappe: espacios de trabajo por módulo, navegación persistente y listas de documentos. https://docs.frappe.io/framework/user/en/desk/navigation
-- Odoo: vistas de lista/formulario, filtros y acciones contextuales por documento. https://www.odoo.com/documentation/18.0/applications/studio/views.html
+Referencias de disciplina visual y trabajo: SAP Quartz (superficies reducidas y color funcional), listas/formularios de ERPNext y Odoo. No se copian marcas ni se agregan dependencias de esos productos.
 
-Se toman patrones de uso y jerarquía, sin copiar marcas ni interfaces completas. El sistema no es una página promocional: el foco está en consultar, editar, emitir y seguir documentos.
+- https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/colors/quartz-light-colors
+- https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/iconography/iconography-horizon
+- https://docs.frappe.io/framework/user/en/desk/navigation
+- https://www.odoo.com/documentation/18.0/applications/studio/views.html
 
-## Paleta de interfaz
+## Composición obligatoria
 
-Los colores de interfaz son una propuesta derivada de las referencias, ajustada para legibilidad; no constituyen un manual de marca oficial.
+1. Cabecera grafito estable, marca transparente, nombre de producto, apariencia y menú de usuario. Solo controles con función implementada: no campana, ayuda, accesos o métricas simuladas.
+2. Menú lateral por áreas. Comercial: Presupuestos y Clientes. Administración: Mi empresa, según permisos. Selección gris y marcador discreto; sin mosaicos ni recuadros de colores alrededor de iconos.
+3. Encabezado de página con título y una acción principal. La información del negocio ocupa la mayor parte del espacio.
+4. Listados con pestañas de estado, búsqueda, filtros, selector de columnas, tabla y paginación. Acciones de fila dentro del menú de tres puntos. Selección de un documento para abrir detalle, editar borrador, consultar PDF o historial.
+5. Detalle con estado, fechas, partes, ítems, totales, condiciones e historial. Emitir es la acción principal del borrador, con confirmación específica.
+6. Formularios agrupados, etiquetas visibles, resumen de totales calculado con el mismo servicio del guardado. No montar otra lógica monetaria en JavaScript.
 
-| Token | Valor | Uso |
-|---|---|---|
-| Navy | #102F4F | Texto principal de jerarquía, cabecera de trabajo y PDF |
-| Blue | #1769AA | Acción principal, navegación activa, enlaces |
-| Sky | #4A9FE8 | Foco y acentos, no texto pequeño sobre blanco |
-| Logo blue | #78A5BB | Referencia del isotipo, uso decorativo |
-| Sage | #82A6A6 | Referencia del logotipo, uso decorativo |
-| Green | #16845C | Aceptado / completado |
-| Orange | #C56822 | Atención / pendiente |
-| Background | #F3F6FA | Fondo de aplicación |
-| Surface | #FFFFFF | Tablas, formularios y paneles |
-| Border | #DFE6EF | Separadores y límites |
-| Text | #183149 | Cuerpo |
-| Muted | #5B6D82 | Etiquetas secundarias |
+Sin paneles de indicadores, héroes, gradientes, sombras decorativas, grandes iconos ni tarjetas de acceso repetidas en pantallas de operación. No agregar controles del render si no tienen un comportamiento completo.
 
-Fuente de verdad de tokens de interfaz: `public/css/solvet.css`. Filament `primary` usa el mismo Blue. Un cambio de identidad debe actualizar ambos y la plantilla PDF. En esta entrega el PDF utiliza colores explícitos compatibles con Dompdf; no consume variables CSS del navegador.
+## Tokens y temas
 
-## Tipografía y densidad
-
-**Inter Variable** local para interfaz; ese es el nombre exacto declarado en los archivos `@font-face` instalados. El proveedor del panel y el CSS usan el mismo nombre. El historial carga la hoja de la fuente local. Respaldo system-ui. PDF con DejaVu Sans para caracteres españoles y símbolo de guaraní.
-
-| Elemento | Regla |
-|---|---|
-| Título de página | 28 px escritorio / 24 px móvil, peso 650 |
-| Título de sección | 14 px, peso 600–650 |
-| Texto y campos | 13–14 px, interlineado mínimo 1.5 |
-| Etiquetas y descripción | 12–13 px; nunca usar opacidad para atenuar texto |
-| Cabecera de tabla | 12 px en Filament / 11 px en tablas compactas propias |
-| Importes | Cifras tabulares, alineadas a la derecha en tabla |
-| Espaciado | Tokens 4 / 8 / 12 / 16 / 20 / 24 / 32 px |
-| Radios | 6 px estados, 8 px controles, 12 px superficies |
-| Campos y acciones principales | 40 px de alto |
-| Selector de tema | 32 px en escritorio; 44 × 44 px con puntero táctil |
-| Animación | 120 ms solo para color; respetar movimiento reducido |
-
-No usar tarjetas gigantes ni grandes espacios vacíos donde se necesita una tabla de trabajo. Las sombras son discretas; borde y fondo organizan las superficies. Las separaciones decorativas no sustituyen el borde visible de los campos.
-
-## Estructura de pantalla
-
-Cabecera de 72 px y barra lateral de 256 px en escritorio, colapsable mediante el control nativo de Filament. El logo conserva el PNG original con transparencia. Un encuadre SVG toma sus límites visibles con un margen de seguridad, sin posiciones negativas ni deformación. Su contenedor no tiene placa ni fondo propio en ningún tema. En oscuro, solo la tinta del subtítulo se adapta mediante su máscara alfa original; el isotipo y SOLVET-IT conservan sus colores. Usar el mismo componente en cabecera, menú móvil y acceso.
-
-Contenido limitado a 1440 px, con márgenes adaptados al ancho disponible. Aplicar el espaciado vertical a `.fi-page-header-main-ctn`, no también a `.fi-page`: el segundo duplicaría la separación nativa. Usar un título claro, una descripción breve si aporta contexto y una acción principal en el encabezado.
-
-El selector de tema se integra antes del avatar mediante un render hook del panel. No copiar las vistas internas de Filament ni modificar `vendor` para ajustar la estructura.
-
-## Patrones
-
-- Menú lateral por áreas, superficie acorde al tema y módulo activo con fondo, texto y borde de acento.
-- Vista general con datos reales y accesos al trabajo, sin métricas inventadas.
-- Lista: título, acción principal, búsqueda, filtros, estado con texto y total visible.
-- Las acciones de fila se presentan como enlaces o botones secundarios neutros. Reservar el botón azul para la acción principal del contexto; no repetirlo en cada fila.
-- Usar documento y referencia como celda de dos líneas. Identificación y monto tienen más peso; el texto descriptivo usa el token secundario, con contraste suficiente.
-- Formulario: cabecera comercial, detalle de ítems y condiciones. Etiquetas visibles.
-- Las secciones llevan título, una descripción útil y un icono existente cuando facilita reconocerlas. Mantener el orden visual y el orden del teclado. Los campos pasan a una columna en móvil.
-- Documento emitido: consulta/PDF/historial y acciones válidas; sin edición silenciosa.
-- Estados: Borrador gris; Emitido azul; Aceptado verde; Rechazado/Anulado rojo.
-- Acciones irreversibles sobre un documento requieren confirmación específica del efecto.
-- Módulos futuros se identifican como previstos; no se muestran enlaces que parezcan funcionales.
-
-## Accesibilidad y adaptación
-
-Navegación por teclado y foco visible. El significado nunca depende solo del color. Tablas con cabecera, etiquetas y mensajes de validación. Formularios Filament conservan componentes accesibles. En móvil se apilan paneles y las tablas permiten desplazamiento horizontal. Revisar contraste WCAG AA antes de aprobar nuevos tokens; no aplicar el celeste del logo a texto pequeño sobre blanco.
-
-## PDF
-
-Formato A4, logo, número, emisión, vigencia, emisor, destinatario, referencia, líneas y totales. Precios con IVA incluido; el IVA se desglosa, no se suma otra vez. Cabeceras de tabla repetibles, filas sin división, condiciones y pie. Los borradores llevan marca explícita. Verificar una página, varias páginas, descripción extensa, USD y caracteres acentuados al modificar la plantilla.
-
-## Cambios visuales
-
-Reutilizar los componentes existentes. Preferir hooks CSS estables de Filament. No modificar archivos de `vendor`. Publicar los recursos tras cambios de CSS: `php artisan filament:assets`, o reconstruir imagen. Validar escritorio y ancho móvil de 390 px. Conservar una captura de referencia solo cuando sea entregable solicitado; no sustituir la prueba de interfaz por un mockup.
-
-
-## Apariencia clara, oscura y del sistema
-
-Se conserva el diseño claro aprobado: navegación, densidad, tipografía, componentes y marca. El modo oscuro adapta roles de color mediante `:root.dark`; no invierte la página ni aplica filtros al logo. La marca se integra sin fondo; el subtítulo adapta su tinta en oscuro sin cambiar las formas originales.
+Fuente de verdad: `public/css/solvet.css`. Filament primary utiliza `#3B647F` en el proveedor; la hoja publicada se genera con `php artisan filament:assets`. No editar `public/css/app/solvet-theme.css` a mano. La URL incorpora hash del CSS para invalidar caché.
 
 | Rol | Claro | Oscuro |
 |---|---|---|
-| Fondo | #F3F6FA | #0B1220 |
-| Superficie | #FFFFFF | #111F31 |
-| Cabecera de tabla | #F6F8FB | #182B43 |
-| Texto | #183149 | #E4EDF8 |
-| Título | #102F4F | #F4F8FF |
-| Secundario y placeholder | #5B6D82 | #A8B8CE |
-| Enlace y selección | #1769AA | #8FCBFF |
-| Botón principal | #1769AA | #62B1FA |
-| Texto del botón | #FFFFFF | #08213A |
+| Fondo | #F3F3F0 | #181C20 |
+| Superficie | #FFFFFF | #22272B |
+| Cabecera de tabla | #F0F1EF | #2B3136 |
+| Texto | #292E32 | #E4E8EB |
+| Título | #292E32 | #F2F4F5 |
+| Secundario | #5D666B | #B5BFC5 |
+| Selección | #E7E9E7 | #343E45 |
+| Acción principal | #3B647F | #A0BFD2 |
+| Texto de acción | #FFFFFF | #182A35 |
+| Enlace / foco | #3B647F | #B0D0E4 |
 
-El selector accesible ofrece claro/oscuro/sistema y utiliza el evento nativo `theme-changed` de Filament. Filament conserva `filament:theme:mode` en almacenamiento local y aplica el tema antes del primer pintado. El primer acceso sin preferencia utiliza claro. Sistema sigue cambios del sistema operativo en tiempo real; una elección explícita permanece al recargar.
+Cabecera de aplicación: `#29333C`, texto `#F2F4F5`, secundario `#C1CBD2` en ambos modos. Es un contexto de contraste constante, no una inversión global. El resto usa tokens semánticos. Estados etiquetados, sin cápsulas saturadas: neutral para borrador/emitido, verde moderado para aceptación, rojo moderado para rechazo/anulación y advertencias de vencimiento. El color nunca sustituye texto.
 
-El historial HTML comparte la preferencia, aplica su clase antes de cargar los estilos y escucha cambios de sistema y almacenamiento desde otras pestañas. No se agrega una librería de temas ni una preferencia en la base de datos.
+Selector claro/oscuro/sistema nativo de Filament, evento `theme-changed`, clave `filament:theme:mode`. Primera visita clara, preferencia por navegador, sistema sigue cambios del SO. Historial independiente comparte esa preferencia. No usar filtros globales ni invertir imágenes.
 
-### Contraste y nuevas pantallas
+## Marca e iconografía
 
-Los tokens se validan para texto normal con una razón mínima de 4.5:1 y para foco con 3:1 frente a sus superficies. La fórmula corresponde a luminancia relativa sRGB; ver [W3C, contraste mínimo](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). Las pruebas comparan los valores sin redondear antes de decidir si cumplen. Esto comprueba estas combinaciones y no representa una auditoría integral de accesibilidad de toda la aplicación.
+Conservar el logo original `public/brand/solvet-it-logo.png`, sin redibujar ni deformar. Aplicación: componente `components.brand`, encuadre SVG del PNG con transparencia, sin placas. La tinta del subtítulo se adapta sobre fondos oscuros usando su máscara alfa original; no cambian las formas ni los colores principales.
 
-No usar colores literales para texto/superficies de nuevas vistas. Usar `--solvet-text`, `--solvet-heading`, `--solvet-muted`, `--solvet-surface`, `--solvet-bg` y pares de estado. Conservar etiquetas junto al color. Los bordes decorativos y el logo no se tratan como texto normal. No sobrescribir estados inválidos/deshabilitados ni anillos de validación nativos de Filament.
+Usar la familia Heroicons ya instalada: variante mini sólida de 20 px para navegación (caja visible 18–20 px), variante outline para acciones de 16–20 px. Mantener peso óptico, alineación y función por contexto. No mezclar emoji, iconos 3D, familias externas o dibujos decorativos. Etiquetas accesibles siempre; tooltip en controles que solo tienen icono. No usar un icono distinto para la misma acción en otra pantalla.
 
-Los PDF son documentos independientes con paleta clara estable: una elección de tema no cambia un documento comercial ni modifica sus copias emitidas.
+## Tipografía y dimensiones
 
-Antes de aprobar cambios, comprobar login, vista general, listas, creación/edición, placeholders, validación, menús, confirmaciones e historial, además del ancho móvil. Ver `pruebas-apariencia.md`.
+Inter Variable local, nombre exacto instalado, fallback system-ui. Documento PDF: DejaVu Sans por compatibilidad con español y guaraní.
 
-La hoja de aplicación y la de historial incluyen una versión derivada del contenido CSS en la URL. Mantener ese mecanismo al publicar cambios; evita mezclar un selector nuevo con colores de una hoja anterior almacenada en caché.
+| Elemento | Regla |
+|---|---|
+| Título | 28 px escritorio / 24 px móvil, peso 650 |
+| Texto | 13–14 px; interlineado mínimo 1.5 |
+| Secundario | 12–13 px, sin opacidad para bajar contraste |
+| Tabla | Cabecera 11–12 px; cuerpo 13 px; divisores finos |
+| Importes | Alineación derecha y cifras tabulares |
+| Espaciado | 4 / 8 / 12 / 16 / 20 / 24 / 32 px |
+| Radios | 3 px detalles, 4 px controles, 5 px superficies |
+| Controles | 40 px; objetivos táctiles mínimos 44 px |
+| Cabecera / lateral | 68 px / 224 px en escritorio |
+| Contenido | Máximo 1600 px; márgenes adaptables |
 
-## Componentes y cambios futuros
+No duplicar el espaciado nativo: usar `.fi-page-header-main-ctn`, no sumar padding también en `.fi-page`. Pestañas compactas y subrayadas. Mantener validación, foco y estados deshabilitados de Filament.
 
-Ver [catálogo de componentes](componentes-ui.md). Reutilizar primero los componentes nativos de Filament para recursos; los componentes `x-ui.*` cubren las vistas propias. No agregar una segunda biblioteca de interfaz ni un compilador de recursos para cambiar estilos.
+## Documento comercial
 
-Una nueva pantalla debe presentarse en claro y oscuro, con datos vacíos y reales de prueba, textos extensos, errores y ancho móvil. La adaptación nativa de listados apila las filas por debajo de 640 px; las tablas de consulta del panel y del historial mantienen desplazamiento interno. No permitir desplazamiento horizontal de toda la página.
+A4 claro, logo completo, número, emisión, vigencia, emisor, destinatario, referencia, líneas, subtotal, descuentos, IVA incluido, total, condiciones y páginas. Paleta neutra independiente del navegador. Borrador inequívoco, sin número comercial. La emisión asigna el siguiente `PPTO-000001` de la secuencia global existente: no cambia prefijo ni reinicia por año para parecerse al render.
 
-Si un nuevo módulo necesita un patrón que no está contemplado, documentarlo aquí y agregarlo a la base compartida antes de repetirlo en pantallas aisladas.
+Los documentos emitidos conservan bytes, hash y snapshot originales. Los cambios de plantilla afectan únicamente borradores y próximas emisiones. La vista previa del emitido sirve el mismo archivo que la descarga.
+
+## Accesibilidad y mantenimiento
+
+Usar tokens para superficies/textos de nuevas vistas; preservar semántica y teclado nativos de Filament. Foco visible, etiquetas, errores, menús y ventanas legibles. Contraste WCAG AA para texto normal; pruebas de combinaciones no equivalen a auditoría integral.
+
+Validar claro/oscuro, escritorio, 390 px, datos reales de prueba/vacíos/extensos, filtros y acciones. Listados nativos apilados en móvil; tablas de detalle e historial con desplazamiento interno. Sin desbordamiento global. Respetar movimiento reducido.
+
+Reutilizar componentes nativos y `x-ui.panel`, `x-ui.status`, `x-ui.empty-state`. No copiar vistas internas ni modificar `vendor`, no agregar SPA ni biblioteca visual. Ante un patrón nuevo, documentarlo y agregarlo compartido antes de duplicarlo. Ver [componentes](componentes-ui.md) y [módulo](modulos/presupuestos.md).

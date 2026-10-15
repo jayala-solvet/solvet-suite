@@ -28,3 +28,14 @@ Antes de operar con datos reales:
 5. Configurar HTTPS/proxy/secretos y verificar permisos según la instalación.
 
 Las capturas de navegador fueron materiales internos de verificación y no se incluyen en el proyecto. El ejemplo PDF y los registros demostrativos contienen datos ficticios.
+
+## Base operativa de presupuestos · 15/10/2026
+
+Verificaciones de esta entrega:
+
+- PHP 8.5.11, dependencias de `composer.lock`: 18 pruebas, 195 aserciones aprobadas. Incluyen pestañas, moneda, período, búsqueda por correlativo/identificador/snapshot, emisión y decisión desde Livewire, preview inline con bytes originales, permisos de consulta y vencimiento sin mutación de estado.
+- Navegador Chromium real: 24 estados, 1545 comprobaciones de contraste de texto, cero fallas en esas combinaciones y cero errores JavaScript. Listado, vacío, pestañas, selección, detalle, formularios, cálculo durante edición, confirmación, clientes e historial; claro/oscuro y ancho móvil 390 px. Sin desbordamiento global en pantallas revisadas.
+- PDFs generados por Dompdf: PYG de una página, 35 ítems en cuatro páginas, USD con decimales y marca de borrador. Inspección de páginas renderizadas, logo completo, encabezados repetidos, condiciones y paginación.
+- Pint y `git diff --check` aprobados.
+
+Se ejecutó la aplicación con PHP local y SQLite de pruebas; no hay Docker Engine en este entorno. No se ejecutó construcción Docker ni prueba de concurrencia PostgreSQL. La imagen de despliegue sigue usando el mismo Dockerfile y las mismas dependencias. No se accedió al servidor de José ni se emitieron documentos en su base. La instalación debe aplicar `scripts/update.sh` y verificar `/up` e ingreso.

@@ -16,6 +16,8 @@ class Workspace extends Page
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?int $navigationSort = -1;
 
     public function summary(): array
