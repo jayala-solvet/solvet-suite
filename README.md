@@ -20,7 +20,9 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 Los botones de sol, luna y monitor permiten elegir **claro**, **oscuro** o **sistema** en el acceso y en la barra superior. La primera visita usa claro para conservar el diseño inicial. La elección se recuerda en ese navegador y dirección del sistema; no se sincroniza entre dispositivos. El historial sigue esa preferencia y los PDF conservan el diseño para compartir e imprimir.
 
-La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño](docs/diseno.md) y [comprobaciones de apariencia](docs/pruebas-apariencia.md).
+La base visual utiliza Inter Variable local, navegación compacta, jerarquía de acciones, formularios por secciones y listas adaptadas a móvil. Los componentes compartidos están en `resources/views/components/ui`.
+
+La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño](docs/diseno.md), [catálogo de componentes](docs/componentes-ui.md) y [comprobaciones de apariencia](docs/pruebas-apariencia.md).
 
 ## Alcance de esta versión
 

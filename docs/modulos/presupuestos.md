@@ -41,6 +41,14 @@ Este es un presupuesto comercial, no una factura fiscal. El tratamiento definiti
 7. Usuario de consulta no puede escribir.
 8. PDF e historial no son públicos.
 
+## Interfaz de referencia
+
+El listado presenta documento y referencia en una misma celda, cliente, estado etiquetado, importe alineado a la derecha y vigencia. La acción principal es `Nuevo presupuesto`; PDF y menú de fila son secundarios. Los borradores muestran su identificador interno (`Borrador #…`), sin asignar correlativo comercial.
+
+El formulario agrupa datos de cabecera, productos/servicios y condiciones comerciales. El detalle pasa de una columna en móvil a dos en tablet y una fila de campos en escritorio amplio. `Guardar borrador` usa el mismo servicio y validaciones de la versión inicial. La búsqueda sigue incluyendo número, asunto y cliente; el modo móvil apila cada documento con etiquetas.
+
+Ver `diseno.md` y `componentes-ui.md` en la carpeta superior antes de implementar nuevas pantallas.
+
 ## Siguientes tareas
 
 Revisiones vinculadas con referencia de documento/revisión, aprobación interna configurable, envío con estados separados, evidencia adjunta, catálogo, historial de modificaciones con diferencias de campos y conversión a orden. El historial actual registra que se guardó un borrador, no cada diferencia individual.

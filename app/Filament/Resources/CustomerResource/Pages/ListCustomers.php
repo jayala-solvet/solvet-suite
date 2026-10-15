@@ -10,8 +10,10 @@ class ListCustomers extends ListRecords
 {
     protected static string $resource = CustomerResource::class;
 
+    protected ?string $subheading = 'Tu cartera de clientes y sus datos de contacto, en un solo lugar.';
+
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Nuevo cliente')];
+        return [CreateAction::make()->label('Nuevo cliente')->icon('heroicon-o-plus')];
     }
 }
