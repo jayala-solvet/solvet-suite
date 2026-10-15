@@ -21,7 +21,7 @@ class CustomerResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Clientes';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-m-user-group';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Comercial';
 
@@ -45,7 +45,7 @@ class CustomerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Identificación del cliente')->description('Datos que se utilizarán al preparar tus presupuestos.')->icon('heroicon-o-building-office-2')->schema([
+            Section::make('Identificación del cliente')->description('Datos que se utilizarán al preparar tus presupuestos.')->icon('heroicon-o-users')->schema([
                 TextInput::make('name')->label('Razón social / nombre')->required()->maxLength(200),
                 TextInput::make('tax_id')->label('RUC / identificación')->maxLength(50),
             ])->columns(2)->columnSpanFull(),
@@ -62,7 +62,7 @@ class CustomerResource extends Resource
     {
         return $table->columns([
             TextColumn::make('name')->label('Cliente')->searchable()->sortable()->weight(FontWeight::SemiBold)->wrap(), TextColumn::make('tax_id')->label('RUC')->searchable()->placeholder('Sin registrar'), TextColumn::make('contact')->label('Contacto')->placeholder('Sin registrar'), TextColumn::make('email')->label('Correo')->placeholder('Sin registrar'), TextColumn::make('phone')->label('Teléfono')->placeholder('Sin registrar'),
-        ])->recordActions([EditAction::make()->color('gray')->visible(fn () => self::canCreate())])->recordActionsColumnLabel('Opciones')->stackedOnMobile()->searchPlaceholder('Buscar por nombre o RUC')->emptyStateIcon('heroicon-o-building-office-2')->emptyStateHeading('No hay clientes para mostrar')->emptyStateDescription('Revisá la búsqueda. Los clientes registrados aparecerán en este listado.')->defaultSort('name');
+        ])->recordActions([EditAction::make()->color('gray')->visible(fn () => self::canCreate())])->recordActionsColumnLabel('Opciones')->stackedOnMobile()->searchPlaceholder('Buscar por nombre o RUC')->emptyStateIcon('heroicon-m-user-group')->emptyStateHeading('No hay clientes para mostrar')->emptyStateDescription('Revisá la búsqueda. Los clientes registrados aparecerán en este listado.')->defaultSort('name');
     }
 
     public static function getPages(): array

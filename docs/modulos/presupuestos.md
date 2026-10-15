@@ -52,3 +52,17 @@ Ver `diseno.md` y `componentes-ui.md` en la carpeta superior antes de implementa
 ## Siguientes tareas
 
 Revisiones vinculadas con referencia de documento/revisión, aprobación interna configurable, envío con estados separados, evidencia adjunta, catálogo, historial de modificaciones con diferencias de campos y conversión a orden. El historial actual registra que se guardó un borrador, no cada diferencia individual.
+
+## Operación completa desde la interfaz (15/10/2026)
+
+- Inicio en Presupuestos, pestañas Todos/Borradores/Emitidos/Aceptados/Rechazados/Anulados con conteos globales por estado (independientes de filtros de tabla).
+- Búsqueda por correlativo completo, identificador de borrador, asunto y nombre actual/original del cliente, filtro PYG/USD, rango de emisión, emitidos del mes y vencidos sin respuesta. Un borrador sin emisión no entra en rangos de emisión.
+- Selector de columnas, ordenación y paginación de 10/25/50. Selección máxima de un registro para detalle, edición de borrador, PDF e historial; no hay emisión masiva.
+- Guardar abre el detalle. Resumen de totales durante la edición con cálculo en servidor; los campos incompletos no presentan importes como definitivos.
+- Detalle consultable en todos los estados, con snapshot de cliente/emisor al emitir, ítems, condiciones, totales, fechas, advertencia de vencimiento e historial con actor.
+- Emitir requiere confirmar el cierre y correlativo. PDF en vista previa inline o descarga; emitidos reutilizan siempre el archivo conservado. No se envía correo.
+- Registrar decisión requiere estado permitido y evidencia; vuelve al detalle actualizado.
+- Los vencidos permanecen Emitidos hasta decisión; no se altera retrospectivamente el PDF.
+- No se agregan notificaciones ficticias, soporte ni órdenes de trabajo sin módulo implementado.
+
+Los PDFs ya emitidos y la numeración de la instalación se conservan. No se necesitan migraciones ni carga de demostración para esta actualización.

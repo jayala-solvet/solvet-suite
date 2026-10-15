@@ -12,7 +12,7 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 - Cálculo en servidor, correlativo al emitir, PDF descargable y copia comercial de cliente/emisor.
 - Decisiones manuales de aceptación, rechazo o anulación con evidencia textual obligatoria.
 - Historial por presupuesto, actor, fecha y hash SHA-256 del PDF emitido.
-- Panel con conteos reales y navegación comercial; PDF A4 con identidad Solvet.
+- Listado con pestañas, filtros, selección contextual, detalle completo e historial; PDF A4 con identidad Solvet.
 - Apariencia clara, oscura o según el sistema, seleccionable antes y después de iniciar sesión.
 - Docker Compose, volúmenes persistentes, respaldo, actualización y pruebas automatizadas.
 
@@ -20,7 +20,7 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 Los botones de sol, luna y monitor permiten elegir **claro**, **oscuro** o **sistema** en el acceso y en la barra superior. La primera visita usa claro para conservar el diseño inicial. La elección se recuerda en ese navegador y dirección del sistema; no se sincroniza entre dispositivos. El historial sigue esa preferencia y los PDF conservan el diseño para compartir e imprimir.
 
-La base visual utiliza Inter Variable local, navegación compacta, jerarquía de acciones, formularios por secciones y listas adaptadas a móvil. Los componentes compartidos están en `resources/views/components/ui`.
+La base visual aprobada usa superficies neutras, cabecera grafito, Inter Variable local e iconografía compacta. El inicio abre Presupuestos, con filtros, pestañas y detalle completo; los formularios muestran totales durante la edición. Los componentes compartidos están en `resources/views/components/ui`.
 
 La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño](docs/diseno.md), [catálogo de componentes](docs/componentes-ui.md) y [comprobaciones de apariencia](docs/pruebas-apariencia.md).
 
@@ -75,7 +75,7 @@ No usar `down -v` si querés conservar la base y los documentos.
 ## Próximo desarrollo recomendado
 
 1. Revisiones de presupuestos conservando el vínculo y el histórico.
-2. Catálogo reutilizable y vistas de totales durante la edición.
+2. Catálogo reutilizable.
 3. Envío por correo con cola y registro de entregas, separado de emitir.
 4. Portal de aprobación y órdenes de trabajo.
 5. Integración GLPI.
