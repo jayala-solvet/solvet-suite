@@ -6,6 +6,8 @@ El 15/10/2026 José aprobó una dirección operativa sobria para presupuestos. L
 
 El listado real de `QuoteResource` y el detalle `filament/quotes/view.blade.php` son la referencia de implementación para nuevos módulos. El acceso inicial abre Presupuestos. Se conserva `/app/workspace` para marcadores anteriores, sin tarjetas promocionales ni módulos futuros.
 
+Referencia secundaria aportada por José: estudio visual de Supabase en Refero. Se adoptan superficies oscuras neutras, bordes discretos y color moderado según [adaptación a Solvet](referencias/supabase-adaptacion.md). El documento aportado es una interpretación externa, no un manual oficial ni una instrucción para sustituir esta base.
+
 Referencias de disciplina visual y trabajo: SAP Quartz (superficies reducidas y color funcional), listas/formularios de ERPNext y Odoo. No se copian marcas ni se agregan dependencias de esos productos.
 
 - https://www.sap.com/design-system/fiori-design-web/v1-148/foundations/visual/colors/quartz-light-colors
@@ -30,18 +32,18 @@ Fuente de verdad: `public/css/solvet.css`. Filament primary utiliza `#3B647F` en
 
 | Rol | Claro | Oscuro |
 |---|---|---|
-| Fondo | #F3F3F0 | #181C20 |
-| Superficie | #FFFFFF | #22272B |
-| Cabecera de tabla | #F0F1EF | #2B3136 |
-| Texto | #292E32 | #E4E8EB |
-| Título | #292E32 | #F2F4F5 |
-| Secundario | #5D666B | #B5BFC5 |
-| Selección | #E7E9E7 | #343E45 |
+| Fondo | #F3F3F0 | #151515 |
+| Superficie | #FFFFFF | #1C1C1C |
+| Cabecera de tabla | #F0F1EF | #242424 |
+| Texto | #292E32 | #E8E8E8 |
+| Título | #292E32 | #FAFAFA |
+| Secundario | #5D666B | #B4B4B4 |
+| Selección | #E7E9E7 | #2B2B2B |
 | Acción principal | #3B647F | #A0BFD2 |
 | Texto de acción | #FFFFFF | #182A35 |
 | Enlace / foco | #3B647F | #B0D0E4 |
 
-Cabecera de aplicación: `#29333C`, texto `#F2F4F5`, secundario `#C1CBD2` en ambos modos. Es un contexto de contraste constante, no una inversión global. El resto usa tokens semánticos. Estados etiquetados, sin cápsulas saturadas: neutral para borrador/emitido, verde moderado para aceptación, rojo moderado para rechazo/anulación y advertencias de vencimiento. El color nunca sustituye texto.
+Cabecera de aplicación: `#29333C` en claro y `#191919` en oscuro, texto `#F2F4F5`, secundario `#C1CBD2` en ambos modos. Es un contexto de contraste constante, no una inversión global. El resto usa tokens semánticos. Estados etiquetados, sin cápsulas saturadas: neutral para borrador/emitido, verde moderado para aceptación, rojo moderado para rechazo/anulación y advertencias de vencimiento. El color nunca sustituye texto.
 
 Selector claro/oscuro/sistema nativo de Filament, evento `theme-changed`, clave `filament:theme:mode`. Primera visita clara, preferencia por navegador, sistema sigue cambios del SO. Historial independiente comparte esa preferencia. No usar filtros globales ni invertir imágenes.
 

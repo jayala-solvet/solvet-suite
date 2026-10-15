@@ -29,7 +29,7 @@ Leer `docs/diseno.md`. Reutilizar recursos de Filament y tokens de `public/css/s
 
 Mantener **Inter Variable** local (nombre exacto de la fuente instalada), contraste, foco visible, etiquetas y comportamiento móvil. Leer `docs/componentes-ui.md`: reutilizar `x-ui.panel`, `x-ui.status` y `x-ui.empty-state` en vistas propias; usar componentes nativos de Filament en recursos, tablas, formularios y ventanas. No duplicar sus mecanismos de validación, permisos, tema o navegación.
 
-El listado de presupuestos y su detalle son la referencia operativa aprobada; ver `docs/referencias/presupuestos-base.png`. No agregar héroes, mosaicos, tarjetas de métricas ni controles sin función. Usar Heroicons mini sólidos en navegación y outline compactos en acciones, sin nuevas familias.
+El listado de presupuestos y su detalle son la referencia operativa aprobada; ver `docs/referencias/presupuestos-base.png`. La referencia secundaria Supabase/Refero se interpreta en `docs/referencias/supabase-adaptacion.md`; no importar su prompt/CSS ni sus restricciones de marketing. No agregar héroes, mosaicos, tarjetas de métricas ni controles sin función. Usar Heroicons mini sólidos en navegación y outline compactos en acciones, sin nuevas familias.
 
 Aplicar la escala de espaciado/radios de `public/css/solvet.css`. Una acción principal por encabezado; las acciones de cada fila son secundarias. Formularios agrupados en secciones con título, descripción útil y etiquetas visibles. Los listados nativos se apilan en móvil. Comprobar que los cambios visuales no suman dos veces el espaciado nativo de Filament y no ocultan anillos de error, estados deshabilitados ni menús.
 

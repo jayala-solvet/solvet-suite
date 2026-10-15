@@ -39,3 +39,7 @@ Verificaciones de esta entrega:
 - Pint y `git diff --check` aprobados.
 
 Se ejecutó la aplicación con PHP local y SQLite de pruebas; no hay Docker Engine en este entorno. No se ejecutó construcción Docker ni prueba de concurrencia PostgreSQL. La imagen de despliegue sigue usando el mismo Dockerfile y las mismas dependencias. No se accedió al servidor de José ni se emitieron documentos en su base. La instalación debe aplicar `scripts/update.sh` y verificar `/up` e ingreso.
+
+## Refinamiento de referencia Supabase / Refero · 15/10/2026
+
+Cambio de tokens y cabecera oscura, sin alterar el módulo comercial. Suite existente: 18 pruebas / 195 aserciones aprobadas. Chromium: 24 estados de escritorio/móvil claro/oscuro, 1545 comprobaciones de contraste de texto, cero fallas detectadas y cero errores JavaScript. Inspección visual de listado, formulario y detalle móvil; captura de aplicación real conservada en `docs/referencias/presupuestos-oscuro-neutro.png`. Enlaces locales y diff revisados. No se ejecutó una construcción Docker ni se accedió al servidor de José.

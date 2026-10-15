@@ -47,8 +47,12 @@
     --solvet-radius-sm: 3px;
     --solvet-radius-control: 4px;
     --solvet-radius: 5px;
-    --solvet-shadow: 0 2px 8px #292e3206;
+    --solvet-shadow: none;
     --solvet-overlay-shadow: 0 12px 36px #292e321f;
+    --solvet-shell-bg: #29333c;
+    --solvet-shell-border: #46515a;
+    --solvet-shell-control-border: #76838c;
+    --solvet-shell-hover: #46535d;
     --solvet-content-width: 1600px;
     --solvet-control-height: 40px;
     --solvet-motion: 120ms ease;
@@ -60,18 +64,18 @@
 /* No filters or colour inversion: each role has a legible dark counterpart. */
 :root.dark {
     color-scheme: dark;
-    --solvet-bg: #181c20;
-    --solvet-surface: #22272b;
-    --solvet-subtle: #2b3136;
-    --solvet-table-header: #2b3136;
-    --solvet-hover: #30373d;
-    --solvet-border: #434c52;
-    --solvet-divider: #394148;
-    --solvet-text: #e4e8eb;
-    --solvet-heading: #f2f4f5;
-    --solvet-muted: #b5bfc5;
+    --solvet-bg: #151515;
+    --solvet-surface: #1c1c1c;
+    --solvet-subtle: #242424;
+    --solvet-table-header: #242424;
+    --solvet-hover: #2b2b2b;
+    --solvet-border: #383838;
+    --solvet-divider: #303030;
+    --solvet-text: #e8e8e8;
+    --solvet-heading: #fafafa;
+    --solvet-muted: #b4b4b4;
     --solvet-link: #b0d0e4;
-    --solvet-nav-active: #343e45;
+    --solvet-nav-active: #2b2b2b;
     --solvet-primary-bg: #a0bfd2;
     --solvet-primary-hover: #bad2df;
     --solvet-primary-text: #182a35;
@@ -84,14 +88,18 @@
     --solvet-warning-text: #ffc68b;
     --solvet-danger-bg: #472831;
     --solvet-danger-text: #ffadb1;
-    --solvet-neutral-bg: #39434a;
-    --solvet-neutral-text: #d4dde2;
-    --solvet-field: #1d2327;
-    --solvet-control-border: #7e909c;
+    --solvet-neutral-bg: #303030;
+    --solvet-neutral-text: #d6d6d6;
+    --solvet-field: #181818;
+    --solvet-control-border: #747474;
     --solvet-green: #7ee3b4;
     --solvet-orange: #ffc68b;
-    --solvet-shadow: 0 2px 8px #0000000d;
+    --solvet-shadow: none;
     --solvet-overlay-shadow: 0 12px 36px #0000004d;
+    --solvet-shell-bg: #191919;
+    --solvet-shell-border: #383838;
+    --solvet-shell-control-border: #747474;
+    --solvet-shell-hover: #303030;
 }
 
 /* 1. Application shell and typography. The installed font is Inter Variable. */
@@ -983,14 +991,14 @@ button:focus-visible {
 }
 
 /* Approved operational direction: graphite shell, quiet navigation, document register. */
-.fi-topbar, .fi-sidebar-header { background: #29333c; border-color: #46515a; }
+.fi-topbar, .fi-sidebar-header { background: var(--solvet-shell-bg); border-color: var(--solvet-shell-border); }
 .fi-topbar .fi-icon-btn, .fi-topbar .fi-icon-btn .fi-icon { color: #e4e8eb; }
 .fi-topbar .sv-workspace-label { border-color: #66737c; }
 .fi-topbar .sv-workspace-label strong { color: #f2f4f5; font-weight: 500; }
 .fi-topbar .sv-workspace-label span { color: #c1cbd2; }
-.fi-topbar .sv-theme-switcher { background: #29333c; border-color: #76838c; }
+.fi-topbar .sv-theme-switcher { background: var(--solvet-shell-bg); border-color: var(--solvet-shell-control-border); }
 .fi-topbar .sv-theme-option { color: #c1cbd2; }
-.fi-topbar .sv-theme-option:hover, .fi-topbar .sv-theme-option[aria-pressed="true"] { color: #fff; background: #46535d; }
+.fi-topbar .sv-theme-option:hover, .fi-topbar .sv-theme-option[aria-pressed="true"] { color: #fff; background: var(--solvet-shell-hover); }
 .fi-topbar .sv-brand-tagline, .fi-sidebar-header .sv-brand-tagline { display: block; fill: #c1cbd2; }
 .fi-sidebar { background: var(--solvet-bg); }
 .fi-sidebar-item.fi-active .fi-sidebar-item-label, .fi-sidebar-item.fi-active .fi-icon { color: var(--solvet-heading); }
