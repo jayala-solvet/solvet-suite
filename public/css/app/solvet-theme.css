@@ -761,18 +761,22 @@ button:focus-visible {
 }
 
 .sv-brand {
-    position: relative;
     width: 102px;
     height: 62px;
-    overflow: hidden;
+    flex-shrink: 0;
+    background: transparent;
 }
-.sv-brand img {
-    position: absolute;
-    width: 174px;
-    max-width: none !important;
-    height: auto;
-    left: -39px;
-    top: -31px;
+.sv-brand > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.sv-brand-tagline {
+    display: none;
+}
+.dark .sv-brand-tagline {
+    display: block;
+    fill: var(--solvet-muted);
 }
 .sv-main-grid > * {
     min-width: 0;
@@ -900,12 +904,6 @@ button:focus-visible {
 .fi-select-input-placeholder,
 .fi-ta-placeholder {
     color: var(--solvet-muted);
-}
-
-/* The original logo contains a dark tagline; preserve the asset on a light plate. */
-.dark .sv-brand {
-    background: #e8f0f8;
-    border-radius: 6px;
 }
 
 .fi-breadcrumbs-item-label {
