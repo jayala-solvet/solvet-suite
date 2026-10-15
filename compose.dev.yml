@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      args:
+        INSTALL_DEV: "true"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+    volumes:
+      - ./app:/var/www/html/app
+      - ./routes:/var/www/html/routes
+      - ./config:/var/www/html/config
+      - ./database/migrations:/var/www/html/database/migrations
+      - ./resources:/var/www/html/resources
+      - ./tests:/var/www/html/tests
+      - ./public/css:/var/www/html/public/css
+  web:
+    volumes:
+      - ./public/css:/var/www/html/public/css:ro

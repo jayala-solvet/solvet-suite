@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Modules\Quotes\Services;
+
+use App\Models\User;
+use App\Modules\Core\Models\AuditEvent;
+use App\Modules\Core\Models\Company;
+use App\Modules\Customers\Models\Customer;
+use App\Modules\Quotes\Models\Quote;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
+class QuoteService
+{
+    public function __construct(private QuoteCalculator $calculator) {}
+
+    private function authorize(User $actor): void
+    {
+        Gate::forUser($actor)->authorize('write-business');
+    }
+
+    private function event(User $actor, Quote $quote, string $action, array $metadata = []): void
+    {
+        AuditEvent::create(['actor_id' => $actor->id, 'action' => $action, 'subject_type' => 'quote', 'subject_id' => $quote->id, 'metadata' => $metadata]);
+    }
+
+    public function saveDraft(User $actor, array $data, ?Quote $quote = null): Quote
+    {
+        $this->authorize($actor);
+        $data = Validator::make($data, ['customer_id' => 'required|exists:customers,id', 'subject' => 'required|string|max:200', 'currency' => 'required|in:PYG,USD', 'valid_until' => 'required|date|after_or_equal:today', 'terms' => 'nullable|string|max:5000', 'lines' => 'required|array'])->validate();
+        $calculated = $this->calculator->calculate($data['lines'], $data['currency']);
+
+        return DB::transaction(function () use ($actor, $data, $calculated, $quote) {
+            if ($quote) {
+                $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+                if ($quote->status !== 'draft') {
+                    throw ValidationException::withMessages(['status' => 'Solo se pueden editar borradores.']);
+                }
+            } else {
+                $quote = new Quote(['created_by' => $actor->id, 'status' => 'draft']);
+            }
+            $quote->fill(array_merge($data, $calculated))->save();
+            $this->event($actor, $quote, 'draft.saved');
+
+            return $quote;
+        });
+    }
+
+    public function issue(User $actor, Quote $quote): Quote
+    {
+        $this->authorize($actor);
+
+        return DB::transaction(function () use ($actor, $quote) {
+            $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+            if ($quote->status !== 'draft') {
+                throw ValidationException::withMessages(['status' => 'El presupuesto ya fue emitido.']);
+            }
+            if ($quote->valid_until->isBefore(today())) {
+                throw ValidationException::withMessages(['valid_until' => 'Actualizá la fecha de vigencia antes de emitir.']);
+            }
+            $seq = DB::table('document_sequences')->where('key', 'quote')->lockForUpdate()->first();
+            if (! $seq) {
+                throw new \RuntimeException('Ejecutá solvet:install antes de emitir.');
+            }
+            $customer = Customer::findOrFail($quote->customer_id);
+            $company = Company::firstOrFail();
+            $quote->fill(['number' => $seq->next_number, 'status' => 'issued', 'issued_at' => now(), 'snapshot' => ['company' => $company->only(['name', 'tax_id', 'email', 'phone', 'address']), 'customer' => $customer->only(['name', 'tax_id', 'contact', 'email', 'phone', 'address'])]]);
+            $bytes = Pdf::loadView('pdf.quote', ['quote' => $quote, 'draft' => false])->setPaper('a4')->output();
+            $path = 'quotes/'.Str::uuid().'.pdf';
+            Storage::disk('local')->put($path, $bytes);
+            $quote->fill(['pdf_path' => $path, 'pdf_sha256' => hash('sha256', $bytes)])->save();
+            DB::table('document_sequences')->where('key', 'quote')->update(['next_number' => $seq->next_number + 1]);
+            $this->event($actor, $quote, 'quote.issued', ['number' => $quote->number, 'pdf_sha256' => $quote->pdf_sha256]);
+
+            return $quote;
+        });
+    }
+
+    public function decide(User $actor, Quote $quote, string $status, string $evidence): Quote
+    {
+        $this->authorize($actor);
+        Validator::make(['status' => $status, 'evidence' => $evidence], ['status' => 'required|in:accepted,rejected,cancelled', 'evidence' => 'required|string|min:10|max:2000'])->validate();
+
+        return DB::transaction(function () use ($actor, $quote, $status, $evidence) {
+            $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+            if ($quote->status !== 'issued') {
+                throw ValidationException::withMessages(['status' => 'Solo un presupuesto emitido puede recibir esta decisión.']);
+            }
+            $quote->update(['status' => $status]);
+            $this->event($actor, $quote, 'quote.'.$status, ['evidence' => $evidence]);
+
+            return $quote;
+        });
+    }
+}

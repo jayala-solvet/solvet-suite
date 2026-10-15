@@ -1,0 +1,60 @@
+name: ${COMPOSE_PROJECT_NAME:-solvet-suite}
+services:
+  app:
+    build:
+      context: .
+      target: app
+    image: ${COMPOSE_PROJECT_NAME:-solvet-suite}-app:${APP_VERSION:-0.1.0}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: solvet
+      DB_USERNAME: solvet
+      SESSION_DRIVER: database
+      CACHE_STORE: database
+    volumes:
+      - app_storage:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@fsockopen('127.0.0.1',9000) ? 0 : 1);"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  web:
+    build:
+      context: .
+      target: web
+    image: ${COMPOSE_PROJECT_NAME:-solvet-suite}-web:${APP_VERSION:-0.1.0}
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-8088}:8080"
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: solvet
+      POSTGRES_USER: solvet
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Ejecutar bash scripts/setup.sh primero}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U solvet -d solvet"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+volumes:
+  db_data:
+  app_storage:
