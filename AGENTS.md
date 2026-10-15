@@ -27,7 +27,9 @@ La documentación expresa decisiones y alcance; verificar siempre el código y l
 
 Leer `docs/diseno.md`. Reutilizar recursos de Filament y tokens de `public/css/solvet.css`. Pantallas de gestión con navegación por módulos, encabezado, acción principal, filtros y tabla. Evitar estilos aislados, gradientes decorativos y paneles de métricas ficticias. Verde/naranja/rojo representan estados; el color siempre lleva una etiqueta.
 
-Mantener Inter local, contraste, foco visible, etiquetas y comportamiento móvil.
+Mantener **Inter Variable** local (nombre exacto de la fuente instalada), contraste, foco visible, etiquetas y comportamiento móvil. Leer `docs/componentes-ui.md`: reutilizar `x-ui.panel`, `x-ui.stat-card`, `x-ui.status` y `x-ui.empty-state` en vistas propias; usar componentes nativos de Filament en recursos, tablas, formularios y ventanas. No duplicar sus mecanismos de validación, permisos, tema o navegación.
+
+Aplicar la escala de espaciado/radios de `public/css/solvet.css`. Una acción principal por encabezado; las acciones de cada fila son secundarias. Formularios agrupados en secciones con título, descripción útil y etiquetas visibles. Los listados nativos se apilan en móvil. Comprobar que los cambios visuales no suman dos veces el espaciado nativo de Filament y no ocultan anillos de error, estados deshabilitados ni menús.
 
 Toda nueva pantalla debe funcionar en claro y oscuro usando los tokens semánticos existentes. No fijar fondos blancos ni texto oscuro en las vistas de aplicación. El selector comparte la preferencia nativa de Filament y ofrece claro, oscuro y sistema. Verificar texto principal/secundario, placeholders, estados, errores, menús y ventanas en ambos modos. Los PDF mantienen su paleta de documento y no heredan el tema del navegador. El logo entregado se conserva sin redibujarlo. No sustituirlo por el logo distinto que aparece en la referencia cromática.
 

@@ -34,14 +34,41 @@ Fuente de verdad de tokens de interfaz: `public/css/solvet.css`. Filament `prima
 
 ## Tipografía y densidad
 
-Inter local para interfaz; respaldo system-ui. PDF con DejaVu Sans para caracteres españoles y símbolo de guaraní. Texto habitual 13–14 px, etiquetas 12 px, títulos 24–28 px. Números monetarios alineados a la derecha. Espaciado con escala 4/8/12/16/24/32. Esquinas 8–12 px, sombras casi imperceptibles. No usar tarjetas gigantes ni grandes espacios vacíos donde se necesita una tabla de trabajo.
+**Inter Variable** local para interfaz; ese es el nombre exacto declarado en los archivos `@font-face` instalados. El proveedor del panel y el CSS usan el mismo nombre. El historial carga la hoja de la fuente local. Respaldo system-ui. PDF con DejaVu Sans para caracteres españoles y símbolo de guaraní.
+
+| Elemento | Regla |
+|---|---|
+| Título de página | 28 px escritorio / 24 px móvil, peso 650 |
+| Título de sección | 14 px, peso 600–650 |
+| Texto y campos | 13–14 px, interlineado mínimo 1.5 |
+| Etiquetas y descripción | 12–13 px; nunca usar opacidad para atenuar texto |
+| Cabecera de tabla | 12 px en Filament / 11 px en tablas compactas propias |
+| Importes | Cifras tabulares, alineadas a la derecha en tabla |
+| Espaciado | Tokens 4 / 8 / 12 / 16 / 20 / 24 / 32 px |
+| Radios | 6 px estados, 8 px controles, 12 px superficies |
+| Campos y acciones principales | 40 px de alto |
+| Selector de tema | 32 px en escritorio; 44 × 44 px con puntero táctil |
+| Animación | 120 ms solo para color; respetar movimiento reducido |
+
+No usar tarjetas gigantes ni grandes espacios vacíos donde se necesita una tabla de trabajo. Las sombras son discretas; borde y fondo organizan las superficies. Las separaciones decorativas no sustituyen el borde visible de los campos.
+
+## Estructura de pantalla
+
+Cabecera de 72 px y barra lateral de 256 px en escritorio, colapsable mediante el control nativo de Filament. El logo conserva el archivo original: se ajusta la ventana CSS y la escala, sin redibujarlo. En oscuro usa una base clara proporcionada al tamaño del logo.
+
+Contenido limitado a 1440 px, con márgenes adaptados al ancho disponible. Aplicar el espaciado vertical a `.fi-page-header-main-ctn`, no también a `.fi-page`: el segundo duplicaría la separación nativa. Usar un título claro, una descripción breve si aporta contexto y una acción principal en el encabezado.
+
+El selector de tema se integra antes del avatar mediante un render hook del panel. No copiar las vistas internas de Filament ni modificar `vendor` para ajustar la estructura.
 
 ## Patrones
 
-- Menú lateral claro por áreas y módulo activo destacado.
+- Menú lateral por áreas, superficie acorde al tema y módulo activo con fondo, texto y borde de acento.
 - Vista general con datos reales y accesos al trabajo, sin métricas inventadas.
 - Lista: título, acción principal, búsqueda, filtros, estado con texto y total visible.
+- Las acciones de fila se presentan como enlaces o botones secundarios neutros. Reservar el botón azul para la acción principal del contexto; no repetirlo en cada fila.
+- Usar documento y referencia como celda de dos líneas. Identificación y monto tienen más peso; el texto descriptivo usa el token secundario, con contraste suficiente.
 - Formulario: cabecera comercial, detalle de ítems y condiciones. Etiquetas visibles.
+- Las secciones llevan título, una descripción útil y un icono existente cuando facilita reconocerlas. Mantener el orden visual y el orden del teclado. Los campos pasan a una columna en móvil.
 - Documento emitido: consulta/PDF/historial y acciones válidas; sin edición silenciosa.
 - Estados: Borrador gris; Emitido azul; Aceptado verde; Rechazado/Anulado rojo.
 - Acciones irreversibles sobre un documento requieren confirmación específica del efecto.
@@ -91,3 +118,11 @@ Los PDF son documentos independientes con paleta clara estable: una elección de
 Antes de aprobar cambios, comprobar login, vista general, listas, creación/edición, placeholders, validación, menús, confirmaciones e historial, además del ancho móvil. Ver `pruebas-apariencia.md`.
 
 La hoja de aplicación y la de historial incluyen una versión derivada del contenido CSS en la URL. Mantener ese mecanismo al publicar cambios; evita mezclar un selector nuevo con colores de una hoja anterior almacenada en caché.
+
+## Componentes y cambios futuros
+
+Ver [catálogo de componentes](componentes-ui.md). Reutilizar primero los componentes nativos de Filament para recursos; los componentes `x-ui.*` cubren las vistas propias. No agregar una segunda biblioteca de interfaz ni un compilador de recursos para cambiar estilos.
+
+Una nueva pantalla debe presentarse en claro y oscuro, con datos vacíos y reales de prueba, textos extensos, errores y ancho móvil. La adaptación nativa de listados apila las filas por debajo de 640 px; las tablas de consulta del panel y del historial mantienen desplazamiento interno. No permitir desplazamiento horizontal de toda la página.
+
+Si un nuevo módulo necesita un patrón que no está contemplado, documentarlo aquí y agregarlo a la base compartida antes de repetirlo en pantallas aisladas.

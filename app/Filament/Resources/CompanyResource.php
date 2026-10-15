@@ -7,6 +7,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -45,12 +46,22 @@ class CompanyResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([TextInput::make('name')->label('Razón social')->required()->maxLength(200), TextInput::make('tax_id')->label('RUC')->maxLength(50), TextInput::make('email')->label('Correo')->email()->maxLength(200), TextInput::make('phone')->label('Teléfono')->maxLength(50), Textarea::make('address')->label('Dirección')->maxLength(1000)]);
+        return $schema->components([
+            Section::make('Identidad de la empresa')->icon('heroicon-o-building-office')->description('Datos del emisor que aparecerán en los nuevos presupuestos.')->schema([
+                TextInput::make('name')->label('Razón social')->required()->maxLength(200),
+                TextInput::make('tax_id')->label('RUC')->maxLength(50),
+            ])->columns(2)->columnSpanFull(),
+            Section::make('Información de contacto')->icon('heroicon-o-envelope')->schema([
+                TextInput::make('email')->label('Correo')->email()->maxLength(200),
+                TextInput::make('phone')->label('Teléfono')->maxLength(50),
+                Textarea::make('address')->label('Dirección')->maxLength(1000)->rows(3)->columnSpanFull(),
+            ])->columns(2)->columnSpanFull(),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
-        return $table->columns([TextColumn::make('name')->label('Empresa'), TextColumn::make('tax_id')->label('RUC'), TextColumn::make('email')->label('Correo')])->recordActions([EditAction::make()]);
+        return $table->columns([TextColumn::make('name')->label('Empresa')->wrap(), TextColumn::make('tax_id')->label('RUC')->placeholder('Sin registrar'), TextColumn::make('email')->label('Correo')->placeholder('Sin registrar')])->recordActions([EditAction::make()->color('gray')])->recordActionsColumnLabel('Opciones')->stackedOnMobile();
     }
 
     public static function getPages(): array

@@ -2,6 +2,11 @@
 
 ## Sin publicar
 
+- Base visual Solvet consolidada: Inter Variable local correctamente aplicada, cabecera de 72 px, navegación de 256 px, escala de espaciado/radios y superficies en claro/oscuro.
+- Jerarquía de acciones, documento y referencia en la misma columna, importes tabulares y listados apilados en móvil.
+- Formularios de presupuestos, clientes y empresa organizados por secciones; guardado explícito de borradores y detalle de ítems adaptable.
+- Componentes Blade compartidos para paneles, indicadores, estados y vacíos; catálogo y reglas para futuros módulos.
+
 - Selector de apariencia clara, oscura y del sistema en el acceso y la barra superior, con preferencia persistente del navegador.
 - Colores semánticos para paneles, tablas, formularios, estados, historial, placeholders y foco. Logo original sobre soporte claro en oscuro para conservar el subtítulo.
 - Pruebas de contraste y controles de apariencia, sin cambios de dependencias, esquema ni reglas comerciales. Los PDF conservan su diseño original.

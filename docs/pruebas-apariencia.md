@@ -12,15 +12,18 @@ Fecha: 2026-10-15. Cambio: selector de claro, oscuro y sistema.
 - El historial usa la misma preferencia y los PDF siguen siendo documentos claros independientes.
 - Nuevos colores del CSS cambian automáticamente su versión de URL para evitar que el navegador reutilice una hoja anterior.
 
-## Ejecutado
+## Última verificación de la base visual · 2026-10-15
 
-- Suite PHP completa y pruebas nuevas de apariencia y contraste: ver resultado en el Pull Request.
-- Chromium real con escritorio de 1512 × 1000 y móvil de 390 × 844.
-- 24 estados de pantalla comprobados automáticamente y una selección inspeccionada visualmente: acceso, vista general, presupuestos, formulario, clientes, empresa, historial, validación, acciones, confirmación y versiones móviles.
-- 1070 comprobaciones automáticas de colores computados de texto, fondo y placeholders en esas vistas: sin pares por debajo del umbral correspondiente al tamaño del texto en la última ejecución.
-- Selector, persistencia al recargar, seguimiento del sistema y conservación de contenido del formulario comprobados.
-- Sin errores JavaScript ni imágenes rotas; sin desbordamiento horizontal global en móvil. Las tablas conservan su desplazamiento interno.
-- Hoja fuente y copia publicada idénticas; diferencias de Git sin errores de espacio.
+- PHP 8.5.11: suite completa aprobada, **14 pruebas / 136 aserciones**. Incluye reglas comerciales, permisos, conservación de PDF, apariencia y contraste.
+- Chromium real: escritorio 1512 × 1000, comprobaciones adicionales en 1280 × 900, 1920 × 1080 y tablet 768 × 1024; móvil de 390 × 844.
+- **37 estados de pantalla** comprobados y una selección inspeccionada visualmente: acceso, vista general, listas, formularios, historial, validación, estado sin resultados, acciones y confirmación en ambos temas; vistas adicionales por ancho.
+- **2149 comprobaciones de colores computados** de texto, fondo y placeholders: sin pares por debajo del umbral correspondiente al tamaño en la ejecución final.
+- Fuente Inter Variable local realmente cargada en las pantallas de aplicación e historial.
+- Selector, persistencia, seguimiento del sistema y conservación del formulario al alternar tema comprobados.
+- Guardado de un borrador mediante el formulario: 2 × ₲ 125.000 = ₲ 250.000 conservado; búsqueda por asunto, agregado de ítem, foco visible y colapso/apertura del menú lateral comprobados.
+- Controles del selector de 44 × 44 px verificados con emulación táctil. Las capturas completas del navegador reinician temporalmente esa emulación; la medida se comprueba antes de capturar.
+- Sin errores JavaScript ni imágenes rotas; sin desbordamiento horizontal global en los anchos verificados. Las tablas nativas se apilan en móvil y las de consulta mantienen desplazamiento interno.
+- Hoja fuente y copia publicada idénticas; formato PHP y diferencias de Git comprobados.
 
 Las capturas utilizan datos ficticios y son materiales internos de comprobación. No se publican ni se incluyen secretos o archivos de entorno.
 

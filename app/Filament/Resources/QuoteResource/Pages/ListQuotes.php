@@ -10,8 +10,10 @@ class ListQuotes extends ListRecords
 {
     protected static string $resource = QuoteResource::class;
 
+    protected ?string $subheading = 'Prepará propuestas, emití documentos y seguí cada decisión.';
+
     protected function getHeaderActions(): array
     {
-        return [CreateAction::make()->label('Nuevo presupuesto')];
+        return [CreateAction::make()->label('Nuevo presupuesto')->icon('heroicon-o-plus')];
     }
 }

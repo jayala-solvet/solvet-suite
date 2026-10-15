@@ -7,7 +7,9 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -43,15 +45,24 @@ class CustomerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('name')->label('Razón social / nombre')->required()->maxLength(200), TextInput::make('tax_id')->label('RUC / identificación')->maxLength(50), TextInput::make('contact')->label('Contacto')->maxLength(200), TextInput::make('email')->label('Correo')->email()->maxLength(200), TextInput::make('phone')->label('Teléfono')->maxLength(50), Textarea::make('address')->label('Dirección')->maxLength(1000),
+            Section::make('Identificación del cliente')->description('Datos que se utilizarán al preparar tus presupuestos.')->icon('heroicon-o-building-office-2')->schema([
+                TextInput::make('name')->label('Razón social / nombre')->required()->maxLength(200),
+                TextInput::make('tax_id')->label('RUC / identificación')->maxLength(50),
+            ])->columns(2)->columnSpanFull(),
+            Section::make('Contacto y ubicación')->description('Información para coordinar la propuesta y el servicio.')->icon('heroicon-o-user-circle')->schema([
+                TextInput::make('contact')->label('Contacto')->maxLength(200),
+                TextInput::make('email')->label('Correo')->email()->maxLength(200),
+                TextInput::make('phone')->label('Teléfono')->maxLength(50),
+                Textarea::make('address')->label('Dirección')->maxLength(1000)->rows(3)->columnSpanFull(),
+            ])->columns(['default' => 1, 'md' => 3])->columnSpanFull(),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table->columns([
-            TextColumn::make('name')->label('Cliente')->searchable()->sortable(), TextColumn::make('tax_id')->label('RUC')->searchable(), TextColumn::make('contact')->label('Contacto'), TextColumn::make('email')->label('Correo'), TextColumn::make('phone')->label('Teléfono'),
-        ])->recordActions([EditAction::make()->visible(fn () => self::canCreate())])->defaultSort('name');
+            TextColumn::make('name')->label('Cliente')->searchable()->sortable()->weight(FontWeight::SemiBold)->wrap(), TextColumn::make('tax_id')->label('RUC')->searchable()->placeholder('Sin registrar'), TextColumn::make('contact')->label('Contacto')->placeholder('Sin registrar'), TextColumn::make('email')->label('Correo')->placeholder('Sin registrar'), TextColumn::make('phone')->label('Teléfono')->placeholder('Sin registrar'),
+        ])->recordActions([EditAction::make()->color('gray')->visible(fn () => self::canCreate())])->recordActionsColumnLabel('Opciones')->stackedOnMobile()->searchPlaceholder('Buscar por nombre o RUC')->emptyStateIcon('heroicon-o-building-office-2')->emptyStateHeading('No hay clientes para mostrar')->emptyStateDescription('Revisá la búsqueda. Los clientes registrados aparecerán en este listado.')->defaultSort('name');
     }
 
     public static function getPages(): array
