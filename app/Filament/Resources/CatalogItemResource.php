@@ -59,8 +59,11 @@ class CatalogItemResource extends Resource
             Section::make('Producto o servicio')->description('Catálogo opcional. Los datos se copian al presupuesto y pueden ajustarse allí.')->schema([
                 TextInput::make('name')->label('Nombre')->required()->maxLength(200)->columnSpanFull(),
                 TextInput::make('sku')->label('Código / SKU')->maxLength(50)->unique(ignoreRecord: true),
-                Select::make('unit')->label('Unidad de cotización')->options(['unit' => 'Unidad', 'hour' => 'Hora'])->default('unit')->required()->helperText('Para soporte N1/N2 utilizá Hora. Con historial de costos, cambiar unidad, tipo o moneda requiere otro ítem. Cambiar IVA desvincula el costo actual.'),
-                Select::make('kind')->label('Tipo')->options(['product' => 'Producto', 'service' => 'Servicio'])->default('service')->required(),
+                Select::make('unit')->label('Unidad de cotización')->options(['unit' => 'Unidad', 'hour' => 'Hora', 'day' => 'Día', 'package' => 'Paquete'])->default('unit')->required()->helperText('Para soporte N1/N2 utilizá Hora. Con historial de costos, cambiar unidad, tipo o moneda requiere otro ítem. Cambiar IVA desvincula el costo actual.'),
+                Select::make('kind')->label('Tipo')->options(['product' => 'Bien / producto físico', 'service' => 'Servicio'])->default('service')->required()->live(),
+                Toggle::make('can_buy')->label('Se puede comprar')->default(true),
+                Toggle::make('can_sell')->label('Se puede vender')->default(true),
+                Toggle::make('track_stock')->label('Controlar stock')->default(false)->visible(fn (Get $get) => $get('kind') === 'product')->helperText('Activar no crea existencias. El saldo inicial se registra con un ajuste documentado.'),
                 Textarea::make('description')->label('Descripción para el presupuesto')->helperText('Si se deja vacía, se usará el nombre.')->maxLength(1000)->rows(3)->columnSpanFull(),
                 Select::make('currency')->label('Moneda')->options(['PYG' => 'Guaraníes (PYG)', 'USD' => 'Dólares (USD)'])->default('PYG')->required(),
                 TextInput::make('unit_price')->label('Precio con IVA incluido')->numeric()->minValue(0)->required()

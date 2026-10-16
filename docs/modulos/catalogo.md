@@ -1,10 +1,10 @@
 # Catálogo opcional · productos y servicios
 
-Estado: implementado. CAT-01 alta/edición, CAT-02 selección desde presupuesto. Monolito existente, sin dependencias nuevas. Se integra con [Costos y precios](costos-precios.md) para costos versionados y reglas de venta. No implementa inventario, compras, facturación ni conversiones cambiarias.
+Estado: implementado. CAT-01 alta/edición, CAT-02 selección desde presupuesto. Monolito existente, sin dependencias nuevas. Se integra con [Costos y precios](costos-precios.md) para costos versionados y reglas de venta. Se integra con [Operaciones](operaciones.md) para compras e inventario. No implementa facturación ni conversión cambiaria.
 
 ## Datos y autorización
 
-`catalog_items`: ID, SKU opcional único hasta 50, nombre obligatorio hasta 200, descripción opcional hasta 1000, tipo product/service, moneda PYG/USD, precio en unidades menores decimal(20,0), IVA 0/5/10, disponibilidad y timestamps. No hay borrado desde interfaz: usar desactivación. SKU vacío se normaliza a null.
+`catalog_items`: ID, SKU opcional único hasta 50, nombre obligatorio hasta 200, descripción opcional hasta 1000, tipo product/service, unidad unit/hour/day/package, capacidades can_buy/can_sell/track_stock, moneda PYG/USD, precio en unidades menores decimal(20,0), IVA 0/5/10, disponibilidad y timestamps. No hay borrado desde interfaz: usar desactivación. SKU vacío se normaliza a null.
 
 Usuarios activos consultan el catálogo según el alcance compartido de la instalación. Admin/commercial crean y editan; reader no escribe. `CatalogService` comprueba Gate, valida y utiliza `QuoteCalculator` para convertir el precio incluido IVA a unidades menores sin float. PYG entero, USD hasta dos decimales y precio con hasta nueve enteros. La interfaz muestra el error de precio en el campo correspondiente.
 

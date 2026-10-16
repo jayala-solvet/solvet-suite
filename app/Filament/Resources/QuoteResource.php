@@ -4,9 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Costs\Models\CostProfile;
-use App\Modules\Costs\Services\CostCalculator;
 use App\Modules\Costs\Services\QuoteProfitability;
 use App\Modules\Customers\Services\CustomerService;
+use App\Modules\Operations\Models\SalesOrder;
+use App\Modules\Operations\Services\OrderService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteCalculator;
 use App\Modules\Quotes\Services\QuoteDefaults;
@@ -83,8 +84,8 @@ class QuoteResource extends Resource
                 Repeater::make('lines')->live(debounce: 600)->label('Detalle')->hiddenLabel()->compact()->collapsible()->cloneable()
                     ->itemLabel(fn (array $state): string => Str::limit($state['description'] ?? 'Nuevo ítem', 65))->itemNumbers()->schema([
                         Select::make('catalog_item_id')->label('Catálogo (opcional)')->placeholder('Carga manual')->searchable()->preload()
-                            ->options(fn (Get $get) => CatalogItem::where('is_active', true)->where('currency', $get('../../currency') ?? 'PYG')->orderBy('name')->limit(25)->get()->mapWithKeys(fn (CatalogItem $item) => [$item->id => $item->selectionLabel()])->all())
-                            ->getSearchResultsUsing(fn (string $search, Get $get) => CatalogItem::where('is_active', true)->where('currency', $get('../../currency') ?? 'PYG')
+                            ->options(fn (Get $get) => CatalogItem::where('is_active', true)->where('can_sell', true)->where('currency', $get('../../currency') ?? 'PYG')->orderBy('name')->limit(25)->get()->mapWithKeys(fn (CatalogItem $item) => [$item->id => $item->selectionLabel()])->all())
+                            ->getSearchResultsUsing(fn (string $search, Get $get) => CatalogItem::where('is_active', true)->where('can_sell', true)->where('currency', $get('../../currency') ?? 'PYG')
                                 ->where(fn (Builder $q) => $q->whereLike('name', '%'.$search.'%')->orWhereLike('sku', '%'.$search.'%'))
                                 ->orderBy('name')->limit(25)->get()->mapWithKeys(fn (CatalogItem $item) => [$item->id => $item->selectionLabel()])->all())
                             ->getOptionLabelUsing(fn ($value) => CatalogItem::find($value)?->selectionLabel())
@@ -104,17 +105,11 @@ class QuoteResource extends Resource
                                 $set('tax_rate', (string) $item->tax_rate);
                                 $set('cost_profile_id', $item->current_cost_id);
                             })->columnSpan(['default' => 1, 'md' => 2, 'xl' => 4]),
-                        Select::make('cost_profile_id')->label('Costo interno a utilizar')->placeholder('Actual del catálogo')->searchable()->preload()->live()
-                            ->visible(fn (Get $get) => (bool) $get('catalog_item_id'))
+                        Select::make('cost_profile_id')->label('Costo interno a utilizar')->placeholder('Elegí una referencia o dejá sin costo')->searchable()->preload()->live()
+                            ->visible(fn (Get $get) => (bool) $get('catalog_item_id') && empty($get('components')))
                             ->options(fn (Get $get) => CostProfile::where('catalog_item_id', $get('catalog_item_id'))->where('currency', $get('../../currency') ?? 'PYG')->latest('id')->limit(30)->get()->mapWithKeys(fn ($cost) => [$cost->id => $cost->selectionLabel()])->all())
                             ->getOptionLabelUsing(fn ($value) => CostProfile::find($value)?->selectionLabel())
-                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
-                                $cost = CostProfile::find($state);
-                                if ($cost && (int) $cost->catalog_item_id === (int) $get('catalog_item_id') && $cost->currency === $get('../../currency') && $cost->suggested_price_minor !== null) {
-                                    $price = app(CostCalculator::class)->priceForProfile($cost, (int) $get('tax_rate'));
-                                    $set('unit_price', bcdiv($price, $cost->currency === 'USD' ? '100' : '1', $cost->currency === 'USD' ? 2 : 0));
-                                }
-                            })->helperText('Elegí propio o tercero y su versión. Seleccionar un costo copia su precio sugerido; podés ajustar el precio. Uso interno.')
+                            ->helperText('Elegí propio o tercero y su versión. El precio al cliente se conserva; podés ajustarlo por separado. Uso interno.')
                             ->columnSpan(['default' => 1, 'md' => 2, 'xl' => 12]),
                         Textarea::make('description')->label('Descripción')->required()->maxLength(1000)->columnSpan(['default' => 1, 'md' => 2, 'xl' => 8])->rows(2),
                         TextInput::make('quantity')->label('Cantidad')->numeric()->minValue('0.001')->maxValue(999999.999)->default('1')->required()->columnSpan(['xl' => 2]),
@@ -124,8 +119,19 @@ class QuoteResource extends Resource
                         TextInput::make('discount')->label('Dto. %')->numeric()->minValue(0)->maxValue(100)->default('0')->required()->columnSpan(['xl' => 2]),
                         Select::make('tax_rate')->label('IVA incluido')->options(['0' => 'Exento', '5' => '5%', '10' => '10%'])->default('10')->required()->columnSpan(['xl' => 2]),
                         TextInput::make('internal_unit_cost')->label('Costo interno unitario (opcional)')->numeric()->minValue(0)
-                            ->visible(fn (Get $get) => ! $get('catalog_item_id'))->helperText('Solo uso interno. Neto de IVA recuperable; vacío significa desconocido.')
+                            ->visible(fn (Get $get) => ! $get('catalog_item_id') && empty($get('components')))->helperText('Solo uso interno. Neto de IVA recuperable; vacío significa desconocido.')
                             ->rules(fn (Get $get) => ['nullable', 'regex:'.QuoteCalculator::pricePattern($get('../../currency') ?? 'PYG')])->columnSpan(['xl' => 6]),
+                        Repeater::make('components')->label('Componentes internos de este conjunto (opcional)')->helperText('La cantidad es por unidad del conjunto. El precio comercial se carga una sola vez en la línea principal. Si agregás componentes, sustituyen su costo principal.')->defaultItems(0)->maxItems(30)->reorderable(false)->collapsible()->collapsed()->schema([
+                            Select::make('catalog_item_id')->label('Componente del catálogo')->options(fn (Get $get) => CatalogItem::where('can_sell', true)->where('currency', $get('../../../../currency') ?? 'PYG')->orderBy('name')->pluck('name', 'id'))->searchable()->live()->afterStateUpdated(function ($state, Set $set) {
+                                $item = CatalogItem::find($state);
+                                $set('description', $item?->name);
+                                $set('cost_profile_id', $item?->current_cost_id);
+                            }),
+                            TextInput::make('description')->label('Descripción interna')->required()->maxLength(1000),
+                            TextInput::make('quantity')->label('Cantidad por conjunto')->default('1')->numeric()->minValue('0.001')->required(),
+                            Select::make('cost_profile_id')->label('Referencia de costo del componente')->options(fn (Get $get) => CostProfile::where('catalog_item_id', $get('catalog_item_id'))->where('currency', $get('../../../../currency') ?? 'PYG')->latest('id')->get()->mapWithKeys(fn ($p) => [$p->id => $p->selectionLabel()]))->searchable(),
+                            TextInput::make('internal_unit_cost')->label('Costo neto manual (sin catálogo)')->numeric()->minValue(0)->visible(fn (Get $get) => ! $get('catalog_item_id')),
+                        ])->columns(2)->columnSpanFull()->addActionLabel('Agregar componente interno'),
                         View::make('filament.quotes.line-total')->viewData(function (Get $get) {
                             $currency = $get('../../currency') ?? 'PYG';
                             try {
@@ -277,6 +283,16 @@ class QuoteResource extends Resource
                     Notification::make()->title('Borrador eliminado')->success()->send();
                     $livewire->redirect(self::getUrl('index'));
                 }),
+            Action::make('order')->label('Confirmar pedido')->icon('heroicon-o-clipboard-document-check')->color('gray')->requiresConfirmation()
+                ->modalDescription('Crea un pedido vinculado al presupuesto aceptado. No reserva ni entrega unidades hasta que lo indiques en el pedido.')
+                ->visible(fn (Quote $record) => self::canCreate() && $record->status === 'accepted' && ! SalesOrder::where('quote_id', $record->id)->exists())
+                ->action(function (Quote $record, $livewire) {
+                    $order = app(OrderService::class)->fromQuote(auth()->user(), $record);
+                    $livewire->redirect(SalesOrderResource::getUrl('view', ['record' => $order]));
+                }),
+            Action::make('viewOrder')->label('Ver pedido')->icon('heroicon-o-clipboard-document-check')->color('gray')
+                ->visible(fn (Quote $record) => SalesOrder::where('quote_id', $record->id)->exists())
+                ->url(fn (Quote $record) => SalesOrderResource::getUrl('view', ['record' => SalesOrder::where('quote_id', $record->id)->value('id')])),
             Action::make('history')->label('Historial')->icon('heroicon-o-clock')->color('gray')
                 ->url(fn (Quote $record) => route('quotes.history', $record))->openUrlInNewTab(),
         ];

@@ -13,6 +13,7 @@ Monolito modular sobre Laravel 13, PHP 8.5 y PostgreSQL 17. Interfaz Filament 5/
 | Catálogo | app/Modules/Catalog | Maestro opcional de productos/servicios; copia de datos a propuestas |
 | Presupuestos | app/Modules/Quotes | Cálculo, persistencia, emisión y decisión |
 | Costos | app/Modules/Costs | Versiones sobre catálogo, precio sugerido y copia de costos en propuestas |
+| Operaciones | app/Modules/Operations | Compras, pedido, ejecución, reservas y kardex valorado |
 | Dashboard | app/Modules/Dashboard | Resumen comercial de lectura; consume Quotes sin escribir sus datos |
 | Interfaz | app/Filament | Formularios, tablas y navegación |
 | Documentos | resources/views/pdf | Representación del contenido emitido |
@@ -59,4 +60,8 @@ Los límites de confianza y requisitos para laboratorio/publicación están en [
 
 ## Contrato económico compartido
 
-Catálogo conserva precio/unidad y apunta a una versión actual de Costos. CostService crea versiones y actualiza ese vínculo/precio en transacción; QuoteService guarda una copia interna por presupuesto mediante QuoteProfitability. No existe cálculo de ganancias en JavaScript ni consulta de maestros para reconstruir emitidos. Costos estimados y futuros costos reales son conceptos separados. Permisos, IVA y redondeo se definen en [Costos y precios](modulos/costos-precios.md). El acoplamiento de datos de catálogo/versiones se registra en [ADR 0002](decisiones/0002-costos-versionados.md).
+Catálogo conserva precio/unidad y apunta a una versión actual de Costos. CostService crea versiones sin publicar; una acción explícita actualiza ese vínculo/precio en transacción; QuoteService guarda una copia interna por presupuesto mediante QuoteProfitability. No existe cálculo de ganancias en JavaScript ni consulta de maestros para reconstruir emitidos. Costos estimados y costos reales de ejecución son conceptos separados. Permisos, IVA y redondeo se definen en [Costos y precios](modulos/costos-precios.md). El acoplamiento de datos de catálogo/versiones se registra en [ADR 0002](decisiones/0002-costos-versionados.md).
+
+## Operaciones
+
+Ver [ADR 0003](decisiones/0003-operaciones-inventario.md) y [contrato OP-01…OP-08](modulos/operaciones.md). Una recepción confirma cantidades/costos y una entrega conserva su valoración. Catálogo y referencias de costo nunca revalorizan existencias. Agrupar comercialmente conserva componentes en privado; presupuestos previos permanecen inmutables. No hay nuevos servicios externos o dependencias.

@@ -12,9 +12,9 @@ class CostProfile extends Model
 {
     protected $guarded = ['id'];
 
-    public const SOURCES = ['purchase' => 'Producto de distribuidor', 'own' => 'Servicio propio', 'external' => 'Servicio de tercero'];
+    public const SOURCES = ['purchase' => 'Compra de bien a proveedor', 'own' => 'Trabajo propio', 'external' => 'Servicio de tercero'];
 
-    public const MODES = ['margin' => 'Margen sobre venta (%)', 'markup' => 'Recargo sobre costo (%)', 'fixed_profit' => 'Utilidad fija por unidad'];
+    public const MODES = ['margin' => 'Margen sobre venta (%)', 'markup' => 'Recargo sobre costo (%)', 'fixed_profit' => 'Utilidad fija por unidad', 'manual' => 'Precio final manual (IVA incluido)'];
 
     public const VAT = ['recoverable' => 'IVA recuperable previsto', 'non_recoverable' => 'IVA no recuperable', 'pending' => 'Pendiente de determinar'];
 

@@ -97,3 +97,7 @@ Excepción específica para el resumen comercial pedido por José: tres cifras t
 ## Costos y precios
 
 Nuevo recurso nativo con tabla apilada en móvil, formulario agrupado, historial por versiones y modal de cálculo. Mantiene los tokens y familia de iconos. `sv-cost-summary` reutiliza la jerarquía de totales para estimaciones internas y avisos; no usar mosaicos. La rentabilidad solo es visible a roles autorizados y no pasa al PDF comercial.
+
+## Compras, pedidos e inventario
+
+Se reutilizan recursos, formularios, repetidores, tablas, acciones y ventanas nativas de Filament; los detalles usan x-ui.panel y x-ui.totals. Una acción principal por encabezado y acciones secundarias agrupadas. El precio comercial vive una sola vez; costos y componentes se presentan como información interna. Tablas de detalle desplazan dentro de su contenedor en móvil. Se conserva la paleta, iconos y temas aprobados. El botón destructivo outlined usa el token semántico de texto de peligro para cumplir contraste en claro. Ver [flujo operativo](tareas/compra-a-ejecucion.md).

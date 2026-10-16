@@ -3,10 +3,12 @@
 namespace App\Modules\Catalog\Models;
 
 use App\Modules\Costs\Models\CostProfile;
+use App\Modules\Operations\Models\StockBalance;
 use App\Modules\Quotes\Models\Quote;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CatalogItem extends Model
 {
@@ -16,6 +18,13 @@ class CatalogItem extends Model
 
     protected $hidden = ['current_cost_id', 'currentCost'];
 
+    public const UNITS = ['unit' => 'Unidad', 'hour' => 'Hora', 'day' => 'Día', 'package' => 'Paquete'];
+
+    public function unitLabel(): string
+    {
+        return self::UNITS[$this->unit] ?? $this->unit;
+    }
+
     public function currentCost(): BelongsTo
     {
         return $this->belongsTo(CostProfile::class, 'current_cost_id');
@@ -23,7 +32,12 @@ class CatalogItem extends Model
 
     protected function casts(): array
     {
-        return ['price_minor' => 'decimal:0', 'is_active' => 'boolean'];
+        return ['price_minor' => 'decimal:0', 'is_active' => 'boolean', 'can_buy' => 'boolean', 'can_sell' => 'boolean', 'track_stock' => 'boolean'];
+    }
+
+    public function stock(): HasOne
+    {
+        return $this->hasOne(StockBalance::class, 'catalog_item_id');
     }
 
     protected function unitPrice(): Attribute

@@ -52,7 +52,7 @@ class CostsTest extends TestCase
 
     private function data(array $overrides = []): array
     {
-        return $overrides + ['catalog_item_id' => $this->item->id, 'source' => 'purchase', 'supplier_name' => 'Distribuidor confidencial', 'supplier_tax_id' => '80000000-0', 'reference' => 'COT-INTERNA-001', 'unit_cost' => '500000', 'extra_cost' => '0', 'purchase_tax_rate' => '10', 'vat_treatment' => 'recoverable', 'pricing_mode' => 'margin', 'pricing_value' => '10', 'cost_date' => today()->toDateString(), 'valid_until' => today()->addDays(5)->toDateString(), 'apply_price' => true];
+        return $overrides + ['catalog_item_id' => $this->item->id, 'source' => 'purchase', 'supplier_name' => 'Distribuidor confidencial', 'supplier_tax_id' => '80000000-0', 'reference' => 'COT-INTERNA-001', 'unit_cost' => '500000', 'extra_cost' => '0', 'purchase_tax_rate' => '10', 'vat_treatment' => 'recoverable', 'pricing_mode' => 'margin', 'pricing_value' => '10', 'cost_date' => today()->toDateString(), 'valid_until' => today()->addDays(5)->toDateString(), 'apply_price' => false];
     }
 
     private function draft(array $line = []): Quote
@@ -90,18 +90,19 @@ class CostsTest extends TestCase
     public function test_versions_audit_catalog_price_pending_vat_and_dimension_guards(): void
     {
         $first = app(CostService::class)->create($this->admin, $this->data());
+        app(CostService::class)->applyPrice($this->admin, $first);
         $this->assertSame('555556', $this->item->fresh()->price_minor);
         $second = app(CostService::class)->create($this->admin, $this->data(['unit_cost' => '600000', 'apply_price' => false]));
-        $this->assertSame($second->id, $this->item->fresh()->current_cost_id);
+        $this->assertSame($first->id, $this->item->fresh()->current_cost_id);
         $this->assertSame('500000', $first->fresh()->purchase_minor);
         $this->assertSame('505051', app(CostCalculator::class)->priceForProfile($first, 0));
         $this->assertSame(2, AuditEvent::where('action', 'cost.created')->count());
         $pending = app(CostService::class)->create($this->admin, $this->data(['vat_treatment' => 'pending', 'apply_price' => false]));
         $this->assertNull($pending->effective_unit_minor);
         $this->assertSame('555556', $this->item->fresh()->price_minor);
-        $this->assertFalse($this->draft()->cost_snapshot['complete']);
+        $this->assertFalse($this->draft(['cost_profile_id' => $pending->id])->cost_snapshot['complete']);
         try {
-            app(CostService::class)->create($this->admin, $this->data(['vat_treatment' => 'pending']));
+            app(CostService::class)->create($this->admin, $this->data(['vat_treatment' => 'pending', 'apply_price' => true]));
             $this->fail('Pending VAT price applied');
         } catch (ValidationException $e) {
             $this->assertArrayHasKey('apply_price', $e->errors());
@@ -123,6 +124,7 @@ class CostsTest extends TestCase
         $this->assertNull($own->supplier_name);
         $external = app(CostService::class)->create($this->admin, $this->data(['catalog_item_id' => $service->id, 'source' => 'external', 'unit_cost' => '55000', 'pricing_value' => '50']));
         $this->assertSame('110000', $external->suggested_price_minor);
+        app(CostService::class)->applyPrice($this->admin, $external);
         $ownQuote = $this->draft(['catalog_item_id' => $service->id, 'cost_profile_id' => $own->id]);
         $this->assertSame('own', $ownQuote->cost_snapshot['lines'][0]['source']);
         $this->assertSame($own->id, $ownQuote->cost_snapshot['lines'][0]['profile_id']);
@@ -136,6 +138,7 @@ class CostsTest extends TestCase
     public function test_snapshot_discount_manual_cost_unknown_zero_and_immutable_pdf(): void
     {
         $profile = app(CostService::class)->create($this->admin, $this->data());
+        app(CostService::class)->applyPrice($this->admin, $profile);
         $quote = $this->draft();
         $this->assertSame('45455', $quote->cost_snapshot['profit_minor']);
         $this->assertSame('9.09', $quote->cost_snapshot['margin_percent']);
@@ -167,6 +170,7 @@ class CostsTest extends TestCase
     public function test_foreign_profile_rejected_and_expired_cost_flagged(): void
     {
         $profile = app(CostService::class)->create($this->admin, $this->data());
+        app(CostService::class)->applyPrice($this->admin, $profile);
         try {
             $this->draft(['catalog_item_id' => null, 'cost_profile_id' => $profile->id]);
             $this->fail('Foreign profile accepted');
@@ -190,7 +194,8 @@ class CostsTest extends TestCase
 
     public function test_reader_cannot_access_or_receive_cost_data_and_dashboard_coverage_is_honest(): void
     {
-        app(CostService::class)->create($this->admin, $this->data());
+        $profile = app(CostService::class)->create($this->admin, $this->data());
+        app(CostService::class)->applyPrice($this->admin, $profile);
         $quote = app(QuoteService::class)->issue($this->admin, $this->draft());
         app(QuoteService::class)->decide($this->admin, $quote, 'accepted', 'Aceptación por correo del cliente.');
         $old = app(QuoteService::class)->issue($this->admin, $this->draft(['catalog_item_id' => null]));
