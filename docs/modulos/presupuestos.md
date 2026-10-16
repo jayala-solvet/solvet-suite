@@ -171,3 +171,7 @@ Cabecera más compacta, bloques de emisor/cliente, código cuando existe, descri
 Migración `2026_10_16_000001_add_quote_entry_and_catalog`: campos nullable de pago/entrega/garantía y deleted_at, términos generales del emisor y tabla de catálogo. No actualiza masivamente documentos existentes ni secuencias. Ejecutar `scripts/update.sh` con respaldo habitual. No revertir esa migración después de usarla sin evaluar pérdida de sus datos.
 
 Pruebas específicas en `QuoteEntryTest`: plazos, contado/crédito, términos, mezcla de catálogo/manual, moneda, conservación, alta inline, autorización y baja auditada. Ver [catálogo](catalogo.md) y [validación](../validacion.md).
+
+## Rentabilidad interna
+
+`cost_snapshot` nullable y oculto en serialización almacena costos versionados por línea al guardar borrador. Selector de versión de costo de catálogo o costo neto manual opcional; utilidad después de descuentos, IVA separado y cobertura explícita. Admin/commercial consultan; reader/PDF no reciben estos datos. Históricos sin costos conservan ese estado, emitidos mantienen copia y archivo. Contrato completo: [Costos y precios](costos-precios.md), COS-03.

@@ -13,9 +13,11 @@ class Quote extends Model
 
     protected $guarded = ['id'];
 
+    protected $hidden = ['cost_snapshot'];
+
     protected function casts(): array
     {
-        return ['subtotal_minor' => 'decimal:0', 'discount_minor' => 'decimal:0', 'tax_minor' => 'decimal:0', 'total_minor' => 'decimal:0', 'lines' => 'array', 'snapshot' => 'array', 'issued_at' => 'datetime', 'valid_until' => 'date'];
+        return ['cost_snapshot' => 'array', 'subtotal_minor' => 'decimal:0', 'discount_minor' => 'decimal:0', 'tax_minor' => 'decimal:0', 'total_minor' => 'decimal:0', 'lines' => 'array', 'snapshot' => 'array', 'issued_at' => 'datetime', 'valid_until' => 'date'];
     }
 
     public function customer(): BelongsTo

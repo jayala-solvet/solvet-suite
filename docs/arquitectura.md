@@ -12,12 +12,13 @@ Monolito modular sobre Laravel 13, PHP 8.5 y PostgreSQL 17. Interfaz Filament 5/
 | Clientes | app/Modules/Customers | Información comercial del destinatario |
 | Catálogo | app/Modules/Catalog | Maestro opcional de productos/servicios; copia de datos a propuestas |
 | Presupuestos | app/Modules/Quotes | Cálculo, persistencia, emisión y decisión |
+| Costos | app/Modules/Costs | Versiones sobre catálogo, precio sugerido y copia de costos en propuestas |
 | Dashboard | app/Modules/Dashboard | Resumen comercial de lectura; consume Quotes sin escribir sus datos |
 | Interfaz | app/Filament | Formularios, tablas y navegación |
 | Documentos | resources/views/pdf | Representación del contenido emitido |
 | Infraestructura | Dockerfile, compose.yml, docker | Ejecución y servicios |
 
-Los módulos usan Eloquent y servicios de aplicación. En la escala actual no se agrega una abstracción de repositorios ni un framework de módulos. El módulo Quotes referencia Customer. No se crean dependencias circulares. Integraciones futuras tendrán adaptadores separados y operaciones idempotentes.
+Los módulos usan Eloquent y servicios de aplicación. En la escala actual no se agrega una abstracción de repositorios ni un framework de módulos. El módulo Quotes referencia Customer. No se crean llamadas circulares de servicios. El vínculo de datos catálogo/versiones de costo se acota en ADR 0002. Integraciones futuras tendrán adaptadores separados y operaciones idempotentes.
 
 ## Flujo de emisión
 
@@ -55,3 +56,7 @@ Cada módulo declara sus operaciones, persistencia, cálculo y permisos en `docs
 Figma es una herramienta propuesta de diseño y revisión, según [maquetación](maquetacion.md). Los tokens y componentes de la aplicación siguen siendo la implementación efectiva; no hay generación/sincronización automática adoptada. Cambios de reglas requieren actualizar especificación y pruebas; cambios de estructura requieren ADR.
 
 Los límites de confianza y requisitos para laboratorio/publicación están en [entornos](entornos-publicacion.md). El Nginx interno de Compose y el proxy de publicación cumplen roles distintos. La publicación por Cloudflare no convierte el monolito en multiempresa ni resuelve autorización a nivel de registro.
+
+## Contrato económico compartido
+
+Catálogo conserva precio/unidad y apunta a una versión actual de Costos. CostService crea versiones y actualiza ese vínculo/precio en transacción; QuoteService guarda una copia interna por presupuesto mediante QuoteProfitability. No existe cálculo de ganancias en JavaScript ni consulta de maestros para reconstruir emitidos. Costos estimados y futuros costos reales son conceptos separados. Permisos, IVA y redondeo se definen en [Costos y precios](modulos/costos-precios.md). El acoplamiento de datos de catálogo/versiones se registra en [ADR 0002](decisiones/0002-costos-versionados.md).

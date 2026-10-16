@@ -33,7 +33,7 @@ Los cinco segmentos son excluyentes y suman exactamente el total. Ejemplo PYG: a
 
 Importes **con IVA incluido**, unidades menores enteras, BCMath; nunca float ni conversión de monedas. PYG sin decimales, USD dos. Suma por cursor de columnas mínimas para evitar pérdida de precisión en agregados SQLite y cargar líneas/snapshots innecesarios. No se agregan dependencias, migraciones, caché ni jobs. Con más volumen, medir el recorrido de la cohorte y diseñar agregados exactos/índices según evidencia; el cálculo actual recorre los documentos seleccionados.
 
-Aprobación es decisión interna registrada con evidencia. **No equivale a cobro, ingreso contable ni ganancia**. No hay costos de compra/servicio ni pagos registrados: no se simula margen, beneficio, objetivo mensual, probabilidad, crecimiento ni proyección temporal. Próxima etapa propuesta: acordar captura de costos, base con/sin IVA y reglas de margen antes de implementar rentabilidad.
+Aprobación es decisión interna registrada con evidencia. **No equivale a cobro, ingreso contable ni ganancia**. Hay costos estimados en el módulo nuevo; todavía no hay pagos ni compras/ejecución reales registrados. No se simula objetivo mensual, probabilidad, crecimiento ni proyección temporal. Ampliación implementada: captura de costos y utilidad bruta estimada restringida según COS-04 de [Costos y precios](costos-precios.md). Se mantiene la diferencia entre estimación, resultado real y cobros.
 
 ## Interfaz y acciones
 
@@ -53,3 +53,7 @@ Cambio aditivo sin escritura de datos ni cambios de despliegue. Actualización h
 `CommercialDashboardTest` verifica partición exacta, fechas de emisión/moneda/estado, exclusión de borradores/bajas/futuros, frontera de vigencia hoy, períodos, totales por encima de precisión JS, cero, snapshot, límite/orden de seguimiento, filtros Livewire, permisos e inactivos. Comprobación visual real en claro/oscuro a 1512 y 390 px y navegación a detalle/alta. Evidencia y límites en [validación](../validacion.md).
 
 Referencias visuales aportadas el 16/10/2026: estudios de Ventriloc y ui/shadcn. Se adopta jerarquía tipográfica, neutros y datos sin cromo innecesario. No se importan prompts/CSS de terceros, tipografías, tarjetas redondeadas, rojo decorativo ni estructura de landing. Esta versión es la base para revisión, no una sustitución del sistema de diseño aprobado.
+
+## Ampliación de rentabilidad
+
+Admin/commercial ven una sección de utilidad bruta estimada de aprobados con costos completos, porcentaje agregado ponderado por venta neta y cobertura sobre aprobados. Reader no recibe costos ni esa sección. Historias sin captura no se reconstruyen; cero con cobertura y falta de costos se distinguen. Contrato: [COS-04](costos-precios.md).

@@ -1,6 +1,6 @@
 # Catálogo opcional · productos y servicios
 
-Estado: implementado. CAT-01 alta/edición, CAT-02 selección desde presupuesto. Monolito existente, sin dependencias nuevas. No implementa inventario, costos, compras, facturación ni conversiones cambiarias.
+Estado: implementado. CAT-01 alta/edición, CAT-02 selección desde presupuesto. Monolito existente, sin dependencias nuevas. Se integra con [Costos y precios](costos-precios.md) para costos versionados y reglas de venta. No implementa inventario, compras, facturación ni conversiones cambiarias.
 
 ## Datos y autorización
 
@@ -25,3 +25,7 @@ El ID dentro de JSON es procedencia, no una relación que se consulte para recon
 - Cambio/desactivación del catálogo no modifica presupuestos ya guardados en consultas; la selección explícita vuelve a copiar datos actuales.
 - No exponer este servicio en API o importación sin la misma validación/autorización.
 - Pruebas en `QuoteEntryTest`, revisión visual y recorrido de navegador detallados en `docs/validacion.md`.
+
+## Integración de costos
+
+Unidad «Unidad/Hora» y vínculo oculto de serialización current_cost_id. El precio público sigue en price_minor y puede definirse manualmente o aplicando una regla desde Costos. Versiones de costo, proveedores, permisos, snapshots y restricciones al cambio de dimensiones se especifican en [costos y precios](costos-precios.md). Un lector del catálogo no obtiene costos internos.

@@ -3,6 +3,9 @@
 namespace App\Filament\Resources;
 
 use App\Modules\Catalog\Models\CatalogItem;
+use App\Modules\Costs\Models\CostProfile;
+use App\Modules\Costs\Services\CostCalculator;
+use App\Modules\Costs\Services\QuoteProfitability;
 use App\Modules\Customers\Services\CustomerService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteCalculator;
@@ -30,6 +33,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -86,6 +90,8 @@ class QuoteResource extends Resource
                             ->getOptionLabelUsing(fn ($value) => CatalogItem::find($value)?->selectionLabel())
                             ->rules(fn (Get $get) => [Rule::exists('catalog_items', 'id')->where('currency', $get('../../currency') ?? 'PYG')])->live()
                             ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                $set('cost_profile_id', null);
+                                $set('internal_unit_cost', null);
                                 if (! $state) {
                                     return;
                                 }
@@ -96,7 +102,20 @@ class QuoteResource extends Resource
                                 $set('description', $item->quoteDescription());
                                 $set('unit_price', $item->unit_price);
                                 $set('tax_rate', (string) $item->tax_rate);
+                                $set('cost_profile_id', $item->current_cost_id);
                             })->columnSpan(['default' => 1, 'md' => 2, 'xl' => 4]),
+                        Select::make('cost_profile_id')->label('Costo interno a utilizar')->placeholder('Actual del catálogo')->searchable()->preload()->live()
+                            ->visible(fn (Get $get) => (bool) $get('catalog_item_id'))
+                            ->options(fn (Get $get) => CostProfile::where('catalog_item_id', $get('catalog_item_id'))->where('currency', $get('../../currency') ?? 'PYG')->latest('id')->limit(30)->get()->mapWithKeys(fn ($cost) => [$cost->id => $cost->selectionLabel()])->all())
+                            ->getOptionLabelUsing(fn ($value) => CostProfile::find($value)?->selectionLabel())
+                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                $cost = CostProfile::find($state);
+                                if ($cost && (int) $cost->catalog_item_id === (int) $get('catalog_item_id') && $cost->currency === $get('../../currency') && $cost->suggested_price_minor !== null) {
+                                    $price = app(CostCalculator::class)->priceForProfile($cost, (int) $get('tax_rate'));
+                                    $set('unit_price', bcdiv($price, $cost->currency === 'USD' ? '100' : '1', $cost->currency === 'USD' ? 2 : 0));
+                                }
+                            })->helperText('Elegí propio o tercero y su versión. Seleccionar un costo copia su precio sugerido; podés ajustar el precio. Uso interno.')
+                            ->columnSpan(['default' => 1, 'md' => 2, 'xl' => 12]),
                         Textarea::make('description')->label('Descripción')->required()->maxLength(1000)->columnSpan(['default' => 1, 'md' => 2, 'xl' => 8])->rows(2),
                         TextInput::make('quantity')->label('Cantidad')->numeric()->minValue('0.001')->maxValue(999999.999)->default('1')->required()->columnSpan(['xl' => 2]),
                         TextInput::make('unit_price')->label('Precio unitario')->numeric()->minValue(0)->maxValue(fn (Get $get) => $get('../../currency') === 'USD' ? '999999999.99' : '999999999')->required()
@@ -104,6 +123,9 @@ class QuoteResource extends Resource
                             ->validationMessages(['regex' => 'Ingresá un precio válido: PYG entero o USD con hasta 2 decimales.'])->prefix(fn (Get $get) => $get('../../currency') === 'USD' ? 'US$' : '₲')->columnSpan(['xl' => 3]),
                         TextInput::make('discount')->label('Dto. %')->numeric()->minValue(0)->maxValue(100)->default('0')->required()->columnSpan(['xl' => 2]),
                         Select::make('tax_rate')->label('IVA incluido')->options(['0' => 'Exento', '5' => '5%', '10' => '10%'])->default('10')->required()->columnSpan(['xl' => 2]),
+                        TextInput::make('internal_unit_cost')->label('Costo interno unitario (opcional)')->numeric()->minValue(0)
+                            ->visible(fn (Get $get) => ! $get('catalog_item_id'))->helperText('Solo uso interno. Neto de IVA recuperable; vacío significa desconocido.')
+                            ->rules(fn (Get $get) => ['nullable', 'regex:'.QuoteCalculator::pricePattern($get('../../currency') ?? 'PYG')])->columnSpan(['xl' => 6]),
                         View::make('filament.quotes.line-total')->viewData(function (Get $get) {
                             $currency = $get('../../currency') ?? 'PYG';
                             try {
@@ -127,6 +149,16 @@ class QuoteResource extends Resource
 
                 return compact('totals', 'currency');
             })->columnSpanFull(),
+            View::make('filament.costs.quote-summary')->viewData(function (Get $get) {
+                $currency = $get('currency') ?? 'PYG';
+                try {
+                    $profitability = app(QuoteProfitability::class)->preview(auth()->user(), $get('lines') ?? [], $currency);
+                } catch (ValidationException $e) {
+                    $profitability = null;
+                }
+
+                return compact('profitability', 'currency');
+            })->visible(fn () => Gate::allows('view-costs'))->columnSpanFull(),
             Section::make('Pago y entrega')->description('Estas condiciones se incluyen en el PDF. El plazo de crédito no genera un vencimiento de cobro automático.')->schema([
                 Select::make('payment_mode')->label('Forma de pago')->options(['cash' => 'Contado', 'credit' => 'Crédito', 'to_agree' => 'A convenir'])->default('cash')->required()->live(),
                 TextInput::make('credit_days')->label('Plazo de crédito (días)')->integer()->minValue(1)->maxValue(365)->default(30)

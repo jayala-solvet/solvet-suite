@@ -15,6 +15,20 @@ class EditQuote extends EditRecord
 
     protected ?string $subheading = 'Actualizá el borrador antes de emitir el documento definitivo.';
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        foreach ($data['lines'] as $index => &$line) {
+            $cost = $this->getRecord()->cost_snapshot['lines'][$index] ?? null;
+            $line['cost_profile_id'] = $cost['profile_id'] ?? null;
+            if (($cost['source'] ?? null) === 'manual' && isset($cost['unit_net_minor'])) {
+                $line['internal_unit_cost'] = bcdiv($cost['unit_net_minor'], $data['currency'] === 'USD' ? '100' : '1', $data['currency'] === 'USD' ? 2 : 0);
+            }
+        }
+        unset($line);
+
+        return $data;
+    }
+
     protected function getHeaderActions(): array
     {
         return array_values(array_filter(QuoteResource::documentActions(), fn ($action) => $action->getName() === 'deleteDraft'));

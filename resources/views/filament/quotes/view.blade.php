@@ -54,6 +54,9 @@
             </div>
             <div class="sv-document-terms"><h2>Términos y condiciones</h2><p>{{ $quote->terms ?: 'Sin condiciones adicionales.' }}</p></div>
         </x-ui.panel>
+        @can('view-costs')
+            @include('filament.costs.quote-summary', ['profitability' => $quote->cost_snapshot, 'currency' => $quote->currency])
+        @endcan
         <x-ui.panel title="Historial del documento" description="Actividad y referencias de las decisiones registradas.">
             <div class="sv-table-wrap"><table class="sv-table"><thead><tr><th>Fecha</th><th>Actividad</th><th>Usuario</th><th>Referencia</th></tr></thead><tbody>
                 @foreach($this->events() as $event)

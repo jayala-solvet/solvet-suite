@@ -62,3 +62,12 @@ Cambio de tokens y cabecera oscura, sin alterar el módulo comercial. Suite exis
 - Pint y diff revisados; CSS publicado desde la fuente. Sin migraciones o dependencias nuevas. No se accedió al laboratorio, ni se ejecutó Docker o PostgreSQL. No se simularon ganancias/cobros ni se modificaron documentos del usuario.
 
 La captura [dashboard-inicial.png](referencias/dashboard-inicial.png) muestra datos ficticios de QA; el cálculo efectivo es `CommercialDashboard`, según su [contrato](modulos/dashboard.md).
+
+## Costos y precios · 16/10/2026
+
+- PHP 8.5 / SQLite: suite completa de 37 pruebas y 371 aserciones aprobadas. Costos propios/terceros/productos, IVA previsto/no recuperable/pendiente, margen/recargo/utilidad fija, redondeo PYG/USD, límites, historial, publicación opcional de precio, snapshot con descuentos/cero/desconocido, conservación de versión/PDF y privacidad de reader. Render comercial comprobado sin proveedor/referencia interna.
+- Migración aditiva aplicada en base local existente de QA y en bases limpias de pruebas. No hubo carga demo ni acceso a la instalación de José.
+- Chromium real: 33 estados y 2299 comprobaciones de contraste de texto, cero fallas detectadas, cero errores JavaScript y sin desbordamiento global en las pantallas revisadas. Costos/lista/formulario/modal, presupuestos, catálogo y dashboard; claro/oscuro y escritorio/móvil. Recorridos reales de creación de versión, cálculo, guardado/emisión de presupuesto con costos, elección de propio/tercero, pérdida por descuento y denegación de costos a reader.
+- Pint, enlaces locales, diff y coincidencia de CSS fuente/publicado revisados. Sin dependencias nuevas. No se ejecutó Docker Engine ni concurrencia PostgreSQL en este entorno. Validar esos aspectos en el destino antes de producción.
+
+[Captura real de Costos y precios](referencias/costos-precios.png), con datos ficticios locales. La documentación funcional está en [COS-01 a COS-04](modulos/costos-precios.md).

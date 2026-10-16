@@ -21,3 +21,11 @@ Los documentos vencidos sin respuesta se identifican con advertencia y filtro; n
 - En **Pago y entrega**, elegir Contado, Crédito (1–365 días) o A convenir. Usar detalle del pago para aclarar medio, anticipo y desde qué fecha se cuentan los días.
 - Ajustar entrega/garantía y expandir **Términos y condiciones** si hace falta. La base general se configura en **Mi empresa → Presupuestos** y se copia solo a propuestas nuevas.
 - Para retirar un presupuesto sin emitir, **Acciones → Eliminar borrador** o el botón de edición. Requiere confirmar y conserva auditoría; no está disponible en emitidos.
+
+## Costos internos opcionales
+
+Antes de cotizar, cargá el producto o servicio en Catálogo (Unidad u Hora). En Costos y precios registrá costo propio/distribuidor/tercero, IVA, proveedor cuando corresponda y objetivo de margen. Podés aplicar su precio al catálogo. Para cambiar un costo, creá otra versión: no se modifica la anterior.
+
+En el presupuesto seleccioná catálogo y la versión interna que corresponda (propio o tercero). Elegir una versión copia su precio sugerido; podés ajustar precio/descuento y revisar la rentabilidad. Para una línea manual, indicá el costo interno neto de IVA recuperable o dejalo vacío si no lo conocés. Sin todos los costos no se muestra utilidad total; cero es una declaración explícita de costo cero.
+
+El resumen de rentabilidad es interno para admin/commercial y no se imprime en el PDF. Emitir conserva la copia de costos guardada; no convierte la estimación en resultado real ni registra compra/cobro. Ver [contrato de costos](../modulos/costos-precios.md).

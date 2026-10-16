@@ -47,3 +47,7 @@ Declarar permisos, alcance por registro y datos controlados por servidor en la [
 Si se incorpora carga de archivos, definir límites de contenido/tamaño, nombres generados, almacenamiento privado, validación de descarga y tratamiento de archivos activos. Actualmente no hay carga de evidencia adjunta en presupuestos: solo texto. Si se incorpora API/portal, especificar autenticación, alcance de tokens, expiración, revocación y límites; no publicar automáticamente los recursos internos.
 
 El historial de clientes/emisor, control de versiones concurrentes de borradores, límites específicos de generación PDF y verificación periódica de integridad son pendientes, no capacidades instaladas. Priorizarlos por riesgo y operación, con pruebas propias; no suponer que el documento de contexto evita esos problemas.
+
+## Costos internos
+
+Admin/commercial activos consultan y administran costos (`view-costs`, `manage-costs`). Reader no accede a páginas, formulario ni estimaciones de utilidad; su consulta de dashboard no carga el JSON privado. cost_snapshot se oculta en serialización y no forma parte de líneas/snapshot/PDF comercial. Crear versiones exige autorización de servicio y pertenencia a catálogo/moneda. No se incorporan cargas de comprobantes ni validación tributaria externa.

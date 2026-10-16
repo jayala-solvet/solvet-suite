@@ -2,6 +2,15 @@
 
 ## Sin publicar
 
+### Costos y precios
+
+- Costos versionados sobre un único catálogo, unidad/hora, productos de distribuidor, soporte propio y de terceros con proveedor/referencia.
+- IVA recuperable previsto/no recuperable/pendiente; precio sugerido por margen sobre venta, recargo o utilidad fija con cálculo decimal.
+- Elección de versión al cotizar, costo neto manual opcional y copia privada por documento; utilidad después de descuentos con cobertura y advertencia de pérdida/costo vencido.
+- Dashboard con utilidad bruta estimada de aprobados y cobertura de costos. Acceso solo admin/commercial; datos internos fuera de reader/PDF.
+- Migración aditiva, contratos y reglas comunes para próximos módulos; sin dependencias nuevas ni cambio de documentos emitidos.
+
+
 ### Dashboard comercial · modelo inicial
 
 - Nueva vista de consulta con período/moneda, total cotizado, monto aprobado y oportunidad vigente sobre emisiones reales.
