@@ -1,0 +1,12 @@
+AVISO DE PRIVACIDAD DE SOLVET SUITE
+Responsable: [RESPONSABLE]. RUC: [RUC]. Domicilio: [DOMICILIO]. Contacto para privacidad: [CONTACTO].
+
+Se tratan datos de cuentas y contacto, clientes, proveedores, propuestas, compras, inventario, trabajos asignados y evidencia de acciones para gestionar operaciones, controlar accesos, mantener documentos y atender obligaciones aplicables. Las contraseñas se almacenan mediante hash; los secretos de segundo factor se protegen con cifrado de aplicación. Los accesos se limitan según rol y tarea. Ninguna protección elimina por completo el riesgo.
+
+El tratamiento necesario para la relación contractual o laboral, obligaciones legales y seguridad debe tener un fundamento identificado; no se presume consentimiento para todo. Las finalidades opcionales, si se incorporan, requieren información y una decisión separadas. Una constancia de lectura de este aviso no es un consentimiento general.
+
+[COMPLETAR: inventario real de categorías de datos y titulares; fundamento por finalidad; destinatarios y encargados; servicios de correo, infraestructura y Cloudflare efectivamente utilizados; países y garantías de transferencias; plazos o criterios de conservación; procedimiento de eliminación y bloqueo por obligaciones contables y defensa de derechos].
+
+Las solicitudes de información, acceso, corrección, supresión u otros derechos aplicables se reciben en el contacto señalado, verificando identidad de forma proporcional. Su alcance y plazo se determinarán según el régimen vigente y las obligaciones de conservación. Es posible retirar un consentimiento opcional desde Documentos y privacidad; el retiro no elimina automáticamente obligaciones o registros necesarios por otros fundamentos.
+
+Se conservan versiones del aviso y evidencias mínimas vinculadas a la cuenta, finalidad y fecha. No se utilizan decisiones de consentimiento para restringir funciones necesarias de manera injustificada.

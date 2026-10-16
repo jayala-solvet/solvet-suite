@@ -1,16 +1,25 @@
 <?php
 
 use App\Http\Middleware\EnsureActiveUser;
+use App\Modules\Access\Services\AccessService;
 use App\Modules\Core\Models\AuditEvent;
 use App\Modules\Core\Models\Company;
+use App\Modules\Legal\Models\LegalDocument;
 use App\Modules\Quotes\Models\Quote;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::redirect('/', '/app');
 Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     $document = function (Quote $quote) {
+        if (auth()->user()->role === 'admin' && ! auth()->user()->getAppAuthenticationSecret()) {
+            abort(403, 'Configurá el segundo factor desde tu perfil.');
+        }
+        Gate::authorize('quotes.view');
+        Gate::authorize('quotes.export');
+        AccessService::audit(auth()->user(), 'quote.exported', 'quote', $quote->id);
         $preview = request()->routeIs('quotes.preview');
         if ($quote->pdf_path) {
             abort_unless(Storage::disk('local')->exists($quote->pdf_path), 404);
@@ -27,5 +36,15 @@ Route::middleware(['auth', EnsureActiveUser::class])->group(function () {
     };
     Route::get('/quotes/{quote}/pdf', $document)->name('quotes.pdf');
     Route::get('/quotes/{quote}/preview', $document)->name('quotes.preview');
-    Route::get('/quotes/{quote}/history', fn (Quote $quote) => view('quotes.history', ['quote' => $quote, 'events' => AuditEvent::with('actor')->where('subject_type', 'quote')->where('subject_id', $quote->id)->orderBy('id')->get()]))->name('quotes.history');
+    Route::get('/quotes/{quote}/history', function (Quote $quote) {
+        Gate::authorize('quotes.view');
+
+        return view('quotes.history', ['quote' => $quote, 'events' => AuditEvent::with('actor')->where('subject_type', 'quote')->where('subject_id', $quote->id)->orderBy('id')->get()]);
+    })->name('quotes.history');
 });
+
+Route::get('/legal/documents/{document}', function (LegalDocument $document) {
+    abort_unless($document->published_at, 404);
+
+    return view('legal-document', ['document' => $document]);
+})->name('legal.document');

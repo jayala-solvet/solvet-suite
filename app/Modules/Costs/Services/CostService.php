@@ -55,7 +55,7 @@ class CostService
 
     public function applyPrice(User $actor, CostProfile $profile): void
     {
-        Gate::forUser($actor)->authorize('manage-costs');
+        Gate::forUser($actor)->authorize('costs.approve');
         DB::transaction(function () use ($actor, $profile) {
             $profile->refresh();
             $item = CatalogItem::lockForUpdate()->findOrFail($profile->catalog_item_id);

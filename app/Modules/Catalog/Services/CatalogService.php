@@ -19,7 +19,7 @@ class CatalogService
 {
     public function save(User $actor, array $data, ?CatalogItem $item = null): CatalogItem
     {
-        Gate::forUser($actor)->authorize('write-business');
+        Gate::forUser($actor)->authorize($item ? 'catalog.update' : 'catalog.create');
         $data['sku'] = trim($data['sku'] ?? '') ?: null;
         $data = Validator::make($data, [
             'sku' => ['nullable', 'string', 'max:50', Rule::unique('catalog_items')->ignore($item?->id)],

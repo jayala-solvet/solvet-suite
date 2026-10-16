@@ -1,5 +1,14 @@
 # Historial de versiones
 
+## Gestión de acceso, seguridad y versiones legales · 16/10/2026
+
+- Roles configurables, permisos por acción, usuarios con suspensión/baja/reactivación, reautenticación y último administrador protegido. Asignación técnica sin datos financieros.
+- MFA nativo, recuperación/invitación temporal con cola cifrada y worker; Argon2id compatible con hashes previos, revocación y máximo de sesión. Auditoría y alertas internas.
+- Versiones legales inmutables, publicación condicionada y aceptación/lectura/consentimiento/retiro separados. Borradores a completar con datos de empresa y revisión jurídica.
+- Cabeceras privadas y proxy/hosts explícitos, logs sin query strings, rol PostgreSQL acotado para nuevos perfiles y cifrado age opcional de respaldos. Migración aditiva 000005.
+- No se configura el servidor ni se declara listo para exposición pública sin evidencia; requisitos, diagnóstico y operación documentados.
+
+
 ## Entornos separados · 16/10/2026
 
 - Perfiles development/testing/production con comandos explícitos, proyectos/volúmenes/credenciales/sesiones y respaldos separados. Compatibilidad con .env e instalación anterior.

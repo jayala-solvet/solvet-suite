@@ -3,6 +3,7 @@
 namespace App\Modules\Operations\Services;
 
 use App\Models\User;
+use App\Modules\Access\Services\AccessService;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Operations\Models\ExecutionEntry;
 use App\Modules\Operations\Models\OrderLine;
@@ -17,7 +18,7 @@ class OrderService
 {
     public function fromQuote(User $actor, Quote $quote): SalesOrder
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.create');
 
         return DB::transaction(function () use ($actor, $quote) {
             $quote = Quote::lockForUpdate()->findOrFail($quote->id);
@@ -51,9 +52,27 @@ class OrderService
         });
     }
 
+    public function assign(User $actor, SalesOrder $order, ?int $userId): void
+    {
+        AccessService::authorize($actor, 'orders.update');
+        DB::transaction(function () use ($actor, $order, $userId) {
+            $order = SalesOrder::lockForUpdate()->findOrFail($order->id);
+            if ($userId) {
+                $user = User::findOrFail($userId);
+                abort_unless($user->allows('orders.view-own'), 422);
+            }
+            if ($order->assigned_to === $userId) {
+                return;
+            }
+            $before = $order->assigned_to;
+            $order->update(['assigned_to' => $userId]);
+            OperationRules::audit($actor, 'order.assigned', 'sales_order', $order->id, ['before' => $before, 'assigned_to' => $userId]);
+        });
+    }
+
     public function reserve(User $actor, SalesOrder $order): SalesOrder
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
 
         return DB::transaction(function () use ($actor, $order) {
             $order = SalesOrder::lockForUpdate()->findOrFail($order->id);
@@ -79,7 +98,7 @@ class OrderService
 
     public function release(User $actor, SalesOrder $order): SalesOrder
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
 
         return DB::transaction(function () use ($actor, $order) {
             $order = SalesOrder::lockForUpdate()->findOrFail($order->id);
@@ -100,7 +119,7 @@ class OrderService
 
     public function deliver(User $actor, SalesOrder $order, string $token): SalesOrder
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
         OperationRules::token($token);
         $key = 'delivery:'.$order->id.':'.$token;
         $hash = hash('sha256', (string) $order->id);
@@ -146,7 +165,7 @@ class OrderService
 
     public function chooseExecutor(User $actor, OrderLine $line, string $source, string $reason): void
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
         Validator::make(compact('source', 'reason'), ['source' => 'required|in:own,external', 'reason' => 'required|string|min:10|max:1000'])->validate();
         DB::transaction(function () use ($actor, $line, $source, $reason) {
             $order = SalesOrder::lockForUpdate()->findOrFail($line->sales_order_id);
@@ -163,7 +182,8 @@ class OrderService
 
     public function recordOwn(User $actor, OrderLine $line, string $quantity, string $unitNetCost, string $reference, string $token): ExecutionEntry
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
+        AccessService::authorize($actor, 'costs.view');
         OperationRules::token($token);
         $quantity = OperationRules::quantity($quantity);
         Validator::make(compact('unitNetCost', 'reference'), ['unitNetCost' => ['required', 'regex:/^\d{1,9}(\.\d{1,8})?$/'], 'reference' => 'required|string|min:10|max:1000'])->validate();
@@ -190,7 +210,7 @@ class OrderService
 
     public function recordPurchased(User $actor, OrderLine $line, Purchase $purchase, string $quantity, string $cost, string $key, string $hash): ExecutionEntry
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'purchases.approve');
         // Only invoked by a confirmed receipt inside its transaction; validate every binding again.
         $order = SalesOrder::lockForUpdate()->findOrFail($line->sales_order_id);
         $this->open($order);
@@ -221,7 +241,8 @@ class OrderService
 
     public function voidExecution(User $actor, ExecutionEntry $entry, string $reason): void
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.update');
+        AccessService::authorize($actor, 'costs.view');
         Validator::make(compact('reason'), ['reason' => 'required|string|min:10|max:1000'])->validate();
         DB::transaction(function () use ($actor, $entry, $reason) {
             $line = OrderLine::findOrFail($entry->order_line_id);
@@ -239,7 +260,7 @@ class OrderService
 
     public function cancel(User $actor, SalesOrder $order, string $reason): void
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.approve');
         Validator::make(compact('reason'), ['reason' => 'required|string|min:10|max:1000'])->validate();
         DB::transaction(function () use ($actor, $order, $reason) {
             $order = SalesOrder::lockForUpdate()->findOrFail($order->id);
@@ -258,7 +279,7 @@ class OrderService
 
     public function complete(User $actor, SalesOrder $order): SalesOrder
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'orders.approve');
 
         return DB::transaction(function () use ($actor, $order) {
             $order = SalesOrder::lockForUpdate()->findOrFail($order->id);
@@ -279,7 +300,8 @@ class OrderService
 
     public function result(User $actor, SalesOrder $order): array
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'costs.view');
+        abort_unless($actor->allows('orders.view') || ($actor->allows('orders.view-own') && $order->assigned_to === $actor->id), 403);
         $cost = '0';
         $lines = [];
         $commercial = [];

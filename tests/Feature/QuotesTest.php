@@ -66,7 +66,7 @@ class QuotesTest extends TestCase
         $this->customer->update(['name' => 'Nombre nuevo']);
         $this->assertSame('Cliente inicial', $quote->fresh()->snapshot['customer']['name']);
         $this->assertSame($bytes, Storage::disk('local')->get($quote->pdf_path));
-        $this->assertDatabaseCount('audit_events', 2);
+        $this->assertSame(2, AuditEvent::where('subject_type', 'quote')->where('subject_id', $quote->id)->count());
     }
 
     public function test_issued_quote_cannot_be_edited_or_issued_twice(): void

@@ -2,9 +2,17 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\AppAuthentication;
+use App\Filament\Auth\EditProfile;
+use App\Filament\Auth\Login;
+use App\Filament\Auth\RequestPasswordReset;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\LegalCenter;
 use App\Filament\Pages\Workspace;
+use App\Filament\Resources\SalesOrderResource;
 use App\Http\Middleware\EnsureActiveUser;
+use App\Http\Middleware\EnsureAdminMfa;
+use App\Http\Middleware\RequireContractAcceptance;
 use App\Support\LocalAvatarProvider;
 use Filament\Enums\ThemeMode;
 use Filament\FontProviders\LocalFontProvider;
@@ -27,23 +35,29 @@ class OperationsPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        return $panel->default()->id('operations')->path('app')->login()
+        return $panel->default()->id('operations')->path('app')->login(Login::class)
+            ->passwordReset(requestAction: RequestPasswordReset::class)
+            ->profile(EditProfile::class, isSimple: false)
+            ->multiFactorAuthentication([AppAuthentication::make()->recoverable()->codeWindow(1)], isRequired: true)
+            ->multiFactorAuthenticationRequiredMiddlewareName(EnsureAdminMfa::class)
             ->brandName('SOLVET · Gestión')->brandLogo(fn () => view('components.brand'))->brandLogoHeight('3.875rem')
             ->favicon(asset('brand/solvet-it-logo.png'))->colors(['primary' => Color::hex('#3B647F')])->font('Inter Variable', url: asset('fonts/filament/filament/inter/index.css'), provider: LocalFontProvider::class)
             ->defaultAvatarProvider(LocalAvatarProvider::class)
             ->navigationGroups(['Comercial', 'Operaciones', 'Administración'])
-            ->homeUrl(fn () => Dashboard::getUrl())
+            ->homeUrl(fn () => auth()->user()?->allows('dashboard.view') ? Dashboard::getUrl() : (auth()->user()?->allows('orders.view-own') ? SalesOrderResource::getUrl() : LegalCenter::getUrl()))
+            ->databaseNotifications()
             ->unsavedChangesAlerts()
             ->darkMode()
             ->defaultThemeMode(ThemeMode::Light)
             ->themeSwitcher(false)
             ->renderHook(PanelsRenderHook::TOPBAR_LOGO_AFTER, fn () => view('components.workspace-label'))
             ->renderHook(PanelsRenderHook::GLOBAL_SEARCH_BEFORE, fn () => view('components.theme-switcher'))
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_AFTER, fn () => view('components.legal-links'))
             ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, fn () => view('components.theme-switcher'))
             ->sidebarCollapsibleOnDesktop()->sidebarWidth('14rem')->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->pages([Dashboard::class, Workspace::class])
+            ->pages([Dashboard::class, Workspace::class, LegalCenter::class])
             ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])
-            ->authMiddleware([Authenticate::class, EnsureActiveUser::class]);
+            ->authMiddleware([Authenticate::class, EnsureActiveUser::class, RequireContractAcceptance::class], isPersistent: true);
     }
 }

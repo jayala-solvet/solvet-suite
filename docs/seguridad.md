@@ -1,57 +1,15 @@
 # Seguridad y límites de autorización
 
-## Modelo de v0.1
+Estado actual y evidencia: [diagnóstico](seguridad-validacion.md). Reglas persistentes: [SEC-01…SEC-10](seguridad-requisitos.md). Operación y configuración: [guía](operacion-seguridad.md).
 
-Una empresa emisora por instalación; todos los usuarios activos de esa instalación pueden consultar sus clientes, presupuestos y documentos. La separación entre empresas se hace por despliegue/base/volúmenes. No hay control por cartera individual de clientes ni por sucursal. No alojar empresas diferentes dentro de una sola base como si fueran clientes comerciales.
+Una empresa por instalación con base/archivos/claves independientes. Clientes comerciales no son tenants. Autenticación Laravel/Filament, sesiones de servidor, CSRF y módulos privados; no hay registro público ni API de acceso directo a PostgreSQL. Roles y permisos explícitos, alcance técnico por assigned_to y autorización en servicios. El rol nuevo sin capacidades no accede por defecto a datos comerciales.
 
-| Rol | Consulta/PDF/historial | Clientes/presupuestos | Datos del emisor |
-|---|---|---|---|
-| admin | Sí | Crear/editar/baja auditada de borrador/emitir/decisión y editar catálogo | Editar |
-| commercial | Sí | Crear/editar/baja auditada de borrador/emitir/decisión y editar catálogo | No |
-| reader | Sí | No | No |
+[ACC-01…ACC-08](modulos/usuarios-permisos.md) define altas, suspensión/baja/reactivación, último administrador, reautenticación, invitaciones/recuperación, MFA, sesiones y auditoría. [Legal y privacidad](legal-paraguay.md) separa avisos, contratos y finalidades opcionales.
 
-Se comprueban permisos del servicio de presupuestos en servidor. El panel exige usuario activo. Las rutas PDF e historial requieren sesión y usuario activo. La creación de usuarios se hace por CLI del operador del servidor. No hay usuarios demo ni contraseña fija dentro del proyecto.
+Contraseñas nuevas con Argon2id; hashes bcrypt previos siguen verificables y se actualizan al iniciar sesión. Secretos/códigos MFA y cola de acceso cifrados con APP_KEY, sin valores en serialización/auditoría. Mantener claves y backups protegidos; no regenerar APP_KEY al actualizar. PDF y cálculos históricos se conservan. Costos/márgenes requieren permiso financiero y no aparecen en PDF comercial.
 
-## Controles base
+La aplicación agrega no-store/no-referrer y políticas básicas a respuestas sensibles. Proxies/hosts se configuran explícitamente; la confianza global se rechaza. El Nginx interno no registra query strings, referencias o tokens en access logs. Esas medidas no demuestran firewall, TLS, Full strict, caché del borde, cifrado del volumen o recuperación externa del servidor.
 
-- Contraseñas con hash de Laravel, mínimo 12 caracteres en el comando de alta.
-- Sesión y CSRF del framework, limitación de intentos de inicio de sesión de Filament.
-- Secretos en `.env` fuera de Git e imagen. APP_KEY persistente; no regenerarla al actualizar.
-- PDF privado, sin enlaces públicos permanentes ni symlink público al almacenamiento privado.
-- Datos validados, salida Blade escapada y render de PDF sin recursos remotos habilitados por la aplicación.
-- Integridad de correlativos mediante transacciones y restricciones.
-- Logs sin credenciales ni payloads completos del entorno.
+La auditoría es append-only desde modelos/UI y tiene alertas internas por fallos; un administrador de base puede alterarla. No hay SIEM externo o retención resistente a manipulación configurados. No hay adjuntos de usuario, módulos salariales o multiempresa que deban darse por implementados.
 
-## Antes de uso comercial externo
-
-Completar y probar: recuperación de acceso, MFA para administradores, gestión de usuarios/bajas, política de retención, respaldo fuera del servidor, restauración ensayada, revisión de dependencias/licencias y pruebas de concurrencia en PostgreSQL. Acordar responsables de actualizaciones y recuperación.
-
-La auditoría comercial es una tabla de la misma base: un administrador de base puede alterarla. Si se exige evidencia resistente a manipulación, enviar registros a un destino externo con controles de retención. El hash almacenado no evita que alguien con acceso a base y archivos cambie ambos.
-
-## Operación
-
-En producción: HTTPS, `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`, APP_URL correcto y proxy confiable acotado. No publicar PostgreSQL. Los respaldos contienen datos y secretos: permisos restringidos, cifrado en el destino y almacenamiento fuera del host. La muestra no configura automáticamente una tarea de backup.
-
-Los datos fiscales y tasas incluidos son configuración técnica de ejemplo; la adaptación a documentos legales/fiscales de cada país corresponde a un módulo posterior validado.
-
-## Contexto de laboratorio y publicación prevista
-
-El laboratorio informado por José es `http://192.168.112.22:8088/`. La publicación futura mediante Nginx y Cloudflare se especifica en [entornos y publicación](entornos-publicacion.md), con controles existentes, brechas y criterios para promover. No se modificó configuración de red/proxy desde esa documentación.
-
-La aplicación ya define `America/Asuncion` como zona de negocio. Revisar correctamente fechas/hoy al agregar vencimientos programados. Proxy confiable, validación de host y restricciones del origen aún requieren implementación/validación en la cadena real. APP_URL y un WAF no habilitan esos controles por sí solos.
-
-## Reglas para cada nueva funcionalidad
-
-Declarar permisos, alcance por registro y datos controlados por servidor en la [plantilla](plantillas/funcionalidad.md). Comprobar acceso directo/Livewire y puntos de entrada nuevos, no solo visibilidad. Toda integración usa credenciales acotadas y evita URLs arbitrarias o ejecución de comandos derivados de datos del usuario.
-
-Si se incorpora carga de archivos, definir límites de contenido/tamaño, nombres generados, almacenamiento privado, validación de descarga y tratamiento de archivos activos. Actualmente no hay carga de evidencia adjunta en presupuestos: solo texto. Si se incorpora API/portal, especificar autenticación, alcance de tokens, expiración, revocación y límites; no publicar automáticamente los recursos internos.
-
-El historial de clientes/emisor, control de versiones concurrentes de borradores, límites específicos de generación PDF y verificación periódica de integridad son pendientes, no capacidades instaladas. Priorizarlos por riesgo y operación, con pruebas propias; no suponer que el documento de contexto evita esos problemas.
-
-## Costos internos
-
-Admin/commercial activos consultan y administran costos (`view-costs`, `manage-costs`). Reader no accede a páginas, formulario ni estimaciones de utilidad; su consulta de dashboard no carga el JSON privado. cost_snapshot se oculta en serialización y no forma parte de líneas/snapshot/PDF comercial. Crear versiones exige autorización de servicio y pertenencia a catálogo/moneda. No se incorporan cargas de comprobantes ni validación tributaria externa.
-
-## Compras y ejecución
-
-Admin/commercial registran compras/stock/pedidos; reader consulta stock/cumplimiento sin valoraciones o costos. Compras restringidas también en canView del detalle, no solo navegación/listado. Métodos financieros de página autorizan en servidor. Ajustes/devoluciones exigen motivo, UUID y documento; ejecución y entrega controlan cantidades/reintentos. Las claves tienen huella para rechazar reutilización con otros datos. No se exponen componentes/proveedores en PDF comercial. Ver [contrato](modulos/operaciones.md).
+Antes de publicación revisar hallazgos altos de destino, roles DB previos, cuentas de ensayo, SMTP/worker, MFA, restauración y textos legales. `solvet:security-check --public` ayuda al diagnóstico pero no certifica seguridad o cumplimiento. No compartir .env, tokens, dumps o datos reales en Git/capturas.

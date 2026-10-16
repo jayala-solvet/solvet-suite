@@ -36,6 +36,16 @@ class InventoryResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->allows('inventory.view') ?? false;
+    }
+
+    public static function canView($record): bool
+    {
+        return self::canViewAny();
+    }
+
     public static function canCreate(): bool
     {
         return false;
@@ -65,7 +75,7 @@ class InventoryResource extends Resource
             TextColumn::make('available')->label('Disponible')->getStateUsing(fn (CatalogItem $r) => $r->stock?->available() ?? '0.000')->formatStateUsing(fn ($state) => OperationRules::quantityLabel($state))->alignEnd(),
             TextColumn::make('average')->label('Costo promedio')->getStateUsing(fn (CatalogItem $r) => $r->stock && bccomp($r->stock->quantity, '0', 3) > 0 ? Quote::money(CostCalculator::round($r->stock->average()), $r->currency) : 'Sin existencias')->visible(fn () => Gate::allows('view-costs'))->alignEnd(),
         ])->recordUrl(fn (CatalogItem $record) => self::getUrl('view', ['record' => $record]))->recordActions([
-            Action::make('adjust')->label('Ajustar saldo')->icon('heroicon-o-adjustments-horizontal')->color('gray')->visible(fn () => Gate::allows('manage-costs'))->schema([
+            Action::make('adjust')->label('Ajustar saldo')->icon('heroicon-o-adjustments-horizontal')->color('gray')->visible(fn () => Gate::allows('inventory.update'))->schema([
                 Select::make('direction')->label('Movimiento')->options(['in' => 'Entrada / saldo inicial', 'out' => 'Salida por ajuste'])->default('in')->required(),
                 TextInput::make('quantity')->label('Cantidad')->numeric()->minValue('0.001')->required(),
                 TextInput::make('unit_cost')->label('Costo efectivo unitario de entrada')->helperText('Neto de IVA recuperable; admite hasta 8 decimales. En una salida se usa el promedio actual.')->numeric()->minValue(0),

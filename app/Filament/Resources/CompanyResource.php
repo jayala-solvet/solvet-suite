@@ -27,7 +27,7 @@ class CompanyResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->role === 'admin';
+        return auth()->user()?->allows('company.update') ?? false;
     }
 
     public static function canCreate(): bool

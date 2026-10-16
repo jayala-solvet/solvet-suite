@@ -1,6 +1,6 @@
 name: ${COMPOSE_PROJECT_NAME:-solvet-suite}
 services:
-  app:
+  app: &app-runtime
     build:
       context: .
       target: app
@@ -8,11 +8,12 @@ services:
     restart: unless-stopped
     env_file: ${SOLVET_ENV_FILE:-.env}
     environment:
+      DB_ADMIN_PASSWORD: ""
       DB_CONNECTION: pgsql
       DB_HOST: db
       DB_PORT: 5432
       DB_DATABASE: solvet
-      DB_USERNAME: solvet
+      DB_USERNAME: ${DB_USERNAME:-solvet}
       SESSION_DRIVER: database
       CACHE_STORE: database
     volumes:
@@ -25,6 +26,11 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+  worker:
+    <<: *app-runtime
+    command: ["php", "artisan", "queue:work", "--queue=security-mail", "--sleep=3", "--tries=3", "--timeout=60", "--max-time=3600"]
+    healthcheck:
+      disable: true
   web:
     build:
       context: .
@@ -47,9 +53,12 @@ services:
     environment:
       POSTGRES_DB: solvet
       POSTGRES_USER: solvet
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?Ejecutar bash scripts/setup.sh primero}
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD:-${DB_PASSWORD:?Ejecutar bash scripts/setup.sh primero}}
+      APP_DB_USERNAME: ${DB_USERNAME:-solvet}
+      APP_DB_PASSWORD: ${DB_PASSWORD:?Configurar DB_PASSWORD}
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/10-solvet-role.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U solvet -d solvet"]
       interval: 5s

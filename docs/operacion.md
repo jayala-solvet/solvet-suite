@@ -59,7 +59,7 @@ Construye primero, pone en mantenimiento, respalda, migra, recrea app/web y limp
 
 ## HTTPS y proxy
 
-Puerto de muestra: `127.0.0.1:8088`. Para un dominio, colocar un proxy TLS delante y establecer APP_URL con HTTPS, cookies seguras y entorno production. Laravel debe confiar solo en el proxy utilizado para interpretar correctamente el protocolo. `bootstrap/app.php` todavía no configura `trustProxies`: implementar y comprobar la cadena de proxies/hosts reales antes de publicar. Ver [entornos y publicación](entornos-publicacion.md); no abrir confianza global por comodidad.
+Puerto de muestra: `127.0.0.1:8088`. Para un dominio, colocar un proxy TLS delante y establecer APP_URL con HTTPS, cookies seguras y entorno production. Laravel debe confiar solo en el proxy utilizado para interpretar correctamente el protocolo. La aplicación admite TRUSTED_PROXIES/TRUSTED_HOSTS explícitos; configurar y comprobar la cadena real antes de publicar. Ver [entornos y publicación](entornos-publicacion.md); no abrir confianza global por comodidad.
 
 No cambiar BIND_ADDRESS a `0.0.0.0` sin decidir qué red tendrá acceso. Los puertos de base y PHP-FPM permanecen internos.
 
@@ -95,3 +95,7 @@ Si esa migración experimental ya se aplicó por fuera de main, detener la actua
 ## Entornos separados
 
 Para instalaciones nuevas de desarrollo/testing/producción usar [entornos y promoción](entornos-desarrollo-pruebas-produccion.md) y `scripts/environment.sh`. No cambiar el nombre Compose ni reemplazar .env de la instalación anterior para intentar convertirla en otro entorno. Los comandos anteriores mantienen su comportamiento compatible. No se trasladaron datos existentes como parte de esta incorporación.
+
+## Actualización de seguridad
+
+La migración 000005 agrega roles, controles de usuario, MFA, asignación de pedidos, notificaciones y versiones/eventos legales sin cambiar documentos comerciales. El administrador deberá configurar MFA; conservar recuperación. Ver [operación de seguridad](operacion-seguridad.md) para worker, SMTP, proxy, nuevo rol PostgreSQL y cifrado de backups. No cambiar credenciales/volúmenes antiguos a partir de defaults de instalaciones nuevas.

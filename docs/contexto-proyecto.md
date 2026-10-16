@@ -25,7 +25,7 @@ No se verificó desde esta documentación el estado de red del laboratorio ni la
 
 Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema. Dashboard comercial inicial de consulta por período de emisión/moneda, con composición y seguimiento; incorpora utilidad bruta estimada de aprobados con costos completos, restringida a admin/commercial; no registra cobros.
 
-Compras, inventario y pedidos con ejecución básica están implementados según [Operaciones](modulos/operaciones.md). No hay envío de correo, portal de aceptación, integración GLPI, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. Tampoco hay administración web de usuarios, recuperación de contraseña ni MFA implementados; ver las prioridades en [seguridad](seguridad.md).
+Compras, inventario y pedidos con ejecución básica están implementados según [Operaciones](modulos/operaciones.md). No hay envío de correo, portal de aceptación, integración GLPI, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. La gestión de usuarios/roles, MFA admin, recuperación y versiones legales están implementadas para prueba; requieren configuración y evidencia de correo/proxy/operación y revisión jurídica antes de publicación. Ver [diagnóstico](seguridad-validacion.md).
 
 ## Identidad y experiencia
 

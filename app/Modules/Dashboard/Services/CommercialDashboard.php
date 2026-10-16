@@ -13,7 +13,7 @@ class CommercialDashboard
 
     public function report(User $actor, string $currency, string $period): array
     {
-        abort_unless($actor->is_active && in_array($actor->role, ['admin', 'commercial', 'reader'], true), 403);
+        abort_unless($actor->allows('dashboard.view'), 403);
         Validator::make(compact('currency', 'period'), [
             'currency' => 'required|in:PYG,USD', 'period' => 'required|in:month,quarter,year,all',
         ])->validate();

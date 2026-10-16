@@ -15,8 +15,11 @@ if [ "$sv_action" = init ]; then
   case "$sv_profile" in development) sv_port=8089; sv_app_env=local;; testing) sv_port=8090; sv_app_env=staging;; production) sv_port=8091; sv_app_env=production;; esac
   cp .env.example "$sv_file"
   sv_db_secret=$(openssl rand -hex 32)
+  sv_admin_secret=$(openssl rand -hex 32)
   sv_app_secret=$(openssl rand -base64 32 | tr -d '\n')
   sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$sv_db_secret|;s|^APP_KEY=.*|APP_KEY=base64:$sv_app_secret|;s|^COMPOSE_PROJECT_NAME=.*|COMPOSE_PROJECT_NAME=$sv_project|;s|^APP_PORT=.*|APP_PORT=$sv_port|;s|^APP_URL=.*|APP_URL=http://localhost:$sv_port|;s|^APP_ENV=.*|APP_ENV=$sv_app_env|" "$sv_file"
+  sed -i 's/^DB_USERNAME=.*/DB_USERNAME=solvet_app/' "$sv_file"
+  printf '\nDB_ADMIN_PASSWORD=%s\n' "$sv_admin_secret" >> "$sv_file"
   printf '\nSESSION_COOKIE=solvet_%s_session\n' "$sv_profile" >> "$sv_file"
   chmod 600 "$sv_file"
   printf 'Creado %s. Ajustá APP_URL y BIND_ADDRESS antes de instalar. Puerto propuesto: %s.\n' "$sv_file" "$sv_port"
@@ -33,7 +36,7 @@ if [ "$sv_profile" = production ]; then
 fi
 # Explicit project/files; exported interpolation variables cannot redirect the deployment.
 sv_compose() (
-  unset COMPOSE_FILE COMPOSE_PROFILES COMPOSE_ENV_FILES COMPOSE_PROJECT_NAME APP_VERSION APP_PORT BIND_ADDRESS DB_PASSWORD
+  unset COMPOSE_FILE COMPOSE_PROFILES COMPOSE_ENV_FILES COMPOSE_PROJECT_NAME APP_VERSION APP_PORT BIND_ADDRESS DB_PASSWORD DB_ADMIN_PASSWORD DB_USERNAME
   export SOLVET_ENV_FILE="$sv_file" COMPOSE_PROJECT_NAME="$sv_project"
   sv_cmd=(docker compose --env-file "$sv_file" --project-name "$sv_project" -f compose.yml)
   if [ "$sv_profile" = development ]; then sv_cmd+=(-f compose.dev.yml); fi
@@ -41,6 +44,8 @@ sv_compose() (
 )
 sv_backup() {
   umask 077
+  sv_recipient=$(sv_get BACKUP_AGE_RECIPIENT)
+  if [ -n "$sv_recipient" ]; then command -v age >/dev/null || { echo 'Falta age en el host para cifrar el respaldo.'; exit 1; }; fi
   sv_backup_dir="backups/$sv_profile/$(date -u +%Y%m%dT%H%M%SZ)-$$"
   mkdir -p "$sv_backup_dir"
   sv_compose exec -T db pg_dump -U solvet -d solvet -Fc > "$sv_backup_dir/database.dump"
@@ -53,6 +58,7 @@ sv_backup() {
     printf 'unknown: no installed commit marker\n' > "$sv_backup_dir/COMMIT"
   fi
   cp VERSION "$sv_backup_dir/VERSION"
+  if [ -n "$sv_recipient" ]; then bash scripts/encrypt-backup.sh "$sv_backup_dir" "$sv_recipient"; fi
   printf 'Respaldo: %s\n' "$sv_backup_dir"
 }
 case "$sv_action" in
@@ -73,7 +79,7 @@ case "$sv_action" in
     echo 'En mantenimiento; un fallo conserva cerrado el entorno.'
     sv_backup
     sv_compose run --rm app php artisan migrate --force
-    sv_compose up -d --force-recreate app web
+    sv_compose up -d --force-recreate app web worker
     sv_compose exec -T app php artisan optimize:clear
     sv_compose exec -T app php artisan up
     git rev-parse HEAD > "deploy/environments/$sv_profile.commit"

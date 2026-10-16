@@ -3,6 +3,7 @@
 namespace App\Modules\Operations\Services;
 
 use App\Models\User;
+use App\Modules\Access\Services\AccessService;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Costs\Services\CostCalculator;
 use App\Modules\Operations\Models\OrderLine;
@@ -15,7 +16,7 @@ class PurchaseService
 {
     public function save(User $actor, array $data, ?Purchase $purchase = null): Purchase
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, $purchase ? 'purchases.update' : 'purchases.create');
         $data = Validator::make($data, [
             'supplier_name' => 'required|string|max:200', 'supplier_tax_id' => 'required|string|max:30', 'reference' => 'required|string|max:200',
             'currency' => 'required|in:PYG,USD', 'purchase_date' => 'required|date|before_or_equal:today', 'freight_amount' => 'required', 'freight_tax_rate' => 'required|in:0,5,10',
@@ -102,7 +103,7 @@ class PurchaseService
 
     public function confirm(User $actor, Purchase $purchase): Purchase
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'purchases.approve');
 
         return DB::transaction(function () use ($actor, $purchase) {
             $purchase = Purchase::lockForUpdate()->findOrFail($purchase->id);
@@ -121,7 +122,7 @@ class PurchaseService
 
     public function cancel(User $actor, Purchase $purchase, string $reason): void
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'purchases.approve');
         Validator::make(compact('reason'), ['reason' => 'required|string|min:10|max:1000'])->validate();
         DB::transaction(function () use ($actor, $purchase, $reason) {
             $purchase = Purchase::lockForUpdate()->findOrFail($purchase->id);
@@ -136,7 +137,7 @@ class PurchaseService
 
     public function receive(User $actor, Purchase $purchase): Purchase
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'purchases.approve');
 
         return DB::transaction(function () use ($actor, $purchase) {
             $purchase = Purchase::lockForUpdate()->findOrFail($purchase->id);

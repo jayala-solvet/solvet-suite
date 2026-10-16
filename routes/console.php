@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Modules\Core\Models\Company;
 use App\Modules\Customers\Models\Customer;
+use App\Modules\Legal\Services\LegalService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteService;
 use Illuminate\Support\Facades\Artisan;
@@ -60,4 +61,41 @@ Artisan::command('solvet:demo', function () {
         }
     }
     $this->info('Demostración cargada: tres clientes y tres presupuestos ficticios.');
+});
+
+Artisan::command('solvet:security-check {--public}', function () {
+    $failures = [];
+    $check = function (string $name, bool $ok) use (&$failures) {
+        $this->line(($ok ? 'OK: ' : 'PENDIENTE: ').$name);
+        if (! $ok) {
+            $failures[] = $name;
+        }
+    };
+    $check('APP_KEY configurada', filled(config('app.key')));
+    $check('Argon2id disponible', in_array('argon2id', password_algos(), true));
+    $check('Cookies HttpOnly', (bool) config('session.http_only'));
+    $check('SameSite acotado', in_array(config('session.same_site'), ['lax', 'strict'], true));
+    $check('Sesiones de base de datos', config('session.driver') === 'database');
+    $check('Administradores con segundo factor', ! User::where('role', 'admin')->where('is_active', true)->whereNull('app_authentication_secret')->exists());
+    if ($this->option('public')) {
+        $check('Entorno production sin depuración', app()->environment('production') && ! config('app.debug'));
+        $check('URL HTTPS y cookie Secure', str_starts_with(config('app.url'), 'https://') && (bool) config('session.secure'));
+        $check('Hosts explícitos', ! empty(config('security.trusted_hosts')));
+        $check('Proxies explícitos y sin comodín', ! empty(config('security.trusted_proxies')) && ! in_array('*', config('security.trusted_proxies'), true));
+        $check('Destinatario de cifrado de respaldos configurado', filled(config('security.backup_age_recipient')));
+        $check('Correo real configurado', ! in_array(config('mail.default'), ['log', 'array'], true));
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            $role = DB::selectOne('SELECT rolsuper, rolcreatedb, rolcreaterole, rolbypassrls FROM pg_roles WHERE rolname = current_user');
+            $check('Rol de aplicación sin privilegios administrativos', ! $role->rolsuper && ! $role->rolcreatedb && ! $role->rolcreaterole && ! $role->rolbypassrls);
+        } else {
+            $check('Motor PostgreSQL del destino', false);
+        }
+        $kinds = LegalService::current()->pluck('kind')->all();
+        foreach (['terms', 'privacy', 'cookies'] as $kind) {
+            $check('Versión legal revisada: '.$kind, in_array($kind, $kinds, true));
+        }
+    }
+    $this->warn('Este diagnóstico no prueba firewall, TLS/proxy real, cifrado de disco/backups, restauración, concurrencia o revisión jurídica. Revisar docs/seguridad-validacion.md.');
+
+    return $failures ? 1 : 0;
 });

@@ -36,7 +36,7 @@ class PurchaseResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Gate::allows('view-costs');
+        return Gate::allows('purchases.view');
     }
 
     public static function canView($record): bool
@@ -46,12 +46,12 @@ class PurchaseResource extends Resource
 
     public static function canCreate(): bool
     {
-        return Gate::allows('manage-costs');
+        return Gate::allows('purchases.create');
     }
 
     public static function canEdit($record): bool
     {
-        return self::canCreate() && $record->status === 'draft';
+        return Gate::allows('purchases.update') && $record->status === 'draft';
     }
 
     public static function canDelete($record): bool

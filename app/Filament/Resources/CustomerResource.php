@@ -27,14 +27,24 @@ class CustomerResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->allows('customers.view') ?? false;
+    }
+
+    public static function canView($record): bool
+    {
+        return self::canViewAny();
+    }
+
     public static function canCreate(): bool
     {
-        return auth()->user()?->canWrite() ?? false;
+        return auth()->user()?->allows('customers.create') ?? false;
     }
 
     public static function canEdit($record): bool
     {
-        return self::canCreate();
+        return auth()->user()?->allows('customers.update') ?? false;
     }
 
     public static function canDelete($record): bool
@@ -67,7 +77,7 @@ class CustomerResource extends Resource
     {
         return $table->columns([
             TextColumn::make('name')->label('Cliente')->searchable()->sortable()->weight(FontWeight::SemiBold)->wrap(), TextColumn::make('tax_id')->label('RUC')->searchable()->placeholder('Sin registrar'), TextColumn::make('contact')->label('Contacto')->placeholder('Sin registrar'), TextColumn::make('email')->label('Correo')->placeholder('Sin registrar'), TextColumn::make('phone')->label('Teléfono')->placeholder('Sin registrar'),
-        ])->recordActions([EditAction::make()->color('gray')->visible(fn () => self::canCreate())])->recordActionsColumnLabel('Opciones')->stackedOnMobile()->searchPlaceholder('Buscar por nombre o RUC')->emptyStateIcon('heroicon-m-user-group')->emptyStateHeading('No hay clientes para mostrar')->emptyStateDescription('Revisá la búsqueda. Los clientes registrados aparecerán en este listado.')->defaultSort('name');
+        ])->recordActions([EditAction::make()->color('gray')->visible(fn ($record) => self::canEdit($record))])->recordActionsColumnLabel('Opciones')->stackedOnMobile()->searchPlaceholder('Buscar por nombre o RUC')->emptyStateIcon('heroicon-m-user-group')->emptyStateHeading('No hay clientes para mostrar')->emptyStateDescription('Revisá la búsqueda. Los clientes registrados aparecerán en este listado.')->defaultSort('name');
     }
 
     public static function getPages(): array

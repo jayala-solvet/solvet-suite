@@ -21,9 +21,9 @@ class QuoteService
 {
     public function __construct(private QuoteCalculator $calculator) {}
 
-    private function authorize(User $actor): void
+    private function authorize(User $actor, string $permission): void
     {
-        Gate::forUser($actor)->authorize('write-business');
+        Gate::forUser($actor)->authorize($permission);
     }
 
     private function event(User $actor, Quote $quote, string $action, array $metadata = []): void
@@ -33,7 +33,7 @@ class QuoteService
 
     public function saveDraft(User $actor, array $data, ?Quote $quote = null): Quote
     {
-        $this->authorize($actor);
+        $this->authorize($actor, $quote ? 'quotes.update' : 'quotes.create');
         $data = Validator::make($data, ['customer_id' => 'required|exists:customers,id', 'subject' => 'required|string|max:200', 'currency' => 'required|in:PYG,USD', 'valid_until' => 'required|date|after_or_equal:today', 'terms' => 'nullable|string|max:5000',
             'payment_mode' => 'sometimes|required|in:cash,credit,to_agree',
             'credit_days' => 'nullable|required_if:payment_mode,credit|integer|min:1|max:365',
@@ -58,6 +58,11 @@ class QuoteService
             $line['sku'] = $item?->sku;
         }
         unset($line);
+        if (! $actor->allows('costs.view')) {
+            foreach ($data['lines'] as &$line) {
+                unset($line['cost_profile_id'],$line['internal_unit_cost'],$line['components']);
+            }
+        } unset($line);
         $calculated = $this->calculator->calculate($data['lines'], $data['currency']);
 
         return DB::transaction(function () use ($actor, $data, $calculated, $quote) {
@@ -78,7 +83,7 @@ class QuoteService
                 }
                 unset($line);
             }
-            $costSnapshot = app(QuoteProfitability::class)->snapshot($actor, $data['lines'], $calculated, $data['currency']);
+            $costSnapshot = app(QuoteProfitability::class)->forQuote($actor, $data['lines'], $calculated, $data['currency']);
             $quote->fill(array_merge($data, $calculated, ['cost_snapshot' => $costSnapshot]))->save();
             $this->event($actor, $quote, 'draft.saved');
 
@@ -88,7 +93,7 @@ class QuoteService
 
     public function issue(User $actor, Quote $quote): Quote
     {
-        $this->authorize($actor);
+        $this->authorize($actor, 'quotes.approve');
 
         return DB::transaction(function () use ($actor, $quote) {
             $quote = Quote::lockForUpdate()->findOrFail($quote->id);
@@ -118,7 +123,7 @@ class QuoteService
 
     public function deleteDraft(User $actor, Quote $quote): void
     {
-        $this->authorize($actor);
+        $this->authorize($actor, 'quotes.delete');
         DB::transaction(function () use ($actor, $quote) {
             $quote = Quote::lockForUpdate()->findOrFail($quote->id);
             if ($quote->status !== 'draft' || $quote->number !== null) {
@@ -131,7 +136,7 @@ class QuoteService
 
     public function decide(User $actor, Quote $quote, string $status, string $evidence): Quote
     {
-        $this->authorize($actor);
+        $this->authorize($actor, 'quotes.approve');
         Validator::make(['status' => $status, 'evidence' => $evidence], ['status' => 'required|in:accepted,rejected,cancelled', 'evidence' => 'required|string|min:10|max:2000'])->validate();
 
         return DB::transaction(function () use ($actor, $quote, $status, $evidence) {

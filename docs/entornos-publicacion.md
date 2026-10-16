@@ -1,6 +1,6 @@
 # Laboratorio y publicación mediante Nginx / Cloudflare
 
-Estado: requisitos y plan de puesta en producción. No configura el servidor ni habilita estos controles. Revisado contra `compose.yml`, `.env.example`, `bootstrap/app.php` y `docker/nginx.conf` el 15/10/2026.
+Estado: requisitos y plan de puesta en producción. Hay soporte de hosts/proxies/cabeceras en aplicación y plantilla Nginx según [operación de seguridad](operacion-seguridad.md); no configura ni demuestra el servidor. Revisado contra `compose.yml`, `.env.example`, `bootstrap/app.php` y `docker/nginx.conf`; ampliación de seguridad 16/10/2026.
 
 ## Topología prevista y límites de confianza
 
@@ -39,7 +39,7 @@ La protección de Cloudflare no reemplaza autorización, CSRF, validación y alm
 
 El ejemplo `.env` viene con `APP_URL=http://localhost:8088` y bind de loopback: no demuestra qué valores usa el servidor de José. Los valores locales reales se revisan en el servidor sin pegar secretos en tickets o prompts. HTTP de laboratorio no protege el tránsito; limitarlo a la prueba controlada y priorizar datos ficticios.
 
-No introducir variables inventadas como si ya fueran leídas por el código. Actualmente no hay parámetros propios `TRUSTED_PROXIES` o `ALLOWED_HOSTS`: necesitan implementación y pruebas si se adopta ese mecanismo.
+No introducir variables inventadas como si ya fueran leídas por el código. Se implementan TRUSTED_PROXIES y TRUSTED_HOSTS, vacíos por compatibilidad; requieren valores exactos del destino. No existe ALLOWED_HOSTS. No se debe confiar en *.
 
 ## Controles que existen en la base
 
@@ -72,13 +72,13 @@ TLS válido y Full (strict) hasta Nginx de publicación. Restringir ingreso al o
 
 El puerto de Compose solo acepta al proxy. No exponer 5432, 9000, storage privado, `.env`, dumps, logs o endpoints de diagnóstico. HTTPS y firewall se verifican desde una red externa autorizada.
 
-En el hostname de la aplicación, evitar caché compartida de contenido dinámico/autenticado. Bypass en Cloudflare y sin proxy cache para `/app*`, `/livewire*`, `/quotes*` y cualquier ruta de sesión/datos. No aplicar Cache Everything. Los assets públicos con versión pueden tener caché independiente; respuestas de usuarios y PDFs privados no. Agregar `Cache-Control: private, no-store` donde falte en respuestas sensibles como tarea de implementación; actualmente el preview de archivo emitido ya lo establece.
+En el hostname de la aplicación, evitar caché compartida de contenido dinámico/autenticado. Bypass en Cloudflare y sin proxy cache para `/app*`, `/livewire*`, `/quotes*` y cualquier ruta de sesión/datos. No aplicar Cache Everything. Los assets públicos con versión pueden tener caché independiente; respuestas de usuarios y PDFs privados no. La aplicación establece Cache-Control private/no-store para aplicación, Livewire, legal y PDF; verificar también que el borde lo respete.
 
 Aceptación: dos sesiones no comparten respuestas ni documentos por caché; una descarga privada no se obtiene sin sesión, y no se llega al sistema saltando el proxy por 8088.
 
 ### P03 · Protección interna y operación
 
-- Completar administración de usuarios/bajas, recuperación de acceso y MFA administrativa antes de venta externa; especificar y probar cada función.
+- Administración de usuarios/bajas, recuperación y MFA administrativa se implementan en ACC-01…ACC-08; probar SMTP, enrolamiento y revocación en el destino antes de venta externa.
 - Revisar límites de peticiones y concurrencia de emisión/PDF; el límite de login no cubre por sí solo el coste de estas operaciones. No bloquear Livewire indiscriminadamente con desafíos del WAF.
 - Evaluar CSP primero en modo de reporte, con pruebas de Filament/Livewire. No desplegar una política genérica que rompa la aplicación. HSTS en el borde HTTPS una vez validado el dominio; incluir subdominios/preload solo con evaluación de los demás servicios.
 - PostgreSQL privado con credenciales de instalación, permisos revisados y backup verificable. La cuenta creada por la imagen es la del clúster inicial; separar rol de aplicación de privilegios administrativos requiere preparación adicional. No presentar mínimo privilegio de base como completado.
