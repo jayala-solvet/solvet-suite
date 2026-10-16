@@ -71,3 +71,17 @@ No cambiar BIND_ADDRESS a `0.0.0.0` sin decidir qué red tendrá acceso. Los pue
 - `docker compose exec app php artisan optimize:clear`
 
 APP_KEY no debe cambiar entre reinicios. Si faltan assets después de actualizar, reconstruir app y web con el mismo código; no reutilizar una imagen web anterior.
+
+## Actualización de compras, inventario y ejecución · 16/10/2026
+
+Desde la carpeta del repositorio, traer main y ejecutar el actualizador habitual:
+
+```bash
+git switch main
+git pull --ff-only origin main
+bash scripts/update.sh
+```
+
+El script respalda y aplica `2026_10_16_000003_add_purchases_inventory_execution` y `2026_10_16_000004_extend_cost_breakdown`. Son aditivas: conservan catálogo, referencias, precios y presupuestos. Los productos anteriores empiezan sin control de stock y sin movimientos; habilitarlo cuando corresponda y cargar saldo inicial mediante ajuste con motivo y costo efectivo, nunca mediante una compra ficticia. Extras históricos de costo conservan su significado neto. No ejecutar migrate:fresh ni reiniciar secuencias.
+
+Comprobar migrate:status, /up, un presupuesto anterior y su PDF, roles y el circuito de [compra a ejecución](tareas/compra-a-ejecucion.md). Hacer la primera recepción/reserva/entrega en prueba con datos propios. No revertir tablas después de registrar movimientos: una recuperación requiere respaldo coherente de base y archivos. Las pruebas locales no sustituyen comprobar bloqueos concurrentes en PostgreSQL y la construcción Docker en el destino.

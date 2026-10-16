@@ -71,3 +71,13 @@ La captura [dashboard-inicial.png](referencias/dashboard-inicial.png) muestra da
 - Pint, enlaces locales, diff y coincidencia de CSS fuente/publicado revisados. Sin dependencias nuevas. No se ejecutó Docker Engine ni concurrencia PostgreSQL en este entorno. Validar esos aspectos en el destino antes de producción.
 
 [Captura real de Costos y precios](referencias/costos-precios.png), con datos ficticios locales. La documentación funcional está en [COS-01 a COS-04](modulos/costos-precios.md).
+
+## Compras, inventario y ejecución · 16/10/2026
+
+- PHP 8.5 / SQLite: suite completa de **47 pruebas y 488 aserciones aprobadas**. Incluye A/B, compra/recepción, reserva parcial, entrega idempotente, falta de stock, promedio ponderado, devolución al costo de salida conservado, ajustes con motivo, reparto de envío por cantidad/valor/manual, ejecución propia/externa y anulación. Se comprueban creación Livewire de compra, permisos de detalle, publicación explícita de precios, componentes, cantidades, conservación de snapshots y bytes de PDF emitidos.
+- Las dos migraciones aditivas se aplicaron sobre la base local existente y sobre bases limpias de prueba. No crean existencias, precios ni datos demo del usuario.
+- Chromium: matriz final de 36 estados claro/oscuro, escritorio 1512 px/móvil 390 px; 1814 comprobaciones de contraste sin fallas, cero errores JavaScript y cero desbordamientos globales. Seis estados adicionales verifican caso A terminado, carga real de compra, error visible por salida sin stock y reader sin información financiera: 305 comprobaciones adicionales sin fallas. Inspección visual de detalle de pedido y móvil oscuro.
+- Recorrido real A/B completado en navegador: recepción de ambos, reserva/entrega del equipo, hora propia, cierre de pedidos. A: utilidad ₲ 147.273, margen 24,54545 %, sin stock. B: costo efectivo equipo/envío ₲ 472.727, costo total ₲ 537.727, utilidad ₲ 62.273; una entrada/salida y ningún movimiento por configuración.
+- Pint, enlaces locales, diff y CSS fuente/publicado idéntico comprobados. Sin dependencias nuevas. No se accedió al servidor de José ni se ejecutaron Docker Engine o concurrencia PostgreSQL; comprobar esos aspectos en el destino.
+
+Las capturas de prueba permanecen fuera del repositorio. La fuente efectiva es el código y [contrato OP-01…OP-08](modulos/operaciones.md).

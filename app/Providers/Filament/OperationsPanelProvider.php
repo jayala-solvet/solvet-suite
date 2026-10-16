@@ -31,7 +31,7 @@ class OperationsPanelProvider extends PanelProvider
             ->brandName('SOLVET · Gestión')->brandLogo(fn () => view('components.brand'))->brandLogoHeight('3.875rem')
             ->favicon(asset('brand/solvet-it-logo.png'))->colors(['primary' => Color::hex('#3B647F')])->font('Inter Variable', url: asset('fonts/filament/filament/inter/index.css'), provider: LocalFontProvider::class)
             ->defaultAvatarProvider(LocalAvatarProvider::class)
-            ->navigationGroups(['Comercial', 'Administración'])
+            ->navigationGroups(['Comercial', 'Operaciones', 'Administración'])
             ->homeUrl(fn () => Dashboard::getUrl())
             ->unsavedChangesAlerts()
             ->darkMode()

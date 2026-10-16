@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\QuoteResource\Pages;
 
 use App\Filament\Resources\QuoteResource;
+use App\Modules\Costs\Services\QuoteProfitability;
 use App\Modules\Quotes\Services\QuoteService;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -19,9 +20,8 @@ class EditQuote extends EditRecord
     {
         foreach ($data['lines'] as $index => &$line) {
             $cost = $this->getRecord()->cost_snapshot['lines'][$index] ?? null;
-            $line['cost_profile_id'] = $cost['profile_id'] ?? null;
-            if (($cost['source'] ?? null) === 'manual' && isset($cost['unit_net_minor'])) {
-                $line['internal_unit_cost'] = bcdiv($cost['unit_net_minor'], $data['currency'] === 'USD' ? '100' : '1', $data['currency'] === 'USD' ? 2 : 0);
+            if ($cost) {
+                $line = QuoteProfitability::restoreInputs($line, $cost, $data['currency']);
             }
         }
         unset($line);

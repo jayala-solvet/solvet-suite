@@ -52,7 +52,7 @@ class QuoteService
         $items = CatalogItem::whereIn('id', array_filter(array_column($data['lines'], 'catalog_item_id')))->get()->keyBy('id');
         foreach ($data['lines'] as $key => &$line) {
             $item = $items->get($line['catalog_item_id'] ?? null);
-            if ($item && $item->currency !== $data['currency']) {
+            if ($item && (! $item->can_sell || $item->currency !== $data['currency'])) {
                 throw ValidationException::withMessages(['lines.'.$key.'.catalog_item_id' => 'El ítem de catálogo usa otra moneda. Elegí uno de la moneda del presupuesto o cargá el ítem manualmente.']);
             }
             $line['sku'] = $item?->sku;
@@ -72,13 +72,8 @@ class QuoteService
             if ($quote->exists && $quote->currency === $data['currency']) {
                 foreach ($data['lines'] as $index => &$line) {
                     $previous = $quote->cost_snapshot['lines'][$index] ?? null;
-                    if ($previous && (string) ($previous['catalog_item_id'] ?? '') === (string) ($line['catalog_item_id'] ?? '')) {
-                        if (! array_key_exists('cost_profile_id', $line)) {
-                            $line['cost_profile_id'] = $previous['profile_id'];
-                        }
-                        if (($previous['source'] ?? null) === 'manual' && ! array_key_exists('internal_unit_cost', $line)) {
-                            $line['internal_unit_cost'] = bcdiv($previous['unit_net_minor'], $data['currency'] === 'USD' ? '100' : '1', $data['currency'] === 'USD' ? 2 : 0);
-                        }
+                    if ($previous && (string) ($quote->lines[$index]['catalog_item_id'] ?? '') === (string) ($line['catalog_item_id'] ?? '')) {
+                        $line = QuoteProfitability::restoreInputs($line, $previous, $data['currency']);
                     }
                 }
                 unset($line);

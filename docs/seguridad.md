@@ -51,3 +51,7 @@ El historial de clientes/emisor, control de versiones concurrentes de borradores
 ## Costos internos
 
 Admin/commercial activos consultan y administran costos (`view-costs`, `manage-costs`). Reader no accede a páginas, formulario ni estimaciones de utilidad; su consulta de dashboard no carga el JSON privado. cost_snapshot se oculta en serialización y no forma parte de líneas/snapshot/PDF comercial. Crear versiones exige autorización de servicio y pertenencia a catálogo/moneda. No se incorporan cargas de comprobantes ni validación tributaria externa.
+
+## Compras y ejecución
+
+Admin/commercial registran compras/stock/pedidos; reader consulta stock/cumplimiento sin valoraciones o costos. Compras restringidas también en canView del detalle, no solo navegación/listado. Métodos financieros de página autorizan en servidor. Ajustes/devoluciones exigen motivo, UUID y documento; ejecución y entrega controlan cantidades/reintentos. Las claves tienen huella para rechazar reutilización con otros datos. No se exponen componentes/proveedores en PDF comercial. Ver [contrato](modulos/operaciones.md).

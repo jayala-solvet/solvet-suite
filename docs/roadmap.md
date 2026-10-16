@@ -12,7 +12,8 @@
 | 2 | Correo con cola, portal de aceptación y vencimientos | Planificado |
 | 3 | Órdenes de trabajo y vínculo GLPI | Planificado |
 | 4 | Contratos y servicios recurrentes | Propuesto |
-| 5 | Compras/inventario/facturación según validación | Propuesto |
+| 5 | Compras/inventario/pedidos y ejecución mínima | Implementado; ampliaciones por uso real |
+| 6 | Facturación fiscal e integración contable | Propuesto |
 
 Cada etapa debe tener especificación acotada y criterios de aceptación antes de implementarse. No vender como funciones disponibles las etapas planificadas.
 

@@ -1097,3 +1097,6 @@ button:focus-visible {
 .sv-cost-summary .sv-totals { width: 100%; max-width: 560px; padding: 0; margin: 0; justify-self: end; }
 .sv-cost-summary .sv-totals dd { overflow-wrap: anywhere; min-width: 0; }
 .sv-cost-summary .sv-cost-warning { color: var(--solvet-warning-text); }
+
+/* Outlined destructive actions must also meet contrast on the workspace background. */
+.fi-btn.fi-outlined.fi-color-danger { color: var(--solvet-danger-text); }

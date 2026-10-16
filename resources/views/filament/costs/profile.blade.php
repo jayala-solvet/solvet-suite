@@ -3,7 +3,8 @@
     <p>{{ \App\Modules\Costs\Models\CostProfile::SOURCES[$profile->source] }} · {{ $profile->supplier_name ?? 'Trabajo propio' }} · RUC: {{ $profile->supplier_tax_id ?? 'No informado' }}</p>
     <p>Referencia: {{ $profile->reference ?? 'No informada' }} · Fecha: {{ $profile->cost_date->format('d/m/Y') }}</p>
     <p>{{ \App\Modules\Costs\Models\CostProfile::VAT[$profile->vat_treatment] }} · IVA del costo {{ $profile->purchase_tax_rate }}%</p>
-    <p>{{ \App\Modules\Costs\Models\CostProfile::MODES[$profile->pricing_mode] }}: {{ $profile->pricing_value }} {{ $profile->pricing_mode === 'fixed_profit' ? $profile->currency : '%' }}</p>
+    <p>IVA de gastos adicionales: {{ $profile->extra_tax_rate??0 }}% · {{ $profile->extra_vat_treatment==='recoverable'?'Recuperable previsto':'No recuperable / gasto neto anterior' }}</p>
+    <p>{{ \App\Modules\Costs\Models\CostProfile::MODES[$profile->pricing_mode] }}: {{ $profile->pricing_value }} {{ in_array($profile->pricing_mode,['fixed_profit','manual'],true) ? $profile->currency : '%' }}</p>
     <dl class="sv-totals">
         <div><dt>Costo informado</dt><dd>{{ \App\Modules\Quotes\Models\Quote::money($profile->purchase_minor, $profile->currency) }}</dd></div>
         <div><dt>Otros costos unitarios</dt><dd>{{ \App\Modules\Quotes\Models\Quote::money($profile->extra_minor, $profile->currency) }}</dd></div>

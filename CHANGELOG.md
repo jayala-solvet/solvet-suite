@@ -2,6 +2,16 @@
 
 ## Sin publicar
 
+### Compras, inventario y ejecución
+
+- Capacidades comprable/vendible/stock solo para bienes; catálogo único con unidades y orígenes de costo independientes.
+- Compras confirmadas y recepción completa, envío por cantidad/valor/manual, IVA propio de gastos y precios manuales.
+- Promedio ponderado, stock físico/reservado/disponible, reservas parciales, entregas valoradas, devoluciones y ajustes motivados con reintentos protegidos.
+- Pedidos desde aceptados, ejecución propia/tercerizada, cambio de ejecutor documentado y comparación de costos previstos/realizados por línea y total.
+- Conjuntos con componentes privados sin duplicar ventas; referencias alternativas no publican precio salvo acción explícita.
+- Migraciones aditivas sin inventar existencias ni modificar PDFs/snapshots emitidos. Casos A/B automatizados y guía completa.
+
+
 ### Costos y precios
 
 - Costos versionados sobre un único catálogo, unidad/hora, productos de distribuidor, soporte propio y de terceros con proveedor/referencia.

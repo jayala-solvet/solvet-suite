@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Core\Models\AuditEvent;
 use App\Modules\Costs\Models\CostProfile;
+use App\Modules\Operations\Models\OrderLine;
+use App\Modules\Operations\Models\StockMovement;
 use App\Modules\Quotes\Services\QuoteCalculator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -22,7 +24,7 @@ class CatalogService
         $data = Validator::make($data, [
             'sku' => ['nullable', 'string', 'max:50', Rule::unique('catalog_items')->ignore($item?->id)],
             'name' => 'required|string|max:200', 'description' => 'nullable|string|max:1000',
-            'unit' => 'sometimes|required|in:unit,hour', 'kind' => 'required|in:product,service', 'currency' => 'required|in:PYG,USD',
+            'can_buy' => 'sometimes|required|boolean', 'can_sell' => 'sometimes|required|boolean', 'track_stock' => 'sometimes|required|boolean', 'unit' => 'sometimes|required|in:unit,hour,day,package', 'kind' => 'required|in:product,service', 'currency' => 'required|in:PYG,USD',
             'unit_price' => 'required', 'tax_rate' => 'required|in:0,5,10', 'is_active' => 'required|boolean',
         ])->validate();
         try {
@@ -30,16 +32,22 @@ class CatalogService
         } catch (ValidationException $e) {
             throw ValidationException::withMessages(['unit_price' => collect($e->errors())->flatten()->first()]);
         }
+        if ($data['kind'] === 'service' && ($data['track_stock'] ?? $item?->track_stock ?? false)) {
+            throw ValidationException::withMessages(['track_stock' => 'Los servicios no controlan stock.']);
+        }
         unset($data['unit_price']);
 
         return DB::transaction(function () use ($actor, $data, $calculated, $item) {
             $item = $item ? CatalogItem::lockForUpdate()->findOrFail($item->id) : new CatalogItem;
-            if ($item->exists && ($item->currency !== $data['currency'] || $item->kind !== $data['kind'] || (isset($data['unit']) && $item->unit !== $data['unit'])) && CostProfile::where('catalog_item_id', $item->id)->exists()) {
-                throw ValidationException::withMessages(['unit_price' => 'Este ítem tiene historial de costos. Creá otro ítem para cambiar moneda, tipo o unidad.']);
+            if ($item->exists && ($item->currency !== $data['currency'] || $item->kind !== $data['kind'] || (isset($data['unit']) && $item->unit !== $data['unit'])) && (CostProfile::where('catalog_item_id', $item->id)->exists() || StockMovement::where('catalog_item_id', $item->id)->exists() || OrderLine::where('catalog_item_id', $item->id)->exists())) {
+                throw ValidationException::withMessages(['unit_price' => 'Este ítem tiene historial de costos u operaciones. Creá otro ítem para cambiar moneda, tipo o unidad.']);
             }
             $resetCost = $item->exists && ($item->currency !== $data['currency'] || (int) $item->tax_rate !== (int) $data['tax_rate'] || $item->kind !== $data['kind'] || (isset($data['unit']) && $item->unit !== $data['unit']));
             if ($resetCost) {
                 $item->current_cost_id = null;
+            }
+            if ($item->exists && isset($data['track_stock']) && $item->track_stock !== (bool) $data['track_stock'] && (StockMovement::where('catalog_item_id', $item->id)->exists() || OrderLine::where('catalog_item_id', $item->id)->exists())) {
+                throw ValidationException::withMessages(['track_stock' => 'No se puede cambiar el control de stock con movimientos. Creá otro ítem.']);
             }
             $new = ! $item->exists;
             $item->fill($data + ['price_minor' => $calculated['total_minor']])->save();

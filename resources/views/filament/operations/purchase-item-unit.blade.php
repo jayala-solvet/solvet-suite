@@ -1,0 +1,1 @@
+@if($item)<p class="sv-footnote">Unidad: {{ $item->unitLabel() }} · Informá costo y cantidad en esta unidad. {{ $item->kind==='service'?'Servicio sin stock.':($item->track_stock?'Bien con control de stock.':'Bien sin control de stock.') }}</p>@endif

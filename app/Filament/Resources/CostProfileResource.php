@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Support\OperationAction;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Costs\Models\CostProfile;
 use App\Modules\Costs\Services\CostCalculator;
+use App\Modules\Costs\Services\CostService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteCalculator;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -46,6 +48,11 @@ class CostProfileResource extends Resource
     public static function canViewAny(): bool
     {
         return Gate::allows('view-costs');
+    }
+
+    public static function canView($record): bool
+    {
+        return self::canViewAny();
     }
 
     public static function canCreate(): bool
@@ -97,18 +104,22 @@ class CostProfileResource extends Resource
                 Select::make('purchase_tax_rate')->label('IVA incluido en el costo')->options(['0' => 'Sin IVA', '5' => '5%', '10' => '10%'])->required()->live(),
                 Select::make('vat_treatment')->label('Tratamiento del IVA de compra')->options(CostProfile::VAT)->required()->live()
                     ->helperText('Recuperable previsto supone factura válida a tu RUC y derecho al crédito fiscal. No registra una declaración de IVA.'),
-                TextInput::make('extra_cost')->label('Otros costos por unidad')->numeric()->minValue(0)->default('0')->required()->live(debounce: 500)
+                TextInput::make('extra_cost')->label('Gastos adicionales por unidad (IVA incluido)')->numeric()->minValue(0)->default('0')->required()->live(debounce: 500)
                     ->rules(fn (Get $get) => ['regex:'.QuoteCalculator::pricePattern(CatalogItem::find($get('catalog_item_id'))?->currency ?? 'PYG')])
-                    ->helperText('Importe neto de IVA recuperable: flete, traslado u otros. No dupliques gastos ya incluidos.'),
+                    ->helperText('Flete, traslado u otros por unidad. Definí su IVA por separado; no dupliques el envío de una compra.'),
+                Select::make('extra_tax_rate')->label('IVA incluido en gastos adicionales')->options(['0' => 'Sin IVA', '5' => '5%', '10' => '10%'])->default('10')->required()->live(),
+                Select::make('extra_vat_treatment')->label('IVA de gastos adicionales')->options(['recoverable' => 'Recuperable', 'non_recoverable' => 'No recuperable'])->default('recoverable')->required()->live(),
                 Select::make('pricing_mode')->label('Regla de precio')->options(CostProfile::MODES)->default('margin')->required()->live(),
-                TextInput::make('pricing_value')->label(fn (Get $get) => $get('pricing_mode') === 'fixed_profit' ? 'Utilidad deseada por unidad' : 'Porcentaje deseado')
+                TextInput::make('pricing_value')->label(fn (Get $get) => match ($get('pricing_mode')) {
+                    'fixed_profit' => 'Utilidad deseada por unidad','manual' => 'Precio final al cliente con IVA',default => 'Porcentaje deseado'
+                })
                     ->numeric()->minValue(0)->required()->live(debounce: 500)->helperText('El margen se mide sobre venta sin IVA. Por ejemplo: 20% de margen equivale a 25% de recargo sobre costo.'),
-                Toggle::make('apply_price')->label('Aplicar el precio sugerido al catálogo')->default(true)->helperText('Afecta próximas selecciones de catálogo. No cambia presupuestos guardados.'),
+                Hidden::make('apply_price')->default(false),
                 View::make('filament.costs.calculation')->viewData(function (Get $get) {
                     $item = CatalogItem::find($get('catalog_item_id'));
                     $currency = $item?->currency ?? 'PYG';
                     try {
-                        $calculation = $item ? app(CostCalculator::class)->calculate(collect(['source', 'unit_cost', 'extra_cost', 'purchase_tax_rate', 'vat_treatment', 'pricing_mode', 'pricing_value'])->mapWithKeys(fn ($key) => [$key => $get($key)])->all(), $currency, (int) $item->tax_rate) : null;
+                        $calculation = $item ? app(CostCalculator::class)->calculate(collect(['source', 'unit_cost', 'extra_cost', 'extra_tax_rate', 'extra_vat_treatment', 'purchase_tax_rate', 'vat_treatment', 'pricing_mode', 'pricing_value'])->mapWithKeys(fn ($key) => [$key => $get($key)])->all(), $currency, (int) $item->tax_rate) : null;
                     } catch (ValidationException $e) {
                         $calculation = null;
                     }
@@ -136,6 +147,7 @@ class CostProfileResource extends Resource
             SelectFilter::make('catalog_item_id')->label('Ítem')->relationship('item', 'name')->searchable()->preload(),
             SelectFilter::make('source')->label('Origen')->options(CostProfile::SOURCES),
         ])->recordActions([
+            Action::make('applyPrice')->label('Aplicar precio al catálogo')->icon('heroicon-o-check')->color('gray')->requiresConfirmation()->modalDescription('Publica este precio para futuras selecciones. No modifica presupuestos guardados ni revaloriza stock.')->action(fn (CostProfile $record) => OperationAction::run(fn () => app(CostService::class)->applyPrice(auth()->user(), $record))),
             Action::make('calculation')->label('Ver cálculo')->icon('heroicon-o-document-magnifying-glass')->color('gray')->modalHeading('Detalle de la versión de costo')
                 ->modalContent(fn (CostProfile $record) => view('filament.costs.profile', ['profile' => $record]))->modalSubmitAction(false)->modalCancelActionLabel('Cerrar'),
         ])->stackedOnMobile()->defaultSort('id', 'desc')->emptyStateHeading('Definí el costo de tu primer producto o servicio')

@@ -175,3 +175,7 @@ Pruebas específicas en `QuoteEntryTest`: plazos, contado/crédito, términos, m
 ## Rentabilidad interna
 
 `cost_snapshot` nullable y oculto en serialización almacena costos versionados por línea al guardar borrador. Selector de versión de costo de catálogo o costo neto manual opcional; utilidad después de descuentos, IVA separado y cobertura explícita. Admin/commercial consultan; reader/PDF no reciben estos datos. Históricos sin costos conservan ese estado, emitidos mantienen copia y archivo. Contrato completo: [Costos y precios](costos-precios.md), COS-03.
+
+## Conjuntos y pedido
+
+Una línea admite componentes internos opcionales: su costo sustituye al principal, sin sumar ventas. Snapshot v2 privado conserva cantidad por conjunto y cantidad total. Edición restaura componentes; emitidos/PDF anteriores no cambian. Aceptados ofrecen Confirmar pedido/Ver pedido. No hay reserva hasta una acción explícita en el pedido. Contrato completo: [OP-04, OP-07 y OP-08](operaciones.md).

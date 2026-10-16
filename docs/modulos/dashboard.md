@@ -33,7 +33,7 @@ Los cinco segmentos son excluyentes y suman exactamente el total. Ejemplo PYG: a
 
 Importes **con IVA incluido**, unidades menores enteras, BCMath; nunca float ni conversión de monedas. PYG sin decimales, USD dos. Suma por cursor de columnas mínimas para evitar pérdida de precisión en agregados SQLite y cargar líneas/snapshots innecesarios. No se agregan dependencias, migraciones, caché ni jobs. Con más volumen, medir el recorrido de la cohorte y diseñar agregados exactos/índices según evidencia; el cálculo actual recorre los documentos seleccionados.
 
-Aprobación es decisión interna registrada con evidencia. **No equivale a cobro, ingreso contable ni ganancia**. Hay costos estimados en el módulo nuevo; todavía no hay pagos ni compras/ejecución reales registrados. No se simula objetivo mensual, probabilidad, crecimiento ni proyección temporal. Ampliación implementada: captura de costos y utilidad bruta estimada restringida según COS-04 de [Costos y precios](costos-precios.md). Se mantiene la diferencia entre estimación, resultado real y cobros.
+Aprobación es decisión interna registrada con evidencia. **No equivale a cobro, ingreso contable ni ganancia**. Hay costos estimados en el módulo nuevo; hay compras/ejecución reales en Pedidos, separados de los estimados de esta vista; todavía no hay cobros registrados. No se simula objetivo mensual, probabilidad, crecimiento ni proyección temporal. Ampliación implementada: captura de costos y utilidad bruta estimada restringida según COS-04 de [Costos y precios](costos-precios.md). Se mantiene la diferencia entre estimación, resultado real y cobros.
 
 ## Interfaz y acciones
 
