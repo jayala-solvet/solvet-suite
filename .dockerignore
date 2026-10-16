@@ -14,3 +14,5 @@ storage/framework/views/*
 bootstrap/cache/*.php
 database/*.sqlite*
 docs/referencias
+
+/deploy/environments

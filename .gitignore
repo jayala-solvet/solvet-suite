@@ -29,3 +29,5 @@ Thumbs.db
 /backups
 /artifacts
 /database/*.sqlite*
+
+/deploy/environments

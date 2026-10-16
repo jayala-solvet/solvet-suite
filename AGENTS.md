@@ -75,3 +75,7 @@ Reutilizar CostCalculator/QuoteProfitability y los Gates de costos; costo intern
 Leer [OP-01…OP-08](docs/modulos/operaciones.md) y [ADR 0003](docs/decisiones/0003-operaciones-inventario.md) al tocar productos, compras o ejecución. Bien/servicio es tipo; propio/tercero/compra es origen del costo. No inventar saldos al migrar ni mover stock desde presupuestos. Recepción, reserva, entrega y corrección deben conservar documento/actor/fecha, transacción, orden de bloqueos y claves de reintento. Cotización/publicación de precio no revaloriza stock.
 
 No duplicar ingreso o costo en conjuntos: la venta vive una sola vez en la línea comercial y los componentes en copia privada. Precio de catálogo se publica únicamente con acción explícita. Resultado de ejecución solo al completar cantidades; costos parciales no son margen final. Mantener A/B en OperationsTest, permisos de reader, promedio/salidas conservadas y snapshots/PDF anteriores.
+
+## Entornos y promoción
+
+Leer [entornos separados](docs/entornos-desarrollo-pruebas-produccion.md). No promover bases de ensayo sobre movimientos reales. Usar comandos con perfil explícito y SHA probado; no renombrar proyectos/volúmenes existentes ni compartir APP_KEY. deploy/environments es privado y no entra en Git/contexto Docker. Test automático aislado no acredita construcción o concurrencia PostgreSQL.

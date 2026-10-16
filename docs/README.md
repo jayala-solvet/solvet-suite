@@ -15,6 +15,7 @@ Este índice es la entrada al contexto del proyecto. Los documentos están versi
 | Trabajar con IA sin perder compatibilidad | [Desarrollo](desarrollo.md), [AGENTS](../AGENTS.md) |
 | Accesos y protección de datos | [Seguridad](seguridad.md) |
 | Pasar del laboratorio a Nginx y Cloudflare | [Entornos y publicación](entornos-publicacion.md) |
+| Separar desarrollo, testing y producción | [Entornos y promoción](entornos-desarrollo-pruebas-produccion.md) |
 | Instalar, respaldar, actualizar o restaurar | [Operación](operacion.md) |
 | Usar el módulo | [Emitir presupuesto](tareas/emitir-presupuesto.md), [compra a ejecución](tareas/compra-a-ejecucion.md) |
 | Comprobaciones realizadas y sus límites | [Validación](validacion.md) |
