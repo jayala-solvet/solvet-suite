@@ -2,6 +2,14 @@
 
 ## Sin publicar
 
+### Dashboard comercial · modelo inicial
+
+- Nueva vista de consulta con período/moneda, total cotizado, monto aprobado y oportunidad vigente sobre emisiones reales.
+- Distribución reconciliable por estado y seguimiento de hasta seis propuestas con acceso al detalle; vigencias y cliente original.
+- Diseño tipográfico sobrio, adaptable a claro/oscuro y móvil. Dashboard como entrada, con acceso directo a Presupuestos.
+- Reglas exactas BCMath; sin mezclar monedas, simular ganancias ni modificar documentos o agregar dependencias/migraciones.
+
+
 ### Carga, catálogo, pago y documento comercial
 
 - Catálogo opcional de productos/servicios con moneda, precio, IVA, código y disponibilidad; propuestas con ítems manuales o copiados y ajustables.

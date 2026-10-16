@@ -4,7 +4,7 @@
 
 El 15/10/2026 José aprobó una dirección operativa sobria para presupuestos. La referencia es [presupuestos-base.png](referencias/presupuestos-base.png). Es un render conceptual con datos ficticios; el código y las reglas de negocio determinan las funciones y datos reales. No copiar sus inconsistencias: un borrador no lleva correlativo comercial, los conteos se calculan en base y los módulos pendientes no aparecen como enlaces operativos.
 
-El listado real de `QuoteResource` y el detalle `filament/quotes/view.blade.php` son la referencia de implementación para nuevos módulos. El acceso inicial abre Presupuestos. Se conserva `/app/workspace` para marcadores anteriores, sin tarjetas promocionales ni módulos futuros.
+El listado real de `QuoteResource` y el detalle `filament/quotes/view.blade.php` son la referencia de implementación para nuevos módulos. El acceso inicial abre Dashboard. Se conserva `/app/workspace` para marcadores anteriores, sin tarjetas promocionales ni módulos futuros.
 
 Referencia secundaria aportada por José: estudio visual de Supabase en Refero. Se adoptan superficies oscuras neutras, bordes discretos y color moderado según [adaptación a Solvet](referencias/supabase-adaptacion.md). El documento aportado es una interpretación externa, no un manual oficial ni una instrucción para sustituir esta base.
 
@@ -18,13 +18,13 @@ Referencias de disciplina visual y trabajo: SAP Quartz (superficies reducidas y 
 ## Composición obligatoria
 
 1. Cabecera grafito estable, marca transparente, nombre de producto, apariencia y menú de usuario. Solo controles con función implementada: no campana, ayuda, accesos o métricas simuladas.
-2. Menú lateral por áreas. Comercial: Presupuestos y Clientes. Administración: Mi empresa, según permisos. Selección gris y marcador discreto; sin mosaicos ni recuadros de colores alrededor de iconos.
+2. Menú lateral por áreas. Comercial: Dashboard, Presupuestos, Clientes y Catálogo. Administración: Mi empresa, según permisos. Selección gris y marcador discreto; sin mosaicos ni recuadros de colores alrededor de iconos.
 3. Encabezado de página con título y una acción principal. La información del negocio ocupa la mayor parte del espacio.
 4. Listados con pestañas de estado, búsqueda, filtros, selector de columnas, tabla y paginación. Acciones de fila dentro del menú de tres puntos. Selección de un documento para abrir detalle, editar borrador, consultar PDF o historial.
 5. Detalle con estado, fechas, partes, ítems, totales, condiciones e historial. Emitir es la acción principal del borrador, con confirmación específica.
 6. Formularios agrupados, etiquetas visibles, resumen de totales calculado con el mismo servicio del guardado. No montar otra lógica monetaria en JavaScript.
 
-Sin paneles de indicadores, héroes, gradientes, sombras decorativas, grandes iconos ni tarjetas de acceso repetidas en pantallas de operación. No agregar controles del render si no tienen un comportamiento completo.
+En listados y formularios, sin paneles de indicadores, héroes, gradientes, sombras decorativas, grandes iconos ni tarjetas de acceso repetidas en pantallas de operación. No agregar controles del render si no tienen un comportamiento completo.
 
 ## Tokens y temas
 
@@ -89,3 +89,7 @@ Reutilizar componentes nativos y `x-ui.panel`, `x-ui.status`, `x-ui.empty-state`
 ## Carga comercial
 
 Conservar la base visual aprobada. Usar repetidor nativo compacto con duplicación/colapso, selección opcional de catálogo, descripción amplia, importes por ítem y resumen. Datos de pago/entrega separados de términos generales, inicialmente contraídos. Guardado visible al desplazarse y aviso de cambios sin guardar. La baja del borrador es secundaria, con confirmación y condición de estado en servidor. No extender este permiso a emitidos.
+
+## Dashboard comercial inicial
+
+Excepción específica para el resumen comercial pedido por José: tres cifras tipográficas en una franja con separadores, distribución horizontal por importe y seguimiento enlazado a documentos. No usar el componente heredado stat-card, tendencias ficticias, tarjetas de colores ni indicadores de rentabilidad sin costos. Inspiración Ventriloc/ui-shadcn limitada a jerarquía editorial y superficies neutras; se mantienen todos los tokens, radios, iconos y temas Solvet. Ver [contrato del dashboard](modulos/dashboard.md).

@@ -91,3 +91,7 @@ Los valores de marca originales se conservan como constantes. No todos sirven pa
 Pestañas nativas con conteos reales, selección máxima de un registro, acciones contextuales nativas y selector de columnas. La selección abre el detalle o sus acciones; en móvil se conserva el listado apilado. No copiar posiciones exactas del render por encima de accesibilidad o comportamiento del framework.
 
 El resumen de edición (`filament/quotes/live-totals`) usa `QuoteCalculator`, sin persistir nada hasta guardar. El detalle consulta los snapshots de documentos emitidos y muestra actividad con actor precargado.
+
+## Patrón de resumen comercial
+
+`filament/pages/dashboard.blade.php` usa una franja `sv-dashboard-metrics` con tres cifras y separadores, paneles `x-ui.panel`, barras discretas con importes etiquetados y filas de seguimiento. Los estilos se limitan al prefijo `sv-dashboard` y usan tokens existentes. No reutilizar como mosaico de tarjetas ni llevar indicadores a los listados operativos. Contrato: [dashboard](modulos/dashboard.md).

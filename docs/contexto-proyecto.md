@@ -23,13 +23,13 @@ No se verificó desde esta documentación el estado de red del laboratorio ni la
 
 ## Estado funcional actual
 
-Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema.
+Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema. Dashboard comercial inicial de consulta por período de emisión/moneda, con composición y seguimiento; no calcula ganancias ni cobros.
 
 No hay envío de correo, portal de aceptación, órdenes de trabajo, integración GLPI, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. Tampoco hay administración web de usuarios, recuperación de contraseña ni MFA implementados; ver las prioridades en [seguridad](seguridad.md).
 
 ## Identidad y experiencia
 
-Base operativa sobria aprobada: [diseño](diseno.md) y [render](referencias/presupuestos-base.png). Presupuestos es la pantalla inicial y la referencia real para futuros listados. Conservar marca original transparente, Inter Variable local, superficies neutras, cabecera grafito e iconos compactos de una familia coherente.
+Base operativa sobria aprobada: [diseño](diseno.md) y [render](referencias/presupuestos-base.png). Dashboard es la pantalla inicial; Presupuestos sigue como referencia real para futuros listados. Conservar marca original transparente, Inter Variable local, superficies neutras, cabecera grafito e iconos compactos de una familia coherente.
 
 La maqueta se propone en Figma y se vincula desde la especificación. Todavía no hay un archivo Figma creado ni sincronización automática. Los tokens efectivos viven en `public/css/solvet.css`; ver [maquetación](maquetacion.md).
 
