@@ -10,6 +10,6 @@ class EnsureAdminMfa extends EnsureMultiFactorAuthenticationIsEnabled
 {
     public function handle(Request $request, Closure $next): mixed
     {
-        return $request->user()?->role === 'admin' ? parent::handle($request, $next) : $next($request);
+        return config('security.mfa_enabled') && $request->user()?->role === 'admin' ? parent::handle($request, $next) : $next($request);
     }
 }

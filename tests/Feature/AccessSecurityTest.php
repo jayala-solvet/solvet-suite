@@ -20,7 +20,9 @@ use App\Modules\Operations\Services\OrderService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteService;
 use App\Notifications\AccessLink;
+use App\Providers\Filament\OperationsPanelProvider;
 use Filament\Facades\Filament;
+use Filament\Panel;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -199,6 +201,22 @@ class AccessSecurityTest extends TestCase
         $this->get('/app/dashboard')->assertRedirect();
         $this->assertTrue(Filament::getPanel('operations')->isMultiFactorAuthenticationRequired());
         $this->get('/app/multi-factor-authentication/set-up')->assertOk();
+    }
+
+    public function test_testing_can_disable_mfa_without_erasing_enrolled_secrets(): void
+    {
+        config(['security.mfa_enabled' => false]);
+        $panel = (new OperationsPanelProvider(app()))->panel(Panel::make());
+        Filament::registerPanel($panel);
+        Filament::setCurrentPanel($panel);
+        $this->assertFalse($panel->isMultiFactorAuthenticationRequired());
+        $this->assertCount(0, $panel->getMultiFactorAuthenticationProviders());
+        auth()->logout();
+        $this->flushSession();
+        Livewire::test(Login::class)->fillForm(['email' => $this->admin->email, 'password' => $this->password])->call('authenticate');
+        $this->assertAuthenticatedAs($this->admin);
+        $this->assertSame('JBSWY3DPEHPK3PXP', $this->admin->fresh()->getAppAuthenticationSecret());
+        $this->get('/app/dashboard')->assertOk();
     }
 
     public function test_login_requires_totp_after_valid_password(): void

@@ -94,3 +94,8 @@
 ## 0.1.0 · 2026-10-15
 
 Base inicial del producto. Docker Compose, núcleo por módulos, clientes, presupuestos con IVA incluido, PDF privado conservado, registro de decisiones, identidad Solvet y documentación para desarrollo con IA. Accesos por roles y alta por CLI. Datos ficticios opcionales. Ver `docs/validacion.md` para alcance de pruebas ejecutadas y pendientes.
+
+## Corrección de testing: notificaciones y MFA
+
+- Migración compatible de notificaciones a jsonb en PostgreSQL para consultas de Filament.
+- SECURITY_MFA_ENABLED=false suspende MFA sin eliminar factores; activo por defecto.

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'mfa_enabled' => env('SECURITY_MFA_ENABLED', true),
     'backup_age_recipient' => env('BACKUP_AGE_RECIPIENT'),
     'absolute_session_minutes' => (int) env('SECURITY_SESSION_MAX_MINUTES', 480),
     'trusted_proxies' => array_values(array_filter(array_map('trim', explode(',', env('TRUSTED_PROXIES', ''))))),
