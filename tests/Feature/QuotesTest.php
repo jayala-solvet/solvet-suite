@@ -153,7 +153,7 @@ class QuotesTest extends TestCase
         Filament::setCurrentPanel(Filament::getPanel('operations'));
         Livewire::test(CreateQuote::class)->fillForm($this->data())->call('create')->assertHasNoFormErrors();
         $quote = Quote::firstOrFail();
-        $this->assertSame('198000',$quote->total_minor);
-        $this->assertSame('draft',$quote->status);
+        $this->assertSame('198000', $quote->total_minor);
+        $this->assertSame('draft', $quote->status);
     }
 }

@@ -1,6 +1,6 @@
 # Documentación de Solvet Gestión
 
-Este índice es la entrada al contexto del proyecto. Los documentos están versionados junto con el código. Última revisión de esta base: 15/10/2026, sobre la implementación de presupuestos integrada en PR #4.
+Este índice es la entrada al contexto del proyecto. Los documentos están versionados junto con el código. Última revisión: 16/10/2026, sobre compras, inventario y ejecución integrados en PR #11. El PR #10 fue sustituido: no aplicar su migración junto con main.
 
 ## Leer según la tarea
 

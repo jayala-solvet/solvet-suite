@@ -357,7 +357,7 @@ class OperationsTest extends TestCase
         $this->rejected(fn () => $this->quote([$this->line($unsellable)]));
         $this->rejected(fn () => $this->item('Servicio inválido', ['kind' => 'service', 'track_stock' => true]));
         $order = app(OrderService::class)->fromQuote($this->admin, $this->accepted([$this->line($item)]));
-        Livewire::test(ViewSalesOrder::class, ['record' => $order->id])->callAction('deliver',data: ['token' => Str::uuid()->toString()])->assertNotified('No se pudo completar la operación');
-        $this->assertSame(0,StockMovement::count());
+        Livewire::test(ViewSalesOrder::class, ['record' => $order->id])->callAction('deliver', data: ['token' => Str::uuid()->toString()])->assertNotified('No se pudo completar la operación');
+        $this->assertSame(0, StockMovement::count());
     }
 }

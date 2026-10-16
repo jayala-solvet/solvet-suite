@@ -85,3 +85,9 @@ bash scripts/update.sh
 El script respalda y aplica `2026_10_16_000003_add_purchases_inventory_execution` y `2026_10_16_000004_extend_cost_breakdown`. Son aditivas: conservan catálogo, referencias, precios y presupuestos. Los productos anteriores empiezan sin control de stock y sin movimientos; habilitarlo cuando corresponda y cargar saldo inicial mediante ajuste con motivo y costo efectivo, nunca mediante una compra ficticia. Extras históricos de costo conservan su significado neto. No ejecutar migrate:fresh ni reiniciar secuencias.
 
 Comprobar migrate:status, /up, un presupuesto anterior y su PDF, roles y el circuito de [compra a ejecución](tareas/compra-a-ejecucion.md). Hacer la primera recepción/reserva/entrega en prueba con datos propios. No revertir tablas después de registrar movimientos: una recuperación requiere respaldo coherente de base y archivos. Las pruebas locales no sustituyen comprobar bloqueos concurrentes en PostgreSQL y la construcción Docker en el destino.
+
+### Rama vigente y propuesta anterior
+
+La base de prueba es main con PR #11. El PR #10 (`feature/erp-operaciones-base-20261016`) quedó sustituido y cerrado tras comparar su contenido: sus flags y validación ya están cubiertos. No integrar ni copiar su migración `2026_10_16_000003_add_catalog_trade_stock_flags`: repetiría can_sell/track_stock y agregaría can_purchase, mientras el servicio operativo vigente usa can_buy.
+
+Si esa migración experimental ya se aplicó por fuera de main, detener la actualización y revisar migrate:status y el esquema en una copia; no eliminar columnas ni el registro de migraciones a ciegas. Esta revisión no comprobó el esquema del servidor de José. Proveedores se conservan por nombre/RUC en documentos y snapshots; un maestro reutilizable de proveedores sigue siendo una ampliación futura.
