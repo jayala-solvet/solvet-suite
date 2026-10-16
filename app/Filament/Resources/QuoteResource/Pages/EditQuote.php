@@ -11,7 +11,14 @@ class EditQuote extends EditRecord
 {
     protected static string $resource = QuoteResource::class;
 
+    public static bool $formActionsAreSticky = true;
+
     protected ?string $subheading = 'Actualizá el borrador antes de emitir el documento definitivo.';
+
+    protected function getHeaderActions(): array
+    {
+        return array_values(array_filter(QuoteResource::documentActions(), fn ($action) => $action->getName() === 'deleteDraft'));
+    }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {

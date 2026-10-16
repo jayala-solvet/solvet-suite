@@ -1037,3 +1037,9 @@ button:focus-visible {
 
 .fi-tabs-item .fi-tabs-item-label { color: var(--solvet-muted); }
 .fi-tabs-item.fi-active .fi-tabs-item-label { color: var(--solvet-heading); }
+
+/* Quote entry: compact native rows, per-item result and stable numeric columns. */
+.sv-line-total { display: grid; gap: 8px; font-size: 13px; }
+.sv-line-total span { color: var(--solvet-muted); font-size: 12px; }
+.sv-line-total strong { min-height: 40px; display: flex; align-items: center; justify-content: flex-end; font-variant-numeric: tabular-nums; color: var(--solvet-heading); }
+.sv-line-description small { display: block; color: var(--solvet-muted); font-size: 11px; }

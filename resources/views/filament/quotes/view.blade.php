@@ -35,7 +35,7 @@
             <div class="sv-table-wrap"><table class="sv-table">
                 <thead><tr><th>Producto / servicio</th><th class="amount">Cantidad</th><th class="amount">Precio unitario</th><th class="amount">Dto.</th><th class="amount">IVA</th><th class="amount">Importe</th></tr></thead>
                 <tbody>@foreach($quote->lines as $line)
-                    <tr><td class="sv-line-description">{{ $line['description'] }}</td><td class="amount">{{ $line['quantity'] }}</td>
+                    <tr><td class="sv-line-description">@if($line['sku'] ?? null)<small>{{ $line['sku'] }}</small>@endif{{ $line['description'] }}</td><td class="amount">{{ $line['quantity'] }}</td>
                         <td class="amount">{{ \App\Modules\Quotes\Models\Quote::money(bcmul($line['unit_price'], $quote->currency === 'USD' ? '100' : '1', 0), $quote->currency) }}</td>
                         <td class="amount">{{ $line['discount'] }}%</td><td class="amount">{{ $line['tax_rate'] }}%</td>
                         <td class="amount">{{ \App\Modules\Quotes\Models\Quote::money($line['total_minor'], $quote->currency) }}</td></tr>
@@ -47,7 +47,12 @@
                 @endforeach
                 <div class="sv-total"><dt>Total {{ $quote->currency }}</dt><dd>{{ $quote->formattedTotal() }}</dd></div>
             </dl>
-            <div class="sv-document-terms"><h2>Condiciones comerciales</h2><p>{{ $quote->terms ?: 'Sin condiciones adicionales.' }}</p></div>
+            <div class="sv-document-terms"><h2>Pago y entrega</h2><p><strong>{{ $quote->paymentLabel() }}</strong></p>
+                @if($quote->payment_notes)<p>{{ $quote->payment_notes }}</p>@endif
+                @if($quote->delivery_terms)<p>Entrega: {{ $quote->delivery_terms }}</p>@endif
+                @if($quote->warranty_terms)<p>Garantía / soporte: {{ $quote->warranty_terms }}</p>@endif
+            </div>
+            <div class="sv-document-terms"><h2>Términos y condiciones</h2><p>{{ $quote->terms ?: 'Sin condiciones adicionales.' }}</p></div>
         </x-ui.panel>
         <x-ui.panel title="Historial del documento" description="Actividad y referencias de las decisiones registradas.">
             <div class="sv-table-wrap"><table class="sv-table"><thead><tr><th>Fecha</th><th>Actividad</th><th>Usuario</th><th>Referencia</th></tr></thead><tbody>

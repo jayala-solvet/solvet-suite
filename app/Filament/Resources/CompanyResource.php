@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Modules\Core\Models\Company;
+use App\Modules\Quotes\Services\QuoteDefaults;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -51,6 +52,10 @@ class CompanyResource extends Resource
                 TextInput::make('name')->label('Razón social')->required()->maxLength(200),
                 TextInput::make('tax_id')->label('RUC')->maxLength(50),
             ])->columns(2)->columnSpanFull(),
+            Section::make('Presupuestos')->description('Se aplica a propuestas nuevas; no modifica borradores existentes ni documentos emitidos.')->schema([
+                Textarea::make('quote_terms')->label('Términos y condiciones generales')->rows(8)->maxLength(5000)
+                    ->formatStateUsing(fn ($state) => $state ?? QuoteDefaults::terms()),
+            ])->columnSpanFull(),
             Section::make('Información de contacto')->icon('heroicon-o-envelope')->schema([
                 TextInput::make('email')->label('Correo')->email()->maxLength(200),
                 TextInput::make('phone')->label('Teléfono')->maxLength(50),

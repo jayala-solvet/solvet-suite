@@ -1,13 +1,13 @@
 # Clientes y empresa emisora · contrato actual
 
-Estado: implementado; revisado 15/10/2026. Código de referencia: `CustomerResource`, `CompanyResource` y sus páginas Filament. Se usa persistencia Eloquent nativa en estos recursos, no un servicio comercial propio para estas ediciones.
+Estado: implementado; revisado 15/10/2026. Código de referencia: `CustomerResource`, `CompanyResource` y sus páginas Filament. Los recursos mantienen persistencia Eloquent nativa. El alta inline desde Presupuestos reutiliza su esquema de campos y usa `CustomerService::create`, con Gate y validación en servidor.
 
 ## Datos y permisos
 
 | Entidad | Datos de entrada | Validación de pantalla | Persistencia / permisos |
 |---|---|---|---|
 | Cliente | name, tax_id, contact, email, phone, address | Nombre obligatorio hasta 200; RUC 50; contacto/correo 200; correo válido; teléfono 50; dirección 1000 | `customers`, timestamps; admin/commercial crean/editan; reader consulta |
-| Emisor único | name, tax_id, email, phone, address | Nombre obligatorio hasta 200; RUC/teléfono 50; correo válido hasta 200; dirección 1000 | `companies`, timestamps; solo admin consulta recurso y edita; no alta/baja desde pantalla |
+| Emisor único | name, tax_id, email, phone, address, quote_terms | Términos generales hasta 5000; Nombre obligatorio hasta 200; RUC/teléfono 50; correo válido hasta 200; dirección 1000 | `companies`, timestamps; solo admin consulta recurso y edita; no alta/baja desde pantalla |
 
 El emisor se inicializa mediante el comando de instalación. La unicidad de una fila emisora es una convención del producto, no una restricción de singleton en la base; no insertar varias empresas para simular multiempresa.
 
@@ -29,3 +29,5 @@ Nombre/RUC de clientes no son únicos en esta versión. No hay detección autom�
 5. Evitar duplicar el maestro en cada módulo. Órdenes/contratos futuros referencian el cliente y capturan snapshot cuando su contrato lo requiera.
 
 La cobertura de pruebas publicada se detalla en `docs/validacion.md`; esta lista define también condiciones para cambios futuros, no certifica que cada una tenga hoy una prueba automatizada específica.
+
+`companies.quote_terms` se copia por defecto solo en propuestas nuevas; cambiarlo no sustituye los términos de borradores existentes ni emitidos. Los valores por propuesta permanecen editables en borrador.

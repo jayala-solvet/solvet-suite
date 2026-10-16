@@ -43,3 +43,14 @@ Se ejecutó la aplicación con PHP local y SQLite de pruebas; no hay Docker Engi
 ## Refinamiento de referencia Supabase / Refero · 15/10/2026
 
 Cambio de tokens y cabecera oscura, sin alterar el módulo comercial. Suite existente: 18 pruebas / 195 aserciones aprobadas. Chromium: 24 estados de escritorio/móvil claro/oscuro, 1545 comprobaciones de contraste de texto, cero fallas detectadas y cero errores JavaScript. Inspección visual de listado, formulario y detalle móvil; captura de aplicación real conservada en `docs/referencias/presupuestos-oscuro-neutro.png`. Enlaces locales y diff revisados. No se ejecutó una construcción Docker ni se accedió al servidor de José.
+
+## Ampliación de carga, catálogo, pago y baja · 15/10/2026
+
+- Suite existente y nueva: 26 pruebas / 263 aserciones aprobadas sobre PHP 8.5 y SQLite de pruebas. Casos de crédito obligatorio/límites/contado, términos por empresa, catálogo manual/mixto/moneda/centavos, protección de archivos emitidos, alta inline sin perder el formulario, permisos de catálogo/baja y soft delete con auditoría y 404 de rutas privadas.
+- Migración aditiva aplicada sobre la base local de QA existente, además del esquema limpio de pruebas. No se accedió al servidor de José.
+- Chromium: 30 estados claro/oscuro y escritorio/móvil, 1962 comprobaciones de contraste de texto sin fallas detectadas y cero errores JavaScript. Incluye catálogo, formulario de catálogo, configuración de términos, ítems, importes y campos nuevos.
+- Recorrido real de navegador: seleccionar catálogo, agregar otro ítem manual, total ₲ 650.000, guardar crédito a 45 días, emitir, obtener PDF conservado, crear otro borrador y eliminarlo desde edición con confirmación. Verificado 404 del PDF de la baja; sin errores JavaScript.
+- PDF renderizado e inspeccionado: PYG de una página, USD con marca de borrador y 35 ítems en tres páginas, con encabezados, términos, pago y paginación. PDF de la emisión de navegador comprobado por contenido y render.
+- Pint, enlaces locales y `git diff --check` revisados. Sin construcción Docker o prueba de concurrencia PostgreSQL en este entorno; deben validarse en el destino antes de producción.
+
+[Ejemplo visual del documento](ejemplos/presupuesto-condiciones.png) con datos ficticios; la fuente efectiva es la plantilla Blade, no la captura.

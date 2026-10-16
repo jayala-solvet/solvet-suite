@@ -5,7 +5,7 @@ Estado: núcleo funcional implementado en v0.1.0. Revisiones, envío y portal pe
 ## Entidades
 
 - Quote: destinatario, creador, asunto, moneda, vigencia, líneas, condiciones, totales, estado, número, snapshot y archivo/hash.
-- Líneas en JSON: descripción libre, cantidad de hasta 3 decimales, precio, descuento porcentual, tasa IVA, total e IVA incluido calculados. Un catálogo reutilizable se incorporará después sin alterar snapshots emitidos.
+- Líneas en JSON: descripción libre, cantidad de hasta 3 decimales, precio, descuento porcentual, tasa IVA, total e IVA incluido calculados. El catálogo opcional copia valores al ítem; no vuelve a calcular documentos guardados al consultar el maestro.
 - document_sequences: una secuencia global por instalación, no reinicia por año en v0.1.
 - AuditEvent: actor, acción, documento, metadatos y fecha.
 
@@ -13,7 +13,7 @@ Estado: núcleo funcional implementado en v0.1.0. Revisiones, envío y portal pe
 
 Borrador → Emitido → Aceptado / Rechazado / Anulado.
 
-Borrador no tiene número comercial y puede editarse por admin/comercial. Emitir fija correlativo y contenido. Una decisión solo puede registrarse una vez desde Emitido. No se eliminan documentos en esta interfaz.
+Borrador no tiene número comercial y puede editarse por admin/comercial. Emitir fija correlativo y contenido. Una decisión solo puede registrarse una vez desde Emitido. Solo borradores sin número pueden darse de baja, con confirmación, soft delete y auditoría; emitidos y estados finales no se eliminan.
 
 El vencimiento es fecha de vigencia; no hay un proceso que cambie estados automáticamente. Un borrador con fecha pasada no puede emitirse hasta corregirla. Aceptación vencida no tiene bloqueo automático en esta entrega; se acuerda esa regla antes del portal.
 
@@ -51,7 +51,7 @@ Ver `diseno.md` y `componentes-ui.md` en la carpeta superior antes de implementa
 
 ## Siguientes tareas
 
-Revisiones vinculadas con referencia de documento/revisión, aprobación interna configurable, envío con estados separados, evidencia adjunta, catálogo, historial de modificaciones con diferencias de campos y conversión a orden. El historial actual registra que se guardó un borrador, no cada diferencia individual.
+Revisiones vinculadas con referencia de documento/revisión, aprobación interna configurable, envío con estados separados, evidencia adjunta, historial de modificaciones con diferencias de campos y conversión a orden. El historial actual registra que se guardó un borrador, no cada diferencia individual.
 
 ## Operación completa desde la interfaz (15/10/2026)
 
@@ -65,7 +65,7 @@ Revisiones vinculadas con referencia de documento/revisión, aprobación interna
 - Los vencidos permanecen Emitidos hasta decisión; no se altera retrospectivamente el PDF.
 - No se agregan notificaciones ficticias, soporte ni órdenes de trabajo sin módulo implementado.
 
-Los PDFs ya emitidos y la numeración de la instalación se conservan. No se necesitan migraciones ni carga de demostración para esta actualización.
+Los PDFs ya emitidos y la numeración de la instalación se conservan. La entrega de listado/detalle no requirió migración. La ampliación de catálogo/pago/baja sí incorpora la migración aditiva descrita abajo; no requiere datos demo.
 
 ## Contrato de datos para desarrollo
 
@@ -128,3 +128,46 @@ Guardar USD 0,30 como 30 unidades menores, no 0.30 en una variable float. Redond
 `QuotesTest` cubre cálculo, precisión, PDF conservado, escritura bloqueada/segunda emisión, permisos, evidencia y persistencia Livewire. `QuoteWorkspaceTest` cubre pestañas/filtros/búsqueda, selección, emisión/decisión desde detalle, preview original, reader y vencimiento. `AppearanceTest`/`ThemeContrastTest` cubren apariencia compartida y pares de contraste. Ver ejecución y límites en [validación](../validacion.md).
 
 Pendientes identificados no se consideran implementados por estar descritos en este contrato. Cada uno debe tener tarea propia, criterio de aceptación y prueba antes de declararse disponible.
+
+## Carga, catálogo, pago y baja de borradores · ampliación
+
+Estado: implementado en la ampliación de carga. Mantiene las reglas de cálculo y los estados comerciales anteriores.
+
+### Datos y experiencia de carga
+
+- Alta de cliente desde el selector, con formulario reutilizado y validación/permiso en `CustomerService`. Crear y seleccionar conserva la carga de la propuesta.
+- Ítems compactos con descripción amplia, cantidades, precio con prefijo monetario, descuento, IVA e importe de línea calculado en servidor. Se pueden duplicar y contraer con los controles nativos. No hay guardado automático.
+- Catálogo opcional: buscar productos/servicios activos de la moneda del presupuesto o dejar «Carga manual». La selección copia descripción/precio/IVA; el comercial puede ajustarlos. Al quitar selección no se borran esos valores. Se pueden mezclar ítems manuales y de catálogo.
+- `catalog_item_id` y `sku` son metadatos de línea. La ID debe existir y coincidir en moneda; el servicio toma el SKU del maestro, no de un campo arbitrario. El calculador conserva estos metadatos junto con los valores comerciales copiados. No convertir moneda silenciosamente.
+- Desactivar un producto impide seleccionarlo en nuevas cargas, pero no invalida líneas guardadas que ya lo referencian. Al abrir una propuesta no se reemplazan automáticamente sus descripciones ni precios por los actuales del catálogo. Volver a seleccionar un producto es una copia explícita; guardar una línea vinculada resuelve su SKU actual.
+- Acciones de guardado accesibles al desplazarse y aviso nativo de cambios sin guardar. Términos generales contraídos inicialmente y editables.
+
+### Pago y condiciones
+
+| Campo | Regla | Persistencia |
+|---|---|---|
+| payment_mode | cash / credit / to_agree; Contado inicial para propuestas nuevas | `quotes.payment_mode`, nullable para compatibilidad histórica |
+| credit_days | Obligatorio en Crédito; entero 1–365; fuera de Crédito se guarda null | `quotes.credit_days` |
+| payment_notes | Opcional hasta 1000; medio de pago, anticipo o hito de inicio del plazo | `quotes.payment_notes` |
+| delivery_terms | Opcional hasta 500; texto específico de entrega | `quotes.delivery_terms` |
+| warranty_terms | Opcional hasta 500; cobertura concreta aplicable | `quotes.warranty_terms` |
+| terms | Texto de hasta 5000 propio de cada propuesta | Columna existente `quotes.terms` |
+| quote_terms | Base general editable por admin para nuevas propuestas | `companies.quote_terms` |
+
+Crédito se presenta como «Crédito a N días». No es una cuenta por cobrar ni calcula una fecha de cobro: describir desde qué hito se cuentan los días en payment_notes. No confundir vigencia de la oferta con plazo de pago. Registros anteriores sin modalidad muestran «A convenir»; no se rellenan retrospectivamente ni se altera su PDF.
+
+Los términos iniciales aclaran revisión previa, alcance expreso, conformidad y cambios por escrito que pueden afectar precio/plazo. Para Solvet-IT incluyen la identificación aportada por José. Se pueden ajustar por empresa y por propuesta. No se incorpora una renuncia absoluta a reclamos. Esto es contenido comercial configurable, no firma electrónica ni un módulo de validación legal.
+
+### PPT-07 · Eliminar borrador
+
+Admin/commercial activo puede solicitar baja desde el menú del listado/detalle o la cabecera de edición. Confirmación específica. `QuoteService::deleteDraft` bloquea y vuelve a comprobar en servidor estado draft y número nulo, registra `draft.deleted` con actor/fecha/referencia y aplica SoftDeletes en una transacción. No consume correlativo ni borra PDFs emitidos.
+
+El borrador desaparece de listados, pestañas y accesos normales por ID, PDF e historial (404). Se conserva fila y auditoría para revisión administrativa; no hay papelera/restauración web ni eliminación física implementadas. No presentar esa conservación como borrado definitivo de datos personales. Un intento concurrente de emitir y eliminar se resuelve por el bloqueo de la fila según el motor real; verificar en PostgreSQL antes de operación productiva.
+
+### Documento PDF y compatibilidad
+
+Cabecera más compacta, bloques de emisor/cliente, código cuando existe, descripciones multilínea, columnas numéricas e importes, total destacado y secciones distintas de pago/entrega y términos. A4, pie y encabezados de ítems repetidos en varias páginas. La nueva plantilla afecta borradores y nuevas emisiones; archivos emitidos conservan sus bytes y hash.
+
+Migración `2026_10_16_000001_add_quote_entry_and_catalog`: campos nullable de pago/entrega/garantía y deleted_at, términos generales del emisor y tabla de catálogo. No actualiza masivamente documentos existentes ni secuencias. Ejecutar `scripts/update.sh` con respaldo habitual. No revertir esa migración después de usarla sin evaluar pérdida de sus datos.
+
+Pruebas específicas en `QuoteEntryTest`: plazos, contado/crédito, términos, mezcla de catálogo/manual, moneda, conservación, alta inline, autorización y baja auditada. Ver [catálogo](catalogo.md) y [validación](../validacion.md).

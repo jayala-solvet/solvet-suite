@@ -12,3 +12,12 @@
 Búsqueda y filtros permiten localizar el documento por correlativo, asunto, nombre actual/original del cliente, moneda o fecha de emisión. Las pestañas cuentan documentos por estado en toda la instalación. Una selección habilita acciones para ese documento; no hay operaciones masivas de emisión.
 
 Los documentos vencidos sin respuesta se identifican con advertencia y filtro; no se convierten automáticamente en rechazados. El PDF emitido se conserva incluso si después cambian los datos del cliente o la apariencia del sistema.
+
+## Carga ampliada
+
+- Si falta el cliente, usar el botón de alta junto al selector: **Crear y seleccionar** mantiene la propuesta en curso.
+- El catálogo es opcional. En **Catálogo**, registrar productos/servicios con su moneda, precio e IVA. En cada ítem del presupuesto, elegir uno o continuar con **Carga manual**. Se pueden mezclar ambos y duplicar ítems.
+- Revisar importes por ítem y total. Cambiar moneda no convierte precios; quitar la selección de catálogo o elegir un producto de la moneda correcta.
+- En **Pago y entrega**, elegir Contado, Crédito (1–365 días) o A convenir. Usar detalle del pago para aclarar medio, anticipo y desde qué fecha se cuentan los días.
+- Ajustar entrega/garantía y expandir **Términos y condiciones** si hace falta. La base general se configura en **Mi empresa → Presupuestos** y se copia solo a propuestas nuevas.
+- Para retirar un presupuesto sin emitir, **Acciones → Eliminar borrador** o el botón de edición. Requiere confirmar y conserva auditoría; no está disponible en emitidos.

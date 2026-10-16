@@ -6,8 +6,8 @@ Una empresa emisora por instalación; todos los usuarios activos de esa instalac
 
 | Rol | Consulta/PDF/historial | Clientes/presupuestos | Datos del emisor |
 |---|---|---|---|
-| admin | Sí | Crear/editar borrador/emitir/registrar decisión | Editar |
-| commercial | Sí | Crear/editar borrador/emitir/registrar decisión | No |
+| admin | Sí | Crear/editar/baja auditada de borrador/emitir/decisión y editar catálogo | Editar |
+| commercial | Sí | Crear/editar/baja auditada de borrador/emitir/decisión y editar catálogo | No |
 | reader | Sí | No | No |
 
 Se comprueban permisos del servicio de presupuestos en servidor. El panel exige usuario activo. Las rutas PDF e historial requieren sesión y usuario activo. La creación de usuarios se hace por CLI del operador del servidor. No hay usuarios demo ni contraseña fija dentro del proyecto.

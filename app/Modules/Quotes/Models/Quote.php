@@ -5,9 +5,12 @@ namespace App\Modules\Quotes\Models;
 use App\Modules\Customers\Models\Customer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Quote extends Model
 {
+    use SoftDeletes;
+
     protected $guarded = ['id'];
 
     protected function casts(): array
@@ -28,6 +31,15 @@ class Quote extends Model
     public function statusLabel(): string
     {
         return ['draft' => 'Borrador', 'issued' => 'Emitido', 'accepted' => 'Aceptado', 'rejected' => 'Rechazado', 'cancelled' => 'Anulado'][$this->status] ?? $this->status;
+    }
+
+    public function paymentLabel(): string
+    {
+        return match ($this->payment_mode) {
+            'cash' => 'Contado',
+            'credit' => 'Crédito a '.$this->credit_days.' días',
+            default => 'A convenir',
+        };
     }
 
     public function formattedTotal(): string

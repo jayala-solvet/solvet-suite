@@ -8,7 +8,9 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 - Acceso mediante usuario y contraseña; roles administrador, comercial y consulta.
 - Alta y edición de clientes; edición de datos de la empresa por administrador.
-- Presupuestos en PYG y USD con líneas, cantidades, descuentos e IVA incluido.
+- Presupuestos en PYG y USD con líneas manuales o catálogo opcional, cantidades, descuentos, IVA incluido e importes durante la carga.
+- Alta de cliente desde el presupuesto, duplicación de ítems, pago contado/crédito en días, entrega y términos configurables.
+- Eliminación de borradores con confirmación y registro de auditoría; emitidos protegidos.
 - Cálculo en servidor, correlativo al emitir, PDF descargable y copia comercial de cliente/emisor.
 - Decisiones manuales de aceptación, rechazo o anulación con evidencia textual obligatoria.
 - Historial por presupuesto, actor, fecha y hash SHA-256 del PDF emitido.
@@ -28,7 +30,7 @@ La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño]
 
 Esta base está destinada a instalación de prueba y desarrollo incremental. No es todavía un ERP terminado ni una edición comercial lista para clientes externos. Cada instalación representa una sola empresa; todos sus usuarios autorizados ven los mismos clientes y presupuestos. La base y los archivos son independientes por instalación.
 
-No incluye todavía: revisiones vinculadas de presupuestos emitidos, envío por correo, firma o portal del cliente, recordatorios de vencimiento, importación de planillas, catálogo reutilizable, conversión a orden, integración GLPI, facturación fiscal, licenciamiento comercial, MFA, recuperación de contraseña y administración de usuarios desde pantalla. Las cuentas se crean por CLI y no hay contraseña predeterminada.
+No incluye todavía: revisiones vinculadas de presupuestos emitidos, envío por correo, firma o portal del cliente, recordatorios de vencimiento, importación de planillas, conversión a orden, integración GLPI, facturación fiscal, licenciamiento comercial, MFA, recuperación de contraseña y administración de usuarios desde pantalla. Las cuentas se crean por CLI y no hay contraseña predeterminada.
 
 `Emitido` significa documento cerrado y numerado, **no** correo enviado. La aceptación es registrada por un usuario interno y no equivale a una firma digital. La auditoría se guarda en la base de datos de la aplicación; no es un registro externo inalterable.
 
@@ -75,7 +77,7 @@ No usar `down -v` si querés conservar la base y los documentos.
 ## Próximo desarrollo recomendado
 
 1. Revisiones de presupuestos conservando el vínculo y el histórico.
-2. Catálogo reutilizable.
+2. Mejoras de catálogo basadas en uso real; stock/compras requieren módulos propios.
 3. Envío por correo con cola y registro de entregas, separado de emitir.
 4. Portal de aprobación y órdenes de trabajo.
 5. Integración GLPI.
