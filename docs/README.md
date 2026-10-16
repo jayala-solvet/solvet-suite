@@ -13,7 +13,9 @@ Este índice es la entrada al contexto del proyecto. Los documentos están versi
 | Qué hace, valida, calcula y guarda cada operación | [Presupuestos](modulos/presupuestos.md), [clientes y empresa](modulos/clientes-empresa.md), [catálogo](modulos/catalogo.md), [dashboard](modulos/dashboard.md), [costos y precios](modulos/costos-precios.md), [operaciones](modulos/operaciones.md) |
 | Definir una función nueva | [Plantilla de funcionalidad](plantillas/funcionalidad.md) |
 | Trabajar con IA sin perder compatibilidad | [Desarrollo](desarrollo.md), [AGENTS](../AGENTS.md) |
-| Accesos y protección de datos | [Seguridad](seguridad.md) |
+| Accesos y protección de datos | [Seguridad](seguridad.md), [usuarios y permisos](modulos/usuarios-permisos.md), [requisitos](seguridad-requisitos.md), [diagnóstico](seguridad-validacion.md) |
+| Documentos y evidencia legal | [Paraguay y versiones](legal-paraguay.md) |
+| Operar MFA, correo y seguridad | [Operación de seguridad](operacion-seguridad.md) |
 | Pasar del laboratorio a Nginx y Cloudflare | [Entornos y publicación](entornos-publicacion.md) |
 | Separar desarrollo, testing y producción | [Entornos y promoción](entornos-desarrollo-pruebas-produccion.md) |
 | Instalar, respaldar, actualizar o restaurar | [Operación](operacion.md) |

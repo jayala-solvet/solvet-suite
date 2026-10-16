@@ -3,6 +3,7 @@
 namespace App\Modules\Operations\Services;
 
 use App\Models\User;
+use App\Modules\Access\Services\AccessService;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Operations\Models\OrderLine;
 use App\Modules\Operations\Models\SalesOrder;
@@ -15,7 +16,7 @@ class InventoryService
 {
     public function balance(User $actor, int $itemId): StockBalance
     {
-        OperationRules::authorize($actor);
+        abort_unless($actor->allows('inventory.update') || $actor->allows('purchases.approve') || $actor->allows('orders.update'), 403);
         $item = CatalogItem::lockForUpdate()->findOrFail($itemId);
         if ($item->kind !== 'product' || ! $item->track_stock) {
             OperationRules::fail('El ítem no es un bien con control de stock.');
@@ -27,7 +28,7 @@ class InventoryService
 
     public function move(User $actor, StockBalance $balance, string $quantity, string $value, array $origin): StockMovement
     {
-        OperationRules::authorize($actor);
+        abort_unless($actor->allows('inventory.update') || $actor->allows('purchases.approve') || $actor->allows('orders.update'), 403);
         $key = $origin['operation_key'];
         if ($old = StockMovement::where('operation_key', $key)->first()) {
             OperationRules::same($old->request_hash, $origin['request_hash']);
@@ -54,7 +55,7 @@ class InventoryService
 
     public function adjust(User $actor, CatalogItem $item, string $direction, string $quantity, ?string $unitCost, string $reason, string $token): StockMovement
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'inventory.update');
         OperationRules::token($token);
         $quantity = OperationRules::quantity($quantity);
         Validator::make(compact('direction', 'reason', 'unitCost'), ['direction' => 'required|in:in,out', 'reason' => 'required|string|min:10|max:1000', 'unitCost' => ['nullable', 'regex:/^\d{1,9}(\.\d{1,8})?$/']])->validate();
@@ -90,7 +91,7 @@ class InventoryService
 
     public function returnMovement(User $actor, StockMovement $original, string $quantity, string $reason, string $token): StockMovement
     {
-        OperationRules::authorize($actor);
+        AccessService::authorize($actor, 'inventory.update');
         OperationRules::token($token);
         $quantity = OperationRules::quantity($quantity);
         Validator::make(compact('reason'), ['reason' => 'required|string|min:10|max:1000'])->validate();

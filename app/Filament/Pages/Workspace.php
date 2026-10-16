@@ -20,13 +20,22 @@ class Workspace extends Page
 
     protected static ?int $navigationSort = -1;
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->allows('quotes.view') ?? false;
+    }
+
     public function summary(): array
     {
+        abort_unless(self::canAccess(), 403);
+
         return ['draft' => Quote::where('status', 'draft')->count(), 'issued' => Quote::where('status', 'issued')->count(), 'accepted' => Quote::where('status', 'accepted')->count(), 'customers' => Customer::count()];
     }
 
     public function recent()
     {
+        abort_unless(self::canAccess(), 403);
+
         return Quote::with('customer')->latest()->limit(6)->get();
     }
 }

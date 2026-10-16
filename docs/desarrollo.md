@@ -76,7 +76,7 @@ Nginx sirve assets copiados al construir `web`: publicar dentro de `app` no actu
 
 Definir entidad, relaciones, estados, permisos, campos/calculador, auditoría, efectos y errores en `docs/modulos/<nombre>.md`. Reutilizar Users, Company, Customer y componentes. Operaciones de negocio en `app/Modules/<Modulo>/Services`; no escribir directamente en tablas de otro módulo para evitar su contrato.
 
-Las integraciones tendrán adaptador propio, permisos y credenciales mínimas, tiempos de espera, reintentos e idempotencia. Introducir cola/worker cuando exista un trabajo asíncrono real y operarlo explícitamente; tener tablas `jobs` no significa que un worker esté ejecutándose.
+Las integraciones tendrán adaptador propio, permisos y credenciales mínimas, tiempos de espera, reintentos e idempotencia. Introducir cola/worker cuando exista un trabajo asíncrono real y operarlo explícitamente; El worker actual procesa security-mail; una nueva cola requiere configurar y verificar su propio consumidor.
 
 Si aumenta el volumen, medir consultas, tiempos y consumo, corregir N+1/índices/paginación; luego evaluar cola o escalado. No introducir microservicios antes de tener evidencia. La venta a otra empresa usa la misma base de código y configuración por instalación; no una rama permanente por cliente.
 

@@ -147,7 +147,7 @@ class CostProfileResource extends Resource
             SelectFilter::make('catalog_item_id')->label('Ítem')->relationship('item', 'name')->searchable()->preload(),
             SelectFilter::make('source')->label('Origen')->options(CostProfile::SOURCES),
         ])->recordActions([
-            Action::make('applyPrice')->label('Aplicar precio al catálogo')->icon('heroicon-o-check')->color('gray')->requiresConfirmation()->modalDescription('Publica este precio para futuras selecciones. No modifica presupuestos guardados ni revaloriza stock.')->action(fn (CostProfile $record) => OperationAction::run(fn () => app(CostService::class)->applyPrice(auth()->user(), $record))),
+            Action::make('applyPrice')->visible(fn () => Gate::allows('costs.approve'))->label('Aplicar precio al catálogo')->icon('heroicon-o-check')->color('gray')->requiresConfirmation()->modalDescription('Publica este precio para futuras selecciones. No modifica presupuestos guardados ni revaloriza stock.')->action(fn (CostProfile $record) => OperationAction::run(fn () => app(CostService::class)->applyPrice(auth()->user(), $record))),
             Action::make('calculation')->label('Ver cálculo')->icon('heroicon-o-document-magnifying-glass')->color('gray')->modalHeading('Detalle de la versión de costo')
                 ->modalContent(fn (CostProfile $record) => view('filament.costs.profile', ['profile' => $record]))->modalSubmitAction(false)->modalCancelActionLabel('Cerrar'),
         ])->stackedOnMobile()->defaultSort('id', 'desc')->emptyStateHeading('Definí el costo de tu primer producto o servicio')

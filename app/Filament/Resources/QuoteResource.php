@@ -53,19 +53,29 @@ class QuoteResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->allows('quotes.view') ?? false;
+    }
+
+    public static function canView($record): bool
+    {
+        return self::canViewAny();
+    }
+
     public static function canCreate(): bool
     {
-        return auth()->user()?->canWrite() ?? false;
+        return auth()->user()?->allows('quotes.create') ?? false;
     }
 
     public static function canEdit($record): bool
     {
-        return self::canCreate() && $record->status === 'draft';
+        return (auth()->user()?->allows('quotes.update') ?? false) && $record->status === 'draft';
     }
 
     public static function canDelete($record): bool
     {
-        return self::canEdit($record) && $record->number === null;
+        return (auth()->user()?->allows('quotes.delete') ?? false) && $record->status === 'draft' && $record->number === null;
     }
 
     public static function form(Schema $schema): Schema
@@ -106,7 +116,7 @@ class QuoteResource extends Resource
                                 $set('cost_profile_id', $item->current_cost_id);
                             })->columnSpan(['default' => 1, 'md' => 2, 'xl' => 4]),
                         Select::make('cost_profile_id')->label('Costo interno a utilizar')->placeholder('Elegí una referencia o dejá sin costo')->searchable()->preload()->live()
-                            ->visible(fn (Get $get) => (bool) $get('catalog_item_id') && empty($get('components')))
+                            ->visible(fn (Get $get) => Gate::allows('view-costs') && (bool) $get('catalog_item_id') && empty($get('components')))
                             ->options(fn (Get $get) => CostProfile::where('catalog_item_id', $get('catalog_item_id'))->where('currency', $get('../../currency') ?? 'PYG')->latest('id')->limit(30)->get()->mapWithKeys(fn ($cost) => [$cost->id => $cost->selectionLabel()])->all())
                             ->getOptionLabelUsing(fn ($value) => CostProfile::find($value)?->selectionLabel())
                             ->helperText('Elegí propio o tercero y su versión. El precio al cliente se conserva; podés ajustarlo por separado. Uso interno.')
@@ -119,9 +129,9 @@ class QuoteResource extends Resource
                         TextInput::make('discount')->label('Dto. %')->numeric()->minValue(0)->maxValue(100)->default('0')->required()->columnSpan(['xl' => 2]),
                         Select::make('tax_rate')->label('IVA incluido')->options(['0' => 'Exento', '5' => '5%', '10' => '10%'])->default('10')->required()->columnSpan(['xl' => 2]),
                         TextInput::make('internal_unit_cost')->label('Costo interno unitario (opcional)')->numeric()->minValue(0)
-                            ->visible(fn (Get $get) => ! $get('catalog_item_id') && empty($get('components')))->helperText('Solo uso interno. Neto de IVA recuperable; vacío significa desconocido.')
+                            ->visible(fn (Get $get) => Gate::allows('view-costs') && ! $get('catalog_item_id') && empty($get('components')))->helperText('Solo uso interno. Neto de IVA recuperable; vacío significa desconocido.')
                             ->rules(fn (Get $get) => ['nullable', 'regex:'.QuoteCalculator::pricePattern($get('../../currency') ?? 'PYG')])->columnSpan(['xl' => 6]),
-                        Repeater::make('components')->label('Componentes internos de este conjunto (opcional)')->helperText('La cantidad es por unidad del conjunto. El precio comercial se carga una sola vez en la línea principal. Si agregás componentes, sustituyen su costo principal.')->defaultItems(0)->maxItems(30)->reorderable(false)->collapsible()->collapsed()->schema([
+                        Repeater::make('components')->visible(fn () => Gate::allows('view-costs'))->label('Componentes internos de este conjunto (opcional)')->helperText('La cantidad es por unidad del conjunto. El precio comercial se carga una sola vez en la línea principal. Si agregás componentes, sustituyen su costo principal.')->defaultItems(0)->maxItems(30)->reorderable(false)->collapsible()->collapsed()->schema([
                             Select::make('catalog_item_id')->label('Componente del catálogo')->options(fn (Get $get) => CatalogItem::where('can_sell', true)->where('currency', $get('../../../../currency') ?? 'PYG')->orderBy('name')->pluck('name', 'id'))->searchable()->live()->afterStateUpdated(function ($state, Set $set) {
                                 $item = CatalogItem::find($state);
                                 $set('description', $item?->name);
@@ -260,14 +270,14 @@ class QuoteResource extends Resource
                 ->requiresConfirmation()->modalHeading('Emitir presupuesto definitivo')
                 ->modalDescription('Se asignará el siguiente correlativo y se conservará el PDF con los datos actuales. El documento dejará de ser editable. Esta acción no envía correos.')
                 ->modalSubmitActionLabel('Confirmar emisión')
-                ->visible(fn (Quote $record) => self::canCreate() && $record->status === 'draft')
+                ->visible(fn (Quote $record) => Gate::allows('quotes.approve') && $record->status === 'draft')
                 ->action(function (Quote $record, $livewire) {
                     app(QuoteService::class)->issue(auth()->user(), $record);
                     Notification::make()->title('Presupuesto emitido')->success()->send();
                     $livewire->redirect(self::getUrl('view', ['record' => $record]));
                 }),
             Action::make('decision')->label('Registrar decisión')->icon('heroicon-o-check-circle')->color('gray')
-                ->visible(fn (Quote $record) => self::canCreate() && $record->status === 'issued')->schema([
+                ->visible(fn (Quote $record) => Gate::allows('quotes.approve') && $record->status === 'issued')->schema([
                     Select::make('status')->label('Resultado')->options(['accepted' => 'Aceptado', 'rejected' => 'Rechazado', 'cancelled' => 'Anulado'])->required(),
                     Textarea::make('evidence')->label('Evidencia / referencia')->helperText('Indicá fecha, contacto y referencia del correo, ticket o aprobación.')->minLength(10)->maxLength(2000)->required(),
                 ])->action(function (Quote $record, array $data, $livewire) {
@@ -285,7 +295,7 @@ class QuoteResource extends Resource
                 }),
             Action::make('order')->label('Confirmar pedido')->icon('heroicon-o-clipboard-document-check')->color('gray')->requiresConfirmation()
                 ->modalDescription('Crea un pedido vinculado al presupuesto aceptado. No reserva ni entrega unidades hasta que lo indiques en el pedido.')
-                ->visible(fn (Quote $record) => self::canCreate() && $record->status === 'accepted' && ! SalesOrder::where('quote_id', $record->id)->exists())
+                ->visible(fn (Quote $record) => Gate::allows('orders.create') && $record->status === 'accepted' && ! SalesOrder::where('quote_id', $record->id)->exists())
                 ->action(function (Quote $record, $livewire) {
                     $order = app(OrderService::class)->fromQuote(auth()->user(), $record);
                     $livewire->redirect(SalesOrderResource::getUrl('view', ['record' => $order]));

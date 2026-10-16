@@ -17,7 +17,7 @@ class SalesOrder extends Model
 
     protected function casts(): array
     {
-        return ['estimated_snapshot' => 'array', 'completed_at' => 'datetime', 'sales_minor' => 'decimal:0', 'sales_tax_minor' => 'decimal:0'];
+        return ['assigned_to' => 'integer', 'estimated_snapshot' => 'array', 'completed_at' => 'datetime', 'sales_minor' => 'decimal:0', 'sales_tax_minor' => 'decimal:0'];
     }
 
     public function quote(): BelongsTo

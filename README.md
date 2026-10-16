@@ -10,7 +10,8 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 - Conjuntos comerciales con componentes internos, rentabilidad prevista y resultado de ejecución sin duplicar ingresos.
 - Costos versionados, soporte propio/tercerizado, reglas de margen/recargo y rentabilidad interna de presupuestos.
 - Dashboard comercial con cotizado, aprobado, oportunidades vigentes y seguimiento, por período y moneda.
-- Acceso mediante usuario y contraseña; roles administrador, comercial y consulta.
+- Gestión de cuentas y roles configurables, sesiones revocables, MFA administrador y recuperación/invitación por correo configurado.
+- Documentos legales versionados, publicación explícita y evidencia separada de aceptación/lectura/consentimiento.
 - Alta y edición de clientes; edición de datos de la empresa por administrador.
 - Presupuestos en PYG y USD con líneas manuales o catálogo opcional, cantidades, descuentos, IVA incluido e importes durante la carga.
 - Alta de cliente desde el presupuesto, duplicación de ítems, pago contado/crédito en días, entrega y términos configurables.
@@ -34,13 +35,17 @@ La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño]
 
 Esta base está destinada a instalación de prueba y desarrollo incremental. No es todavía un ERP terminado ni una edición comercial lista para clientes externos. Cada instalación representa una sola empresa; todos sus usuarios autorizados ven los mismos clientes y presupuestos. La base y los archivos son independientes por instalación.
 
-No incluye todavía: revisiones vinculadas de presupuestos emitidos, envío por correo, firma o portal del cliente, recordatorios de vencimiento, importación de planillas, integración GLPI, facturación fiscal, licenciamiento comercial, MFA, recuperación de contraseña y administración de usuarios desde pantalla. Las cuentas se crean por CLI y no hay contraseña predeterminada.
+No incluye todavía: revisiones vinculadas de presupuestos emitidos, envío por correo, firma o portal del cliente, recordatorios de vencimiento, importación de planillas, integración GLPI, facturación fiscal, licenciamiento comercial, conformidad jurídica definitiva y configuración verificada de publicación. También se conserva el alta inicial por CLI; no hay contraseña predeterminada.
 
 `Emitido` significa documento cerrado y numerado, **no** correo enviado. La aceptación es registrada por un usuario interno y no equivale a una firma digital. La auditoría se guarda en la base de datos de la aplicación; no es un registro externo inalterable.
 
 ## Tecnología efectiva
 
 PHP 8.5 · Laravel 13 · Filament 5 · Livewire 4 · PostgreSQL 17 · Nginx · Dompdf. Las versiones concretas de bibliotecas están en `composer.lock`. No se necesita Node para ejecutar esta entrega: los recursos de Filament se publican al construir la imagen; la identidad visual usa CSS propio. Docker debe descargar imágenes y paquetes en la primera construcción.
+
+## Seguridad y acceso
+
+Leer [usuarios y permisos](docs/modulos/usuarios-permisos.md), [diagnóstico y pendientes](docs/seguridad-validacion.md) y [operación de seguridad](docs/operacion-seguridad.md) antes de exponer por Nginx/Cloudflare. Los avisos legales son borradores pendientes de completar y validar.
 
 ## Entornos separados
 

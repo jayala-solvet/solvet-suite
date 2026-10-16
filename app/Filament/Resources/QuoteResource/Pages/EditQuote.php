@@ -7,6 +7,7 @@ use App\Modules\Costs\Services\QuoteProfitability;
 use App\Modules\Quotes\Services\QuoteService;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 
 class EditQuote extends EditRecord
 {
@@ -20,7 +21,7 @@ class EditQuote extends EditRecord
     {
         foreach ($data['lines'] as $index => &$line) {
             $cost = $this->getRecord()->cost_snapshot['lines'][$index] ?? null;
-            if ($cost) {
+            if ($cost && Gate::allows('view-costs')) {
                 $line = QuoteProfitability::restoreInputs($line, $cost, $data['currency']);
             }
         }

@@ -38,14 +38,24 @@ class CatalogItemResource extends Resource
 
     protected static bool $hasTitleCaseModelLabel = false;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->allows('catalog.view') ?? false;
+    }
+
+    public static function canView($record): bool
+    {
+        return self::canViewAny();
+    }
+
     public static function canCreate(): bool
     {
-        return auth()->user()?->canWrite() ?? false;
+        return auth()->user()?->allows('catalog.create') ?? false;
     }
 
     public static function canEdit($record): bool
     {
-        return self::canCreate();
+        return auth()->user()?->allows('catalog.update') ?? false;
     }
 
     public static function canDelete($record): bool

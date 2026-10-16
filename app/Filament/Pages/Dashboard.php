@@ -32,7 +32,7 @@ class Dashboard extends Page
     {
         $user = auth()->user();
 
-        return $user?->is_active && in_array($user->role, ['admin', 'commercial', 'reader'], true);
+        return $user?->allows('dashboard.view') ?? false;
     }
 
     protected function getHeaderActions(): array

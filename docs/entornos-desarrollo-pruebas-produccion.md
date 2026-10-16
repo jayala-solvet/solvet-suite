@@ -121,3 +121,7 @@ Los scripts setup.sh/update.sh/backup.sh anteriores siguen usando .env y el proy
 Puede haber tres bases PostgreSQL corriendo: dimensionar RAM/disco antes de habilitar los tres en el mismo host. Se puede comenzar solo con testing y producción. El aislamiento es de aplicación/volúmenes, no de máquina: para mayor separación de fallos, usar hosts distintos y control de acceso por operadores.
 
 Referencias: [Compose: nombre de proyecto](https://docs.docker.com/compose/how-tos/project-name/) y [env-file/interpolación](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/), consultadas 16/10/2026.
+
+## Ampliación de seguridad
+
+Nuevos perfiles generan también una clave administrativa PostgreSQL separada y un usuario de aplicación solvet_app, inicializado solo en volumen nuevo. Env previos conservan sus credenciales. Se incorpora worker para security-mail y los updates lo recrean. Para MFA, SMTP, privilegios de bases existentes y respaldo cifrado ver [operación de seguridad](operacion-seguridad.md); no aplicar cambios de identidad de base a volúmenes con datos sin ensayarlos.

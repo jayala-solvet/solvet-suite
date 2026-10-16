@@ -65,3 +65,7 @@ Catálogo conserva precio/unidad y apunta a una versión actual de Costos. CostS
 ## Operaciones
 
 Ver [ADR 0003](decisiones/0003-operaciones-inventario.md) y [contrato OP-01…OP-08](modulos/operaciones.md). Una recepción confirma cantidades/costos y una entrega conserva su valoración. Catálogo y referencias de costo nunca revalorizan existencias. Agrupar comercialmente conserva componentes en privado; presupuestos previos permanecen inmutables. No hay nuevos servicios externos o dependencias.
+
+## Acceso y seguridad
+
+Módulos Access/Legal: capacidades por rol, asignación técnica, revocación de sesiones, MFA nativo y versiones legales. Un worker de Compose procesa security-mail con payloads cifrados. Ver [ADR 0004](decisiones/0004-acceso-seguridad-legal.md). Se conserva un despliegue por empresa, sin API pública de base ni tenants compartidos.

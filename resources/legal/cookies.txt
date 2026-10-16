@@ -1,0 +1,10 @@
+COOKIES Y ALMACENAMIENTO LOCAL
+Responsable: [RESPONSABLE]. RUC: [RUC]. Domicilio: [DOMICILIO]. Contacto: [CONTACTO].
+
+El sistema utiliza una cookie de sesión para mantener el acceso autenticado. Se protege mediante HttpOnly, SameSite y, cuando se usa HTTPS, Secure. La duración por inactividad depende de SESSION_LIFETIME y el límite absoluto de sesión. Puede existir un mecanismo CSRF del framework para validar solicitudes. La sesión se gestiona como necesaria para seguridad y funcionamiento, no como publicidad.
+
+La preferencia claro/oscuro/sistema se conserva localmente en el navegador. Este almacenamiento no se utiliza como identificador comercial. No se incorporan analítica ni publicidad opcionales en esta entrega.
+
+[COMPLETAR: inventario comprobado en el dominio final, nombres y duración de cookies efectivas, almacenamiento de preferencia visual, servicios de terceros y cookies de Cloudflare según configuración real].
+
+Si se añaden tecnologías opcionales, se informará su finalidad, proveedor y duración, y se habilitará la decisión correspondiente antes de activarlas cuando sea exigible. El consentimiento no se presupone por navegar ni se presenta premarcado. Las preferencias y el retiro de consentimientos opcionales se gestionan desde Documentos y privacidad. También pueden administrarse cookies mediante el navegador; deshabilitar las necesarias puede impedir el acceso.

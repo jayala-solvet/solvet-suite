@@ -1,0 +1,10 @@
+TÉRMINOS DE USO DE SOLVET SUITE
+Responsable de esta instalación: [RESPONSABLE]. RUC: [RUC]. Domicilio: [DOMICILIO]. Contacto: [CONTACTO].
+
+Esta instalación es una herramienta de gestión interna. El acceso se concede mediante cuentas individuales y permisos definidos por el responsable. El usuario debe proteger sus credenciales, utilizar los datos para sus tareas autorizadas y comunicar incidentes al contacto indicado. No debe compartir cuentas, evadir permisos ni extraer información para fines ajenos a su trabajo.
+
+Los presupuestos, compras, inventario y ejecuciones conservan documentos y trazabilidad. La aprobación registrada internamente no constituye por sí sola firma electrónica cualificada, factura fiscal, acreditación de cobro ni aceptación de un cliente externo. Los términos de una propuesta comercial se establecen en ese documento; estos términos regulan el uso del sistema.
+
+El responsable puede suspender accesos por razones operativas o de seguridad, preservando la evidencia y los registros que deban conservarse. El acceso al sistema no transfiere titularidad sobre software ni datos. Nada en estas condiciones limita derechos imperativos, impide reclamos legítimos ni exonera responsabilidades que legalmente no puedan excluirse.
+
+Cada versión publicada se conserva. La aceptación identifica cuenta, versión, contenido y fecha. Ante modificaciones relevantes se solicita revisar la nueva versión. Consultas o conflictos se canalizan al contacto indicado y ante las instancias competentes que correspondan conforme al derecho aplicable.

@@ -1,0 +1,1 @@
+<div class="sv-document"><p>{{ $document->title }} · {{ $document->version }}</p><div style="white-space: pre-wrap">{{ $document->body }}</div><p class="sv-history-hash">SHA-256: {{ $document->sha256 }}</p></div>

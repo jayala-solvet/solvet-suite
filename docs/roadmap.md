@@ -8,7 +8,7 @@
 | 1.2 | Totales durante edición y detalle completo | Implementado en PR #4 |
 | 1.3 | Catálogo opcional, pago, carga y baja auditada de borradores | Implementado en ampliación de carga |
 | 1.3.1 | Revisiones vinculadas | Próxima entrega comercial recomendada |
-| 1.4 | Gestión de usuarios, recuperación de acceso y MFA | Antes de comercializar |
+| 1.4 | Gestión de usuarios, recuperación de acceso y MFA | Implementado para prueba; operación/SMTP/publicación pendientes de verificar |
 | 2 | Correo con cola, portal de aceptación y vencimientos | Planificado |
 | 3 | Órdenes de trabajo y vínculo GLPI | Planificado |
 | 4 | Contratos y servicios recurrentes | Propuesto |

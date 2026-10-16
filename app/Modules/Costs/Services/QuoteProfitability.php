@@ -28,6 +28,19 @@ class QuoteProfitability
     public function snapshot(User $actor, array $raw, array $calculated, string $currency): array
     {
         Gate::forUser($actor)->authorize('view-costs');
+
+        return $this->calculate($raw, $calculated, $currency);
+    }
+
+    public function forQuote(User $actor, array $raw, array $calculated, string $currency): array
+    {
+        abort_unless($actor->allows('quotes.create') || $actor->allows('quotes.update'), 403);
+
+        return $this->calculate($raw, $calculated, $currency);
+    }
+
+    private function calculate(array $raw, array $calculated, string $currency): array
+    {
         Validator::make(['lines' => $raw], ['lines.*.components' => 'nullable|array|max:30', 'lines.*.components.*' => 'required|array', 'lines.*.catalog_item_id' => 'nullable|integer', 'lines.*.cost_profile_id' => 'nullable|integer', 'lines.*.components.*.catalog_item_id' => 'nullable|integer', 'lines.*.components.*.cost_profile_id' => 'nullable|integer'])->validate();
         $flat = [];
         foreach ($raw as $input) {

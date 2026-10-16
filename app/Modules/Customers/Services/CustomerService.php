@@ -11,7 +11,7 @@ class CustomerService
 {
     public function create(User $actor, array $data): Customer
     {
-        Gate::forUser($actor)->authorize('write-business');
+        Gate::forUser($actor)->authorize('customers.create');
         $data = Validator::make($data, [
             'name' => 'required|string|max:200', 'tax_id' => 'nullable|string|max:50',
             'contact' => 'nullable|string|max:200', 'email' => 'nullable|email|max:200',

@@ -37,7 +37,7 @@ class ViewInventory extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('return')->label('Registrar devolución')->color('gray')->visible(fn () => Gate::allows('manage-costs'))->schema([
+            Action::make('return')->label('Registrar devolución')->color('gray')->visible(fn () => Gate::allows('inventory.update'))->schema([
                 Select::make('movement_id')->label('Movimiento original')->options(fn () => StockMovement::with('actor')->where('catalog_item_id', $this->getRecord()->id)->whereIn('kind', ['receipt', 'delivery'])->whereRaw('ABS(quantity) > returned_quantity')->latest('id')->get()->mapWithKeys(fn ($m) => [$m->id => '#'.$m->id.' · '.($m->kind === 'receipt' ? 'Devolver al proveedor' : 'Devolución del cliente').' · '.$m->quantity.' · '.$m->created_at->format('d/m/Y')]))->required()->searchable(),
                 TextInput::make('quantity')->label('Cantidad a devolver')->numeric()->minValue('0.001')->required(), Textarea::make('reason')->label('Motivo / referencia')->required()->minLength(10)->maxLength(1000), Hidden::make('token')->default(fn () => Str::uuid()->toString()),
             ])->requiresConfirmation()->modalDescription('La devolución queda vinculada al movimiento original. Una devolución del cliente reabre el pedido para resolver la entrega; no genera nota de crédito fiscal.')->action(function (array $data) {

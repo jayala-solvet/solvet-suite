@@ -79,3 +79,7 @@ No duplicar ingreso o costo en conjuntos: la venta vive una sola vez en la líne
 ## Entornos y promoción
 
 Leer [entornos separados](docs/entornos-desarrollo-pruebas-produccion.md). No promover bases de ensayo sobre movimientos reales. Usar comandos con perfil explícito y SHA probado; no renombrar proyectos/volúmenes existentes ni compartir APP_KEY. deploy/environments es privado y no entra en Git/contexto Docker. Test automático aislado no acredita construcción o concurrencia PostgreSQL.
+
+## Acceso, privacidad y publicación
+
+Leer [requisitos de seguridad](docs/seguridad-requisitos.md), [usuarios/permisos](docs/modulos/usuarios-permisos.md) y [marco legal](docs/legal-paraguay.md). No usar canWrite como permiso universal: declarar capacidad por acción y alcance de registro. No exponer datos financieros a técnicos o perfiles sin autorización. Preservar versiones legales/eventos, MFA y revocación. Configuración de proxy/correo/cifrado o texto de política no equivale a evidencia del servidor o validación jurídica. No publicar borradores legales ni completar identidades inventadas.

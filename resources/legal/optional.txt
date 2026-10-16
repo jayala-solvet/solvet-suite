@@ -1,0 +1,6 @@
+CONSENTIMIENTO PARA FINALIDAD OPCIONAL
+Responsable: [RESPONSABLE]. RUC: [RUC]. Domicilio: [DOMICILIO]. Contacto: [CONTACTO].
+
+[COMPLETAR: finalidad específica y separada, datos necesarios, destinatarios, duración y consecuencias reales de aceptar o rechazar. No activar funcionalidades ni transferir datos hasta implementar y verificar técnicamente el bloqueo por consentimiento].
+
+Esta finalidad es opcional. Rechazarla no impide utilizar las funciones esenciales autorizadas. Aceptar requiere una acción expresa y se conserva la versión, cuenta, propósito y fecha. Se puede retirar desde Documentos y privacidad con efecto para actuaciones futuras basadas en ese consentimiento. La retirada no modifica por sí sola los registros que deban conservarse con otro fundamento aplicable.
