@@ -76,6 +76,7 @@ Artisan::command('solvet:security-check {--public}', function () {
     $check('Cookies HttpOnly', (bool) config('session.http_only'));
     $check('SameSite acotado', in_array(config('session.same_site'), ['lax', 'strict'], true));
     $check('Sesiones de base de datos', config('session.driver') === 'database');
+    $check('MFA habilitado', (bool) config('security.mfa_enabled'));
     $check('Administradores con segundo factor', ! User::where('role', 'admin')->where('is_active', true)->whereNull('app_authentication_secret')->exists());
     if ($this->option('public')) {
         $check('Entorno production sin depuración', app()->environment('production') && ! config('app.debug'));

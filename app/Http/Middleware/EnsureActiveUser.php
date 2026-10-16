@@ -24,7 +24,7 @@ class EnsureActiveUser
             }
             $session->put('security.started_at', $start);
         }
-        if ($request->is('quotes*') && $user->role === 'admin' && ! $user->getAppAuthenticationSecret()) {
+        if (config('security.mfa_enabled') && $request->is('quotes*') && $user->role === 'admin' && ! $user->getAppAuthenticationSecret()) {
             return redirect('/app/multi-factor-authentication/set-up');
         }
 

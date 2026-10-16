@@ -38,7 +38,7 @@ class OperationsPanelProvider extends PanelProvider
         return $panel->default()->id('operations')->path('app')->login(Login::class)
             ->passwordReset(requestAction: RequestPasswordReset::class)
             ->profile(EditProfile::class, isSimple: false)
-            ->multiFactorAuthentication([AppAuthentication::make()->recoverable()->codeWindow(1)], isRequired: true)
+            ->multiFactorAuthentication(config('security.mfa_enabled') ? [AppAuthentication::make()->recoverable()->codeWindow(1)] : [], isRequired: (bool) config('security.mfa_enabled'))
             ->multiFactorAuthenticationRequiredMiddlewareName(EnsureAdminMfa::class)
             ->brandName('SOLVET · Gestión')->brandLogo(fn () => view('components.brand'))->brandLogoHeight('3.875rem')
             ->favicon(asset('brand/solvet-it-logo.png'))->colors(['primary' => Color::hex('#3B647F')])->font('Inter Variable', url: asset('fonts/filament/filament/inter/index.css'), provider: LocalFontProvider::class)

@@ -59,3 +59,11 @@ bash tests/Infrastructure/encrypted-backup.sh
 ## Criterio de publicación
 
 Ejecutar `solvet:security-check --public` en producción. Revisar además [hallazgos](seguridad-validacion.md): el comando no prueba red, cifrado de disco, SMTP, restauración o WAF. Completar/revisar los borradores legales y publicarlos explícitamente desde Versiones legales. No usar credenciales de prueba ni presentar el sistema como certificado o sin vulnerabilidades.
+
+## Corrección de notificaciones PostgreSQL y MFA de testing
+
+La migración 000006 convierte notifications.data de text a jsonb mediante un cast, conservando las notificaciones. Filament filtra data->format: PostgreSQL requiere JSON nativo. No editar la migración 000005 ya aplicada. Un JSON inválido detiene la migración sin borrar registros; investigar antes de reintentar.
+
+Para suspender temporalmente todo MFA en testing, agregar SECURITY_MFA_ENABLED=false a deploy/environments/testing.env y ejecutar el update del perfil. Se omiten proveedor, desafío y exigencia de inscripción, sin borrar secretos ni códigos existentes. Usuario/contraseña, permisos y sesiones siguen vigentes. Para reactivar, establecer true y actualizar; el valor predeterminado es true. La opción aplica a la instalación: no usarla en producción por accidente. El diagnóstico de seguridad seguirá señalando administradores sin segundo factor.
+
+Validación local de esta corrección: PHPUnit con SQLite; la conversión SQL requiere comprobarse en PostgreSQL de testing. No se ejecutó contra el servidor del usuario.
