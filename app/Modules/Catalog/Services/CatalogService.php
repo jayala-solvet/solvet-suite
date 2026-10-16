@@ -23,6 +23,7 @@ class CatalogService
             'sku' => ['nullable', 'string', 'max:50', Rule::unique('catalog_items')->ignore($item?->id)],
             'name' => 'required|string|max:200', 'description' => 'nullable|string|max:1000',
             'unit' => 'sometimes|required|in:unit,hour', 'kind' => 'required|in:product,service', 'currency' => 'required|in:PYG,USD',
+            'can_purchase' => 'sometimes|boolean', 'can_sell' => 'sometimes|boolean', 'track_stock' => 'sometimes|boolean',
             'unit_price' => 'required', 'tax_rate' => 'required|in:0,5,10', 'is_active' => 'required|boolean',
         ])->validate();
         try {
@@ -31,6 +32,12 @@ class CatalogService
             throw ValidationException::withMessages(['unit_price' => collect($e->errors())->flatten()->first()]);
         }
         unset($data['unit_price']);
+        $data['can_purchase'] = $data['can_purchase'] ?? ($item?->can_purchase ?? true);
+        $data['can_sell'] = $data['can_sell'] ?? ($item?->can_sell ?? true);
+        $data['track_stock'] = $data['track_stock'] ?? ($item?->track_stock ?? false);
+        if ($data['kind'] === 'service' && $data['track_stock']) {
+            throw ValidationException::withMessages(['track_stock' => 'Solo los bienes físicos pueden controlar stock.']);
+        }
 
         return DB::transaction(function () use ($actor, $data, $calculated, $item) {
             $item = $item ? CatalogItem::lockForUpdate()->findOrFail($item->id) : new CatalogItem;
