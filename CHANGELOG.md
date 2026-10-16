@@ -105,3 +105,7 @@ Base inicial del producto. Docker Compose, núcleo por módulos, clientes, presu
 - Errores de servicio asociados a los campos reales del formulario de alta y edición.
 - La confirmación limitada informa segundos restantes en lugar de un HTTP 429 genérico; mantiene cinco intentos y bloqueo temporal.
 - Se vacía la contraseña de confirmación al devolver errores de validación.
+
+## Alta con contraseña definida
+
+El alta desde Usuarios permite definir y confirmar la contraseña del nuevo usuario, sin pedir la contraseña del administrador. Requiere users.manage y valida en servidor mínimo 12 caracteres, letras, números y símbolos (máximo 128). Se guarda únicamente su hash y se audita el alta sin credenciales. La edición, invitación y revocación conservan reautenticación. El envío de invitación sigue siendo opcional y no se dispara al crear. No se modifican contraseñas ni cuentas existentes.

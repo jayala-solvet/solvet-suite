@@ -312,25 +312,25 @@ class AccessSecurityTest extends TestCase
     public function test_native_user_form_persists_through_authorized_service(): void
     {
         Livewire::test(CreateUser::class)->fillForm([
-            'name' => 'Nuevo técnico', 'email' => 'form-tech@example.test', 'role' => 'technician', 'status' => 'active', 'reason' => 'Alta de prueba desde interfaz', 'current_password' => $this->password,
+            'name' => 'Nuevo técnico', 'email' => 'form-tech@example.test', 'role' => 'technician', 'status' => 'active', 'reason' => 'Alta de prueba desde interfaz', 'new_password' => $this->password, 'new_password_confirmation' => $this->password,
         ])->call('create')->assertHasNoFormErrors();
         $this->assertDatabaseHas('users', ['email' => 'form-tech@example.test', 'role' => 'technician', 'is_active' => true]);
     }
 
-    public function test_user_form_shows_password_errors_and_retry_delay_then_allows_creation(): void
+    public function test_new_user_password_is_validated_hashed_and_requires_user_management(): void
     {
-        $form = Livewire::test(CreateUser::class)->fillForm([
-            'name' => 'Nuevo técnico', 'email' => 'retry-tech@example.test', 'role' => 'technician', 'status' => 'active', 'reason' => 'Alta de prueba desde interfaz', 'current_password' => 'incorrect-password',
-        ]);
-        for ($i = 0; $i < 5; $i++) {
-            $form->fillForm(['current_password' => 'incorrect-password'])->call('create')->assertHasFormErrors(['current_password']);
-            $this->assertNull($form->get('data.current_password'));
+        $data = ['name' => 'Nuevo técnico', 'email' => 'password-tech@example.test', 'role' => 'technician', 'status' => 'active', 'reason' => 'Alta con contraseña individual'];
+        $service = app(AccessService::class);
+        foreach (['Short-1!', 'abcdefghijklmnop', '1234567890123!', 'Letters-and-symbols!'] as $weak) {
+            $this->invalid(fn () => $service->createWithPassword($this->admin, $data + ['new_password' => $weak, 'new_password_confirmation' => $weak]));
         }
-        $form->fillForm(['current_password' => $this->password])->call('create')->assertHasFormErrors(['current_password'])->assertSee('Demasiados intentos');
-        $this->assertDatabaseMissing('users', ['email' => 'retry-tech@example.test']);
-        $this->travel(301)->seconds();
-        $form->fillForm(['current_password' => $this->password])->call('create')->assertHasNoFormErrors();
-        $this->assertDatabaseHas('users', ['email' => 'retry-tech@example.test']);
+        $this->invalid(fn () => $service->createWithPassword($this->admin, $data + ['new_password' => $this->password, 'new_password_confirmation' => 'different']));
+        $reader = $this->user('reader');
+        $this->denied(fn () => $service->createWithPassword($reader, $data + ['new_password' => $this->password, 'new_password_confirmation' => $this->password]));
+        $user = $service->createWithPassword($this->admin, $data + ['new_password' => $this->password, 'new_password_confirmation' => $this->password]);
+        $this->assertTrue(Hash::check($this->password, $user->password));
+        $this->assertNotSame($this->password, $user->getRawOriginal('password'));
+        $this->assertDatabaseHas('audit_events', ['action' => 'user.created', 'subject_id' => $user->id]);
     }
 
     public function test_argon2id_verifies_legacy_bcrypt_hashes(): void

@@ -56,12 +56,33 @@ class AccessService
         $actor = $actor->fresh();
         self::authorize($actor, 'users.manage');
         self::reauthenticate($actor, $password);
+
+        return $this->persist($actor, $data, $user);
+    }
+
+    public function createWithPassword(User $actor, array $data): User
+    {
+        self::authorize($actor, 'users.manage');
+        $credentials = Validator::make($data, [
+            'new_password' => ['required', 'string', 'min:12', 'max:128', 'confirmed', \Illuminate\Validation\Rules\Password::min(12)->letters()->numbers()->symbols()],
+        ], [
+            'new_password.min' => 'La contraseña debe tener al menos 12 caracteres.',
+            'new_password.confirmed' => 'Las contraseñas no coinciden.',
+        ])->validate();
+
+        return $this->persist($actor, $data, null, $credentials['new_password']);
+    }
+
+    private function persist(User $actor, array $data, ?User $user, ?string $initialPassword = null): User
+    {
+        $actor = $actor->fresh();
+        self::authorize($actor, 'users.manage');
         if (is_string($data['email'] ?? null)) {
             $data['email'] = mb_strtolower(trim($data['email']));
         }
         $data = Validator::make($data, ['name' => 'required|string|max:200', 'email' => ['required', 'email', 'max:200', Rule::unique('users')->ignore($user?->id)], 'role' => 'required|string|exists:access_roles,key', 'status' => 'required|in:active,suspended,deleted', 'reason' => 'required|string|min:10|max:1000'])->validate();
 
-        return DB::transaction(function () use ($actor, $data, $user) {
+        return DB::transaction(function () use ($actor, $data, $user, $initialPassword) {
             AccessRole::where('key', 'admin')->lockForUpdate()->firstOrFail();
             $target = AccessRole::where('key', $data['role'])->firstOrFail();
             $own = AccessRole::where('key', $actor->fresh()->role)->firstOrFail();
@@ -80,7 +101,7 @@ class AccessService
             $user->suspended_at = $data['status'] === 'suspended' ? now() : null;
             $user->deleted_at = $data['status'] === 'deleted' ? now() : null;
             if ($new) {
-                $user->password = Str::random(80);
+                $user->password = $initialPassword ?? Str::random(80);
             }
             $user->save();
             self::audit($actor, $new ? 'user.created' : 'user.updated', 'user', $user->id, ['status' => $data['status'], 'role' => $data['role'], 'reason' => $data['reason']]);

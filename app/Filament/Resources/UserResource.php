@@ -17,6 +17,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Password;
 
 class UserResource extends Resource
 {
@@ -65,13 +66,15 @@ class UserResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Cuenta individual')->description('Las cuentas nuevas no tienen contraseña compartida. Guardá y enviá una invitación con el correo configurado.')->schema([
+            Section::make('Cuenta individual')->description('Definí los datos, el rol y la contraseña del nuevo usuario.')->schema([
                 TextInput::make('name')->label('Nombre')->required()->maxLength(200), TextInput::make('email')->label('Correo')->email()->required()->maxLength(200),
                 Select::make('role')->label('Rol')->options(fn () => AccessRole::pluck('name', 'key'))->required(),
                 Select::make('status')->label('Estado')->options(['active' => 'Activo', 'suspended' => 'Suspendido', 'deleted' => 'Baja lógica'])->default('active')->required(),
             ])->columns(2)->columnSpanFull(),
             Section::make('Confirmación y trazabilidad')->schema([
-                Textarea::make('reason')->label('Motivo del alta o cambio')->required()->minLength(10)->maxLength(1000), self::passwordField(),
+                TextInput::make('new_password')->label('Contraseña del nuevo usuario')->password()->autocomplete('new-password')->required()->minLength(12)->maxLength(128)->confirmed()->rule(Password::min(12)->letters()->numbers()->symbols())->helperText('Mínimo 12 caracteres, con letras, números y símbolos.')->visible(fn (string $operation) => $operation === 'create')->dehydrated(fn (string $operation) => $operation === 'create'),
+                TextInput::make('new_password_confirmation')->label('Confirmar contraseña')->password()->autocomplete('new-password')->required()->visible(fn (string $operation) => $operation === 'create')->dehydrated(fn (string $operation) => $operation === 'create'),
+                Textarea::make('reason')->label('Motivo del alta o cambio')->required()->minLength(10)->maxLength(1000), self::passwordField()->visible(fn (string $operation) => $operation !== 'create')->dehydrated(fn (string $operation) => $operation !== 'create'),
             ])->columnSpanFull(),
         ]);
     }
