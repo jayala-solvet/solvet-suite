@@ -81,3 +81,10 @@ La captura [dashboard-inicial.png](referencias/dashboard-inicial.png) muestra da
 - Pint, enlaces locales, diff y CSS fuente/publicado idéntico comprobados. Sin dependencias nuevas. No se accedió al servidor de José ni se ejecutaron Docker Engine o concurrencia PostgreSQL; comprobar esos aspectos en el destino.
 
 Las capturas de prueba permanecen fuera del repositorio. La fuente efectiva es el código y [contrato OP-01…OP-08](modulos/operaciones.md).
+
+## Revisión cruzada con propuesta ERP del otro chat · 16/10/2026
+
+- Comparado PR #10 (bb9255c) con main/PR #11 (5a4a84d). Las capacidades de catálogo y prohibición de stock para servicios ya están implementadas y cubiertas por OperationsTest. PR #10 cerrado como sustituido; no integrar sus columnas duplicadas. Se conserva su propuesta en GitHub, sin desplegar esa rama.
+- Suite completa repetida sobre main: 47 pruebas / 488 aserciones aprobadas. migrate:status local: las ocho migraciones aplicadas, sin pendientes. Correcciones de espacios en tres archivos de pruebas para que Pint completo pase; sin cambios de reglas de negocio.
+- Chromium repetido: 36 pantallas, 1852 comprobaciones de contraste sin fallas, cero errores JavaScript y cero desbordamientos globales; claro/oscuro y 1512/390 px. Solo consultas y formularios con datos ficticios locales, sin nuevas operaciones comerciales.
+- No hay Docker Engine ni PostgreSQL disponibles en este entorno. Apto para prueba funcional en laboratorio con main; construcción Docker, esquema real del destino y concurrencia PostgreSQL siguen pendientes de validar allí. No se accedió al servidor ni se aplicaron migraciones remotas.
