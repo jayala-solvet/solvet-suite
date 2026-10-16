@@ -42,6 +42,10 @@ No incluye todavía: revisiones vinculadas de presupuestos emitidos, envío por 
 
 PHP 8.5 · Laravel 13 · Filament 5 · Livewire 4 · PostgreSQL 17 · Nginx · Dompdf. Las versiones concretas de bibliotecas están en `composer.lock`. No se necesita Node para ejecutar esta entrega: los recursos de Filament se publican al construir la imagen; la identidad visual usa CSS propio. Docker debe descargar imágenes y paquetes en la primera construcción.
 
+## Entornos separados
+
+Para desarrollo, carga de pruebas y movimientos reales, usar [desarrollo, testing y producción](docs/entornos-desarrollo-pruebas-produccion.md). Comandos explícitos por entorno, bases/PDFs/claves separados, puertos iniciales 8089/8090/8091 y promoción por commit probado. La instalación actual en 8088 se conserva.
+
 ## Instalación
 
 Requisitos: Docker con Compose v2, Bash y OpenSSL. En Windows se recomienda Docker Desktop con WSL2 y ejecutar desde Ubuntu/WSL. En Linux, Docker Engine y Compose v2.

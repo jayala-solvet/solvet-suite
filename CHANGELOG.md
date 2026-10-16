@@ -1,5 +1,12 @@
 # Historial de versiones
 
+## Entornos separados · 16/10/2026
+
+- Perfiles development/testing/production con comandos explícitos, proyectos/volúmenes/credenciales/sesiones y respaldos separados. Compatibilidad con .env e instalación anterior.
+- Testing persistente separado del proyecto de PHPUnit; comandos de producción bloquean demo y borrados habituales. Guía de montaje LAN y promoción del SHA probado sin reemplazar la base real.
+- Prueba de contrato aislada de infraestructura sin Docker real; despliegue en servidor pendiente.
+
+
 ## Sin publicar
 
 ### Compras, inventario y ejecución

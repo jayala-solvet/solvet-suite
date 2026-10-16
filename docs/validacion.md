@@ -88,3 +88,10 @@ Las capturas de prueba permanecen fuera del repositorio. La fuente efectiva es e
 - Suite completa repetida sobre main: 47 pruebas / 488 aserciones aprobadas. migrate:status local: las ocho migraciones aplicadas, sin pendientes. Correcciones de espacios en tres archivos de pruebas para que Pint completo pase; sin cambios de reglas de negocio.
 - Chromium repetido: 36 pantallas, 1852 comprobaciones de contraste sin fallas, cero errores JavaScript y cero desbordamientos globales; claro/oscuro y 1512/390 px. Solo consultas y formularios con datos ficticios locales, sin nuevas operaciones comerciales.
 - No hay Docker Engine ni PostgreSQL disponibles en este entorno. Apto para prueba funcional en laboratorio con main; construcción Docker, esquema real del destino y concurrencia PostgreSQL siguen pendientes de validar allí. No se accedió al servidor ni se aplicaron migraciones remotas.
+
+## Entornos separados · 16/10/2026
+
+- `tests/Infrastructure/environments.sh` aprobado con Docker/Git simulados en carpeta temporal: tres perfiles, claves distintas, permisos 600, no regeneración, argumentos/proyectos correctos y limpieza de variables heredadas, montajes solo de desarrollo, proyecto de PHPUnit separado, respaldos por entorno, comandos destructivos bloqueados en producción y fallo de migración sin reapertura. No ejecuta contenedores ni consulta bases instaladas.
+- Suite de aplicación PHP 8.5/SQLite: 47 pruebas / 488 aserciones aprobadas. Pint completo aprobado; sintaxis Bash, YAML de Compose, enlaces locales y git diff --check sin errores.
+- compose.yml mantiene .env como valor predeterminado; scripts/setup.sh/update.sh/backup.sh previos no se cambian. Secretos generados en deploy/environments quedan fuera de Git y del contexto Docker. No hubo modificaciones visuales ni de lógica de negocio o migraciones.
+- Docker Engine y PostgreSQL no están disponibles aquí: el contrato de comandos está probado, pero construir/arrancar los tres perfiles, salud real, persistencia y concurrencia quedan para el laboratorio. No se montaron servicios en el servidor de José, no se copiaron datos de pruebas a producción y no se cambió su instalación actual.

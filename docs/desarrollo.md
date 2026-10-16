@@ -58,6 +58,8 @@ Aplicar según el tipo de cambio. Para esquema, emisión, despliegue o proxies, 
 
 ## Desarrollo Docker y assets
 
+Para nuevos checkouts, preferir los perfiles y comandos de [entornos separados](entornos-desarrollo-pruebas-produccion.md). `bash scripts/environment.sh testing test` ejecuta PHPUnit en un proyecto e imagen de pruebas independientes; `bash tests/Infrastructure/environments.sh` verifica el contrato de los scripts con un Docker simulado, sin tocar bases instaladas.
+
 ```bash
 docker compose -f compose.yml -f compose.dev.yml up -d --build
 ```

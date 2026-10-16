@@ -91,3 +91,7 @@ Comprobar migrate:status, /up, un presupuesto anterior y su PDF, roles y el circ
 La base de prueba es main con PR #11. El PR #10 (`feature/erp-operaciones-base-20261016`) quedó sustituido y cerrado tras comparar su contenido: sus flags y validación ya están cubiertos. No integrar ni copiar su migración `2026_10_16_000003_add_catalog_trade_stock_flags`: repetiría can_sell/track_stock y agregaría can_purchase, mientras el servicio operativo vigente usa can_buy.
 
 Si esa migración experimental ya se aplicó por fuera de main, detener la actualización y revisar migrate:status y el esquema en una copia; no eliminar columnas ni el registro de migraciones a ciegas. Esta revisión no comprobó el esquema del servidor de José. Proveedores se conservan por nombre/RUC en documentos y snapshots; un maestro reutilizable de proveedores sigue siendo una ampliación futura.
+
+## Entornos separados
+
+Para instalaciones nuevas de desarrollo/testing/producción usar [entornos y promoción](entornos-desarrollo-pruebas-produccion.md) y `scripts/environment.sh`. No cambiar el nombre Compose ni reemplazar .env de la instalación anterior para intentar convertirla en otro entorno. Los comandos anteriores mantienen su comportamiento compatible. No se trasladaron datos existentes como parte de esta incorporación.

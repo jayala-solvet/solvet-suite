@@ -6,7 +6,7 @@ services:
       target: app
     image: ${COMPOSE_PROJECT_NAME:-solvet-suite}-app:${APP_VERSION:-0.1.0}
     restart: unless-stopped
-    env_file: .env
+    env_file: ${SOLVET_ENV_FILE:-.env}
     environment:
       DB_CONNECTION: pgsql
       DB_HOST: db
