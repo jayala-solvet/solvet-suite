@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Core\Models\AuditEvent;
 use App\Modules\Core\Models\Company;
+use App\Modules\Costs\Services\QuoteProfitability;
 use App\Modules\Customers\Models\Customer;
 use App\Modules\Quotes\Models\Quote;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -68,7 +69,22 @@ class QuoteService
             } else {
                 $quote = new Quote(['created_by' => $actor->id, 'status' => 'draft']);
             }
-            $quote->fill(array_merge($data, $calculated))->save();
+            if ($quote->exists && $quote->currency === $data['currency']) {
+                foreach ($data['lines'] as $index => &$line) {
+                    $previous = $quote->cost_snapshot['lines'][$index] ?? null;
+                    if ($previous && (string) ($previous['catalog_item_id'] ?? '') === (string) ($line['catalog_item_id'] ?? '')) {
+                        if (! array_key_exists('cost_profile_id', $line)) {
+                            $line['cost_profile_id'] = $previous['profile_id'];
+                        }
+                        if (($previous['source'] ?? null) === 'manual' && ! array_key_exists('internal_unit_cost', $line)) {
+                            $line['internal_unit_cost'] = bcdiv($previous['unit_net_minor'], $data['currency'] === 'USD' ? '100' : '1', $data['currency'] === 'USD' ? 2 : 0);
+                        }
+                    }
+                }
+                unset($line);
+            }
+            $costSnapshot = app(QuoteProfitability::class)->snapshot($actor, $data['lines'], $calculated, $data['currency']);
+            $quote->fill(array_merge($data, $calculated, ['cost_snapshot' => $costSnapshot]))->save();
             $this->event($actor, $quote, 'draft.saved');
 
             return $quote;

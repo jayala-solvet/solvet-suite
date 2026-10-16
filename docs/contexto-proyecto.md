@@ -23,7 +23,7 @@ No se verificó desde esta documentación el estado de red del laboratorio ni la
 
 ## Estado funcional actual
 
-Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema. Dashboard comercial inicial de consulta por período de emisión/moneda, con composición y seguimiento; no calcula ganancias ni cobros.
+Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema. Dashboard comercial inicial de consulta por período de emisión/moneda, con composición y seguimiento; incorpora utilidad bruta estimada de aprobados con costos completos, restringida a admin/commercial; no registra cobros.
 
 No hay envío de correo, portal de aceptación, órdenes de trabajo, integración GLPI, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. Tampoco hay administración web de usuarios, recuperación de contraseña ni MFA implementados; ver las prioridades en [seguridad](seguridad.md).
 
@@ -48,3 +48,7 @@ La maqueta se propone en Figma y se vincula desde la especificación. Todavía n
 Leer `AGENTS.md`, este contexto, arquitectura y especificación afectada. Revisar el estado real del repositorio antes de editar. Informar brevemente el alcance, implementar una porción completa y comprobarla. Actualizar documentos y evidencia de pruebas en el mismo PR.
 
 Los documentos orientan al desarrollador y a la IA. La protección frente a regresiones la aportan además los permisos, servicios, restricciones de base, pruebas, revisión del diff y despliegues con respaldo. No considerar suficiente «la IA leyó el contexto».
+
+## Costos confirmados para Solvet
+
+José confirmó IVA venta 10%, precios de distribuidores con IVA incluido, soporte propio y tercerizado con factura. Se implementa Costos y precios con porcentaje configurable por ítem, versiones y rentabilidad estimada. No hay porcentaje universal del mercado/Odoo ni confirmación del régimen de renta. Los detalles y límites están en [costos](modulos/costos-precios.md).

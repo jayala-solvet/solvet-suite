@@ -1089,3 +1089,11 @@ button:focus-visible {
     .sv-dashboard-filter { flex: 1; min-width: 140px; }
     .sv-dashboard-followup-row { padding: 16px; gap: 12px; }
 }
+
+/* Internal cost calculation, shared by forms, details and dashboard. */
+.sv-cost-summary { padding: 16px 20px; border: 1px solid var(--solvet-border); border-radius: var(--solvet-radius); background: var(--solvet-surface); display: grid; gap: 12px; min-width: 0; }
+.sv-panel > .sv-cost-summary, .fi-modal .sv-cost-summary { border: 0; }
+.sv-cost-summary p { color: var(--solvet-muted); font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.sv-cost-summary .sv-totals { width: 100%; max-width: 560px; padding: 0; margin: 0; justify-self: end; }
+.sv-cost-summary .sv-totals dd { overflow-wrap: anywhere; min-width: 0; }
+.sv-cost-summary .sv-cost-warning { color: var(--solvet-warning-text); }

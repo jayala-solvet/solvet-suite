@@ -57,9 +57,22 @@
                     </x-ui.panel>
                 </div>
             @endif
+            @if($report['financials'] !== null)
+                <x-ui.panel title="Utilidad bruta estimada de aprobados" description="Solo documentos con costos completos capturados. No representa cobros ni utilidad neta después de gastos e impuestos a la renta.">
+                    <div class="sv-cost-summary">
+                        <dl class="sv-totals"><div class="sv-total"><dt>Utilidad estimada</dt><dd>{{ $report['financials']['covered'] ? $money($report['financials']['profit_minor']) : 'Sin costos completos' }}</dd></div>
+                        <div><dt>Margen sobre venta sin IVA</dt><dd>{{ $report['financials']['margin_percent'] !== null ? str_replace('.', ',', $report['financials']['margin_percent']).'%' : '—' }}</dd></div></dl>
+                        <p>Cobertura: {{ $report['financials']['covered'] }} de {{ $report['financials']['accepted'] }} presupuestos aprobados. Los históricos sin costos quedan fuera de esta estimación.</p>
+                    </div>
+                </x-ui.panel>
+            @endif
             <div class="sv-dashboard-method">
                 <p><strong>Cómo leer este resumen</strong> · Importes con IVA incluido, separados por moneda. Se usa la fecha de emisión y el estado actual; una aprobación puede haberse registrado después del período elegido.</p>
-                <p><strong>Rentabilidad pendiente de incorporar.</strong> El monto aprobado no representa ganancia ni cobro. Para calcular margen necesitamos registrar los costos de cada propuesta.</p>
+                @if($report['financials'] === null)
+                    <p><strong>Rentabilidad interna restringida.</strong> El monto aprobado no representa ganancia ni cobro. Los costos y márgenes son información interna con acceso restringido.</p>
+                @else
+                    <p>El monto aprobado no representa ganancia ni cobro. La estimación usa costos guardados; para un resultado real faltan compras, horas ejecutadas y gastos finales.</p>
+                @endif
                 <span>Consulta al {{ $report['asOf'] }} · America/Asuncion · Actualizá la página para ver cambios de otros usuarios.</span>
             </div>
         </div>

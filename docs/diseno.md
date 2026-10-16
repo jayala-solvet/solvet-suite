@@ -93,3 +93,7 @@ Conservar la base visual aprobada. Usar repetidor nativo compacto con duplicaci�
 ## Dashboard comercial inicial
 
 Excepción específica para el resumen comercial pedido por José: tres cifras tipográficas en una franja con separadores, distribución horizontal por importe y seguimiento enlazado a documentos. No usar el componente heredado stat-card, tendencias ficticias, tarjetas de colores ni indicadores de rentabilidad sin costos. Inspiración Ventriloc/ui-shadcn limitada a jerarquía editorial y superficies neutras; se mantienen todos los tokens, radios, iconos y temas Solvet. Ver [contrato del dashboard](modulos/dashboard.md).
+
+## Costos y precios
+
+Nuevo recurso nativo con tabla apilada en móvil, formulario agrupado, historial por versiones y modal de cálculo. Mantiene los tokens y familia de iconos. `sv-cost-summary` reutiliza la jerarquía de totales para estimaciones internas y avisos; no usar mosaicos. La rentabilidad solo es visible a roles autorizados y no pasa al PDF comercial.

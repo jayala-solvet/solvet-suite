@@ -4,6 +4,7 @@ namespace App\Modules\Dashboard\Services;
 
 use App\Models\User;
 use App\Modules\Quotes\Models\Quote;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CommercialDashboard
@@ -37,9 +38,19 @@ class CommercialDashboard
         $total = '0';
         $count = 0;
         $dueSoon = 0;
+        $financials = Gate::forUser($actor)->allows('view-costs') ? ['covered' => 0, 'accepted' => 0, 'profit_minor' => '0', 'sales_net_minor' => '0'] : null;
         // Stream canonical minor-unit strings: no SQL/SQLite floating-point SUM or monetary casts to float.
-        foreach ((clone $query)->select(['id', 'status', 'total_minor', 'valid_until'])->cursor() as $quote) {
+        foreach ((clone $query)->select(array_merge(['id', 'status', 'total_minor', 'valid_until'], $financials !== null ? ['cost_snapshot'] : []))->cursor() as $quote) {
             $date = $quote->valid_until->toDateString();
+            if ($financials !== null && $quote->status === 'accepted') {
+                $financials['accepted']++;
+                $snapshot = $quote->cost_snapshot;
+                if (($snapshot['complete'] ?? false) && ($snapshot['currency'] ?? null) === $currency && isset($snapshot['profit_minor'])) {
+                    $financials['covered']++;
+                    $financials['profit_minor'] = bcadd($financials['profit_minor'], $snapshot['profit_minor'], 0);
+                    $financials['sales_net_minor'] = bcadd($financials['sales_net_minor'], $snapshot['sales_net_minor'], 0);
+                }
+            }
             $key = $quote->status === 'issued' ? ($date < $today ? 'expired' : 'pending') : $quote->status;
             $buckets[$key]['minor'] = bcadd($buckets[$key]['minor'], $quote->total_minor, 0);
             $buckets[$key]['count']++;
@@ -58,7 +69,11 @@ class CommercialDashboard
             ->select(['id', 'customer_id', 'number', 'subject', 'currency', 'status', 'total_minor', 'snapshot', 'valid_until'])
             ->orderBy('valid_until')->orderBy('id')->limit(6)->get();
 
-        return compact('total', 'count', 'buckets', 'followUp', 'dueSoon', 'today') + [
+        if ($financials !== null) {
+            $financials['margin_percent'] = bccomp($financials['sales_net_minor'], '0', 0) > 0 ? bcdiv(bcmul($financials['profit_minor'], '100', 2), $financials['sales_net_minor'], 2) : null;
+        }
+
+        return compact('financials', 'total', 'count', 'buckets', 'followUp', 'dueSoon', 'today') + [
             'range' => ($start ? $start->format('d/m/Y') : 'Inicio del historial').' — '.$now->format('d/m/Y'),
             'asOf' => $now->format('d/m/Y H:i'),
         ];

@@ -6,6 +6,7 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 ## Qué funciona
 
+- Costos versionados, soporte propio/tercerizado, reglas de margen/recargo y rentabilidad interna de presupuestos.
 - Dashboard comercial con cotizado, aprobado, oportunidades vigentes y seguimiento, por período y moneda.
 - Acceso mediante usuario y contraseña; roles administrador, comercial y consulta.
 - Alta y edición de clientes; edición de datos de la empresa por administrador.

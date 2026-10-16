@@ -84,7 +84,7 @@ class CommercialDashboardTest extends TestCase
         $this->quote(['currency' => 'USD', 'total_minor' => '0']);
         $this->assertSame('0', $this->report('USD')['buckets']['pending']['share']);
         Livewire::test(Dashboard::class)->assertSee('₲ 18.014.398.509.481.982')
-            ->assertSee('Rentabilidad pendiente de incorporar')->assertSee('no representa ganancia ni cobro')
+            ->assertSee('Rentabilidad interna restringida')->assertSee('no representa ganancia ni cobro')
             ->assertActionHidden('createQuote');
     }
 

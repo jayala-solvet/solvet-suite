@@ -2,15 +2,24 @@
 
 namespace App\Modules\Catalog\Models;
 
+use App\Modules\Costs\Models\CostProfile;
 use App\Modules\Quotes\Models\Quote;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CatalogItem extends Model
 {
     protected $guarded = ['id'];
 
     protected $appends = ['unit_price'];
+
+    protected $hidden = ['current_cost_id', 'currentCost'];
+
+    public function currentCost(): BelongsTo
+    {
+        return $this->belongsTo(CostProfile::class, 'current_cost_id');
+    }
 
     protected function casts(): array
     {

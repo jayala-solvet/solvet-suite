@@ -95,3 +95,7 @@ El resumen de edición (`filament/quotes/live-totals`) usa `QuoteCalculator`, si
 ## Patrón de resumen comercial
 
 `filament/pages/dashboard.blade.php` usa una franja `sv-dashboard-metrics` con tres cifras y separadores, paneles `x-ui.panel`, barras discretas con importes etiquetados y filas de seguimiento. Los estilos se limitan al prefijo `sv-dashboard` y usan tokens existentes. No reutilizar como mosaico de tarjetas ni llevar indicadores a los listados operativos. Contrato: [dashboard](modulos/dashboard.md).
+
+## Resumen de costos
+
+`filament/costs/quote-summary` presenta cobertura y rentabilidad estimada; solo se monta con permiso view-costs. Usa `sv-cost-summary` y `sv-totals` en formulario, detalle y dashboard. No incluir este bloque en plantillas comerciales ni serializar cost_snapshot como datos de cliente.

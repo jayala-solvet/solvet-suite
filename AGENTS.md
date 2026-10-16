@@ -63,3 +63,9 @@ Toda nueva pantalla debe funcionar en claro y oscuro usando los tokens semántic
 - Desarrollo sin reconstruir PHP: usar `compose.dev.yml`; recompilar recursos Filament cuando cambie el CSS publicado (`php artisan filament:assets`).
 
 No desplegar cambios a instalaciones de clientes como efecto incidental de una tarea de código. Trabajar en local/pruebas y entregar una versión revisable; aplicar despliegues solo cuando formen parte del alcance autorizado.
+
+## Regla común de costos y rentabilidad
+
+Para nuevos módulos leer [costos y precios](docs/modulos/costos-precios.md). Un único catálogo; separar costo, precio, IVA recuperable y utilidad. No existe un porcentaje obligatorio de ganancia de Odoo. Utilidad = venta sin IVA menos costos efectivos; distinguir margen sobre venta de recargo sobre costo. Un costo faltante es null, nunca cero implícito. Informar cobertura, moneda, fecha, procedencia y carácter estimado/real de todo indicador. No presentar aprobación como cobro o utilidad realizada.
+
+Reutilizar CostCalculator/QuoteProfitability y los Gates de costos; costo interno y proveedor no aparecen en PDF comercial, serialización pública o vistas de reader. Conservar versiones y snapshots: no recalcular históricos desde maestros actuales. Todo cambio futuro a compras, ejecución o facturación debe declarar cómo registra costos reales, diferencias con estimados y tratamiento fiscal. La configuración de Solvet (IVA 10%, compras informadas con IVA) no es una regla universal para otras instalaciones.
