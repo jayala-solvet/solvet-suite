@@ -7,6 +7,11 @@ use Illuminate\Validation\ValidationException;
 
 class QuoteCalculator
 {
+    public static function pricePattern(string $currency): string
+    {
+        return $currency === 'PYG' ? '/^\d{1,9}(\.0{1,2})?$/' : '/^\d{1,9}(\.\d{1,2})?$/';
+    }
+
     private function round(string $value): string
     {
         return bcadd($value, '0.5', 0);
@@ -38,7 +43,7 @@ class QuoteCalculator
             $discount = bcadd($discount, $off, 0);
             $total = bcadd($total, $net, 0);
             $tax = bcadd($tax, $vat, 0);
-            $normalized[] = ['description' => $line['description'], 'quantity' => (string) $line['quantity'], 'unit_price' => (string) $line['unit_price'], 'discount' => (string) $line['discount'], 'tax_rate' => (string) $line['tax_rate'], 'total_minor' => $net, 'tax_minor' => $vat];
+            $normalized[] = ['description' => $line['description'], 'quantity' => (string) $line['quantity'], 'unit_price' => (string) $line['unit_price'], 'discount' => (string) $line['discount'], 'tax_rate' => (string) $line['tax_rate'], 'total_minor' => $net, 'tax_minor' => $vat, 'catalog_item_id' => $line['catalog_item_id'] ?? null, 'sku' => $line['sku'] ?? null];
         }
 
         return ['lines' => $normalized, 'subtotal_minor' => $subtotal, 'discount_minor' => $discount, 'total_minor' => $total, 'tax_minor' => $tax];

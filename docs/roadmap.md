@@ -6,7 +6,8 @@
 | 1 | Clientes, borradores, cálculo, emisión PDF e historial | Incluido en v0.1 |
 | 1.1 | Validar instalación PostgreSQL/Docker en infraestructura Solvet | Antes de operar con datos reales |
 | 1.2 | Totales durante edición y detalle completo | Implementado en PR #4 |
-| 1.3 | Revisiones y catálogo | Próxima entrega comercial recomendada |
+| 1.3 | Catálogo opcional, pago, carga y baja auditada de borradores | Implementado en ampliación de carga |
+| 1.3.1 | Revisiones vinculadas | Próxima entrega comercial recomendada |
 | 1.4 | Gestión de usuarios, recuperación de acceso y MFA | Antes de comercializar |
 | 2 | Correo con cola, portal de aceptación y vencimientos | Planificado |
 | 3 | Órdenes de trabajo y vínculo GLPI | Planificado |

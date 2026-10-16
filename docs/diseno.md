@@ -85,3 +85,7 @@ Usar tokens para superficies/textos de nuevas vistas; preservar semántica y tec
 Validar claro/oscuro, escritorio, 390 px, datos reales de prueba/vacíos/extensos, filtros y acciones. Listados nativos apilados en móvil; tablas de detalle e historial con desplazamiento interno. Sin desbordamiento global. Respetar movimiento reducido.
 
 Reutilizar componentes nativos y `x-ui.panel`, `x-ui.status`, `x-ui.empty-state`. No copiar vistas internas ni modificar `vendor`, no agregar SPA ni biblioteca visual. Ante un patrón nuevo, documentarlo y agregarlo compartido antes de duplicarlo. Ver [componentes](componentes-ui.md) y [módulo](modulos/presupuestos.md).
+
+## Carga comercial
+
+Conservar la base visual aprobada. Usar repetidor nativo compacto con duplicación/colapso, selección opcional de catálogo, descripción amplia, importes por ítem y resumen. Datos de pago/entrega separados de términos generales, inicialmente contraídos. Guardado visible al desplazarse y aviso de cambios sin guardar. La baja del borrador es secundaria, con confirmación y condición de estado en servidor. No extender este permiso a emitidos.

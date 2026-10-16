@@ -3,6 +3,7 @@
 namespace App\Modules\Quotes\Services;
 
 use App\Models\User;
+use App\Modules\Catalog\Models\CatalogItem;
 use App\Modules\Core\Models\AuditEvent;
 use App\Modules\Core\Models\Company;
 use App\Modules\Customers\Models\Customer;
@@ -32,7 +33,30 @@ class QuoteService
     public function saveDraft(User $actor, array $data, ?Quote $quote = null): Quote
     {
         $this->authorize($actor);
-        $data = Validator::make($data, ['customer_id' => 'required|exists:customers,id', 'subject' => 'required|string|max:200', 'currency' => 'required|in:PYG,USD', 'valid_until' => 'required|date|after_or_equal:today', 'terms' => 'nullable|string|max:5000', 'lines' => 'required|array'])->validate();
+        $data = Validator::make($data, ['customer_id' => 'required|exists:customers,id', 'subject' => 'required|string|max:200', 'currency' => 'required|in:PYG,USD', 'valid_until' => 'required|date|after_or_equal:today', 'terms' => 'nullable|string|max:5000',
+            'payment_mode' => 'sometimes|required|in:cash,credit,to_agree',
+            'credit_days' => 'nullable|required_if:payment_mode,credit|integer|min:1|max:365',
+            'payment_notes' => 'nullable|string|max:1000', 'delivery_terms' => 'nullable|string|max:500',
+            'warranty_terms' => 'nullable|string|max:500',
+            'lines' => 'required|array|min:1|max:100'])->validate();
+        $data['payment_mode'] ??= $quote ? ($quote->payment_mode ?? 'to_agree') : 'cash';
+        Validator::make(['lines' => $data['lines']], ['lines.*' => 'required|array', 'lines.*.catalog_item_id' => 'nullable|integer|exists:catalog_items,id'])->validate();
+        if ($data['payment_mode'] === 'credit' && empty($data['credit_days'])) {
+            throw ValidationException::withMessages(['credit_days' => 'Indicá el plazo del crédito.']);
+        }
+        $data['credit_days'] = $data['payment_mode'] === 'credit' ? $data['credit_days'] : null;
+        if (! $quote && ! array_key_exists('terms', $data)) {
+            $data['terms'] = QuoteDefaults::terms();
+        }
+        $items = CatalogItem::whereIn('id', array_filter(array_column($data['lines'], 'catalog_item_id')))->get()->keyBy('id');
+        foreach ($data['lines'] as $key => &$line) {
+            $item = $items->get($line['catalog_item_id'] ?? null);
+            if ($item && $item->currency !== $data['currency']) {
+                throw ValidationException::withMessages(['lines.'.$key.'.catalog_item_id' => 'El ítem de catálogo usa otra moneda. Elegí uno de la moneda del presupuesto o cargá el ítem manualmente.']);
+            }
+            $line['sku'] = $item?->sku;
+        }
+        unset($line);
         $calculated = $this->calculator->calculate($data['lines'], $data['currency']);
 
         return DB::transaction(function () use ($actor, $data, $calculated, $quote) {
@@ -78,6 +102,19 @@ class QuoteService
             $this->event($actor, $quote, 'quote.issued', ['number' => $quote->number, 'pdf_sha256' => $quote->pdf_sha256]);
 
             return $quote;
+        });
+    }
+
+    public function deleteDraft(User $actor, Quote $quote): void
+    {
+        $this->authorize($actor);
+        DB::transaction(function () use ($actor, $quote) {
+            $quote = Quote::lockForUpdate()->findOrFail($quote->id);
+            if ($quote->status !== 'draft' || $quote->number !== null) {
+                throw ValidationException::withMessages(['status' => 'Solo se pueden eliminar borradores sin emitir.']);
+            }
+            $this->event($actor, $quote, 'draft.deleted', ['reference' => $quote->reference()]);
+            $quote->delete();
         });
     }
 

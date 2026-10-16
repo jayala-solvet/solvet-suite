@@ -12,6 +12,8 @@ class CreateQuote extends CreateRecord
 {
     protected static string $resource = QuoteResource::class;
 
+    public static bool $formActionsAreSticky = true;
+
     protected static ?string $title = 'Nuevo presupuesto';
 
     protected ?string $subheading = 'Completá los datos de tu propuesta. Se guardará como borrador.';

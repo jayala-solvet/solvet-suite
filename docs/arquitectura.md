@@ -10,6 +10,7 @@ Monolito modular sobre Laravel 13, PHP 8.5 y PostgreSQL 17. Interfaz Filament 5/
 |---|---|---|
 | Núcleo | app/Modules/Core | Empresa y auditoría |
 | Clientes | app/Modules/Customers | Información comercial del destinatario |
+| Catálogo | app/Modules/Catalog | Maestro opcional de productos/servicios; copia de datos a propuestas |
 | Presupuestos | app/Modules/Quotes | Cálculo, persistencia, emisión y decisión |
 | Interfaz | app/Filament | Formularios, tablas y navegación |
 | Documentos | resources/views/pdf | Representación del contenido emitido |

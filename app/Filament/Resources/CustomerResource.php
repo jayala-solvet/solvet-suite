@@ -44,7 +44,12 @@ class CustomerResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([
+        return $schema->components(self::fields());
+    }
+
+    public static function fields(): array
+    {
+        return [
             Section::make('Identificación del cliente')->description('Datos que se utilizarán al preparar tus presupuestos.')->icon('heroicon-o-users')->schema([
                 TextInput::make('name')->label('Razón social / nombre')->required()->maxLength(200),
                 TextInput::make('tax_id')->label('RUC / identificación')->maxLength(50),
@@ -55,7 +60,7 @@ class CustomerResource extends Resource
                 TextInput::make('phone')->label('Teléfono')->maxLength(50),
                 Textarea::make('address')->label('Dirección')->maxLength(1000)->rows(3)->columnSpanFull(),
             ])->columns(['default' => 1, 'md' => 3])->columnSpanFull(),
-        ]);
+        ];
     }
 
     public static function table(Table $table): Table

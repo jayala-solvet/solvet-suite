@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Modules\Catalog\Models\CatalogItem;
+use App\Modules\Customers\Services\CustomerService;
 use App\Modules\Quotes\Models\Quote;
 use App\Modules\Quotes\Services\QuoteCalculator;
+use App\Modules\Quotes\Services\QuoteDefaults;
 use App\Modules\Quotes\Services\QuoteService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -17,6 +20,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -27,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class QuoteResource extends Resource
@@ -55,26 +60,62 @@ class QuoteResource extends Resource
 
     public static function canDelete($record): bool
     {
-        return false;
+        return self::canEdit($record) && $record->number === null;
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Section::make('Datos del presupuesto')->description('Definí el destinatario, la moneda y la vigencia de tu propuesta.')->icon('heroicon-o-document-text')->schema([
-                Select::make('customer_id')->label('Cliente')->relationship('customer', 'name')->searchable()->preload()->required(),
+                Select::make('customer_id')->label('Cliente')->relationship('customer', 'name')->searchable()->preload()->required()
+                    ->createOptionForm(CustomerResource::fields())
+                    ->createOptionAction(fn (Action $action) => $action->modalHeading('Nuevo cliente')->modalSubmitActionLabel('Crear y seleccionar'))
+                    ->createOptionUsing(fn (array $data) => app(CustomerService::class)->create(auth()->user(), $data)->getKey()),
                 TextInput::make('subject')->label('Referencia / asunto')->required()->maxLength(200),
-                Select::make('currency')->live()->label('Moneda')->options(['PYG' => 'Guaraníes (PYG)', 'USD' => 'Dólares (USD)'])->default('PYG')->required(),
+                Select::make('currency')->live()->helperText('Cambiar la moneda no convierte los precios. Revisá los ítems.')->label('Moneda')->options(['PYG' => 'Guaraníes (PYG)', 'USD' => 'Dólares (USD)'])->default('PYG')->required(),
                 DatePicker::make('valid_until')->native(false)->displayFormat('d/m/Y')->locale('es')->label('Válido hasta')->default(now()->addDays(15))->required(),
             ])->columns(2)->columnSpanFull(),
             Section::make('Productos y servicios')->icon('heroicon-o-squares-plus')->description('Precios con IVA incluido. Revisá los totales antes de guardar. PYG sin decimales; USD hasta 2.')->schema([
-                Repeater::make('lines')->live(debounce: 600)->label('Detalle')->hiddenLabel()->itemLabel('Ítem')->itemNumbers()->schema([
-                    Textarea::make('description')->label('Descripción')->required()->maxLength(1000)->columnSpan(['default' => 1, 'md' => 2, 'xl' => 4])->rows(2),
-                    TextInput::make('quantity')->label('Cantidad')->numeric()->minValue('0.001')->maxValue(999999.999)->default('1')->required()->columnSpan(['xl' => 2]),
-                    TextInput::make('unit_price')->label('Precio unitario')->numeric()->minValue(0)->maxValue(999999999)->required()->columnSpan(['xl' => 2]),
-                    TextInput::make('discount')->label('Dto. %')->numeric()->minValue(0)->maxValue(100)->default('0')->required()->columnSpan(['xl' => 2]),
-                    Select::make('tax_rate')->label('IVA incluido')->options(['0' => 'Exento', '5' => '5%', '10' => '10%'])->default('10')->required()->columnSpan(['xl' => 2]),
-                ])->columns(['default' => 1, 'md' => 2, 'xl' => 12])->minItems(1)->maxItems(100)->defaultItems(1)->addActionLabel('Agregar ítem')->addAction(fn (Action $action) => $action->color('gray')->outlined()->icon('heroicon-o-plus'))->reorderable(false),
+                Repeater::make('lines')->live(debounce: 600)->label('Detalle')->hiddenLabel()->compact()->collapsible()->cloneable()
+                    ->itemLabel(fn (array $state): string => Str::limit($state['description'] ?? 'Nuevo ítem', 65))->itemNumbers()->schema([
+                        Select::make('catalog_item_id')->label('Catálogo (opcional)')->placeholder('Carga manual')->searchable()->preload()
+                            ->options(fn (Get $get) => CatalogItem::where('is_active', true)->where('currency', $get('../../currency') ?? 'PYG')->orderBy('name')->limit(25)->get()->mapWithKeys(fn (CatalogItem $item) => [$item->id => $item->selectionLabel()])->all())
+                            ->getSearchResultsUsing(fn (string $search, Get $get) => CatalogItem::where('is_active', true)->where('currency', $get('../../currency') ?? 'PYG')
+                                ->where(fn (Builder $q) => $q->whereLike('name', '%'.$search.'%')->orWhereLike('sku', '%'.$search.'%'))
+                                ->orderBy('name')->limit(25)->get()->mapWithKeys(fn (CatalogItem $item) => [$item->id => $item->selectionLabel()])->all())
+                            ->getOptionLabelUsing(fn ($value) => CatalogItem::find($value)?->selectionLabel())
+                            ->rules(fn (Get $get) => [Rule::exists('catalog_items', 'id')->where('currency', $get('../../currency') ?? 'PYG')])->live()
+                            ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                if (! $state) {
+                                    return;
+                                }
+                                $item = CatalogItem::where('is_active', true)->find($state);
+                                if (! $item || $item->currency !== $get('../../currency')) {
+                                    return;
+                                }
+                                $set('description', $item->quoteDescription());
+                                $set('unit_price', $item->unit_price);
+                                $set('tax_rate', (string) $item->tax_rate);
+                            })->columnSpan(['default' => 1, 'md' => 2, 'xl' => 4]),
+                        Textarea::make('description')->label('Descripción')->required()->maxLength(1000)->columnSpan(['default' => 1, 'md' => 2, 'xl' => 8])->rows(2),
+                        TextInput::make('quantity')->label('Cantidad')->numeric()->minValue('0.001')->maxValue(999999.999)->default('1')->required()->columnSpan(['xl' => 2]),
+                        TextInput::make('unit_price')->label('Precio unitario')->numeric()->minValue(0)->maxValue(fn (Get $get) => $get('../../currency') === 'USD' ? '999999999.99' : '999999999')->required()
+                            ->rules(fn (Get $get) => ['regex:'.QuoteCalculator::pricePattern($get('../../currency') ?? 'PYG')])
+                            ->validationMessages(['regex' => 'Ingresá un precio válido: PYG entero o USD con hasta 2 decimales.'])->prefix(fn (Get $get) => $get('../../currency') === 'USD' ? 'US$' : '₲')->columnSpan(['xl' => 3]),
+                        TextInput::make('discount')->label('Dto. %')->numeric()->minValue(0)->maxValue(100)->default('0')->required()->columnSpan(['xl' => 2]),
+                        Select::make('tax_rate')->label('IVA incluido')->options(['0' => 'Exento', '5' => '5%', '10' => '10%'])->default('10')->required()->columnSpan(['xl' => 2]),
+                        View::make('filament.quotes.line-total')->viewData(function (Get $get) {
+                            $currency = $get('../../currency') ?? 'PYG';
+                            try {
+                                $values = app(QuoteCalculator::class)->calculate([['description' => $get('description') ?? '', 'quantity' => $get('quantity'), 'unit_price' => $get('unit_price'), 'discount' => $get('discount'), 'tax_rate' => $get('tax_rate')]], $currency);
+                                $lineTotal = Quote::money($values['total_minor'], $currency);
+                            } catch (ValidationException $e) {
+                                $lineTotal = '—';
+                            }
+
+                            return compact('lineTotal');
+                        })->columnSpan(['xl' => 3]),
+                    ])->columns(['default' => 1, 'md' => 2, 'xl' => 12])->minItems(1)->maxItems(100)->defaultItems(1)->addActionLabel('Agregar ítem')->addAction(fn (Action $action) => $action->color('gray')->outlined()->icon('heroicon-o-plus'))->reorderable(false),
             ])->columnSpanFull(),
             View::make('filament.quotes.live-totals')->viewData(function (Get $get) {
                 $currency = $get('currency') ?? 'PYG';
@@ -86,9 +127,17 @@ class QuoteResource extends Resource
 
                 return compact('totals', 'currency');
             })->columnSpanFull(),
-            Section::make('Condiciones comerciales')->description('Forma de pago, entrega y garantía que acompañarán al documento.')->icon('heroicon-o-clipboard-document-list')->schema([
-                Textarea::make('terms')->label('Condiciones comerciales')->hiddenLabel()->rows(4)->maxLength(5000)->default("Forma de pago: a convenir.\nPlazo de entrega: a confirmar.\nGarantía: según producto o servicio."),
-            ])->columnSpanFull(),
+            Section::make('Pago y entrega')->description('Estas condiciones se incluyen en el PDF. El plazo de crédito no genera un vencimiento de cobro automático.')->schema([
+                Select::make('payment_mode')->label('Forma de pago')->options(['cash' => 'Contado', 'credit' => 'Crédito', 'to_agree' => 'A convenir'])->default('cash')->required()->live(),
+                TextInput::make('credit_days')->label('Plazo de crédito (días)')->integer()->minValue(1)->maxValue(365)->default(30)
+                    ->visible(fn (Get $get) => $get('payment_mode') === 'credit')->required(fn (Get $get) => $get('payment_mode') === 'credit'),
+                TextInput::make('payment_notes')->label('Detalle del pago')->placeholder('Transferencia, anticipo o desde cuándo se cuentan los días')->maxLength(1000)->columnSpanFull(),
+                TextInput::make('delivery_terms')->label('Plazo de entrega')->maxLength(500)->default('A coordinar según disponibilidad y confirmación del pedido.'),
+                TextInput::make('warranty_terms')->label('Garantía / soporte incluido')->maxLength(500)->placeholder('Indicá la cobertura aplicable al producto o servicio'),
+            ])->columns(2)->columnSpanFull(),
+            Section::make('Términos y condiciones')->description('Se copian a esta propuesta. La base se puede ajustar en Mi empresa.')->schema([
+                Textarea::make('terms')->label('Términos y condiciones')->rows(7)->maxLength(5000)->default(fn () => QuoteDefaults::terms()),
+            ])->collapsible()->collapsed()->columnSpanFull(),
         ]);
     }
 
@@ -187,6 +236,14 @@ class QuoteResource extends Resource
                     app(QuoteService::class)->decide(auth()->user(), $record, $data['status'], $data['evidence']);
                     Notification::make()->title('Decisión registrada')->success()->send();
                     $livewire->redirect(self::getUrl('view', ['record' => $record]));
+                }),
+            Action::make('deleteDraft')->label('Eliminar borrador')->icon('heroicon-o-trash')->color('danger')->outlined()->requiresConfirmation()
+                ->modalHeading('Eliminar este borrador')->modalDescription('El borrador dejará de aparecer en el listado. Se conservará un registro de auditoría de esta operación. No afecta presupuestos emitidos ni consume un correlativo.')
+                ->modalSubmitActionLabel('Eliminar borrador')->visible(fn (Quote $record) => self::canDelete($record))
+                ->action(function (Quote $record, $livewire) {
+                    app(QuoteService::class)->deleteDraft(auth()->user(), $record);
+                    Notification::make()->title('Borrador eliminado')->success()->send();
+                    $livewire->redirect(self::getUrl('index'));
                 }),
             Action::make('history')->label('Historial')->icon('heroicon-o-clock')->color('gray')
                 ->url(fn (Quote $record) => route('quotes.history', $record))->openUrlInNewTab(),

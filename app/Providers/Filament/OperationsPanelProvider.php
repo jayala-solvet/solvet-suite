@@ -33,6 +33,7 @@ class OperationsPanelProvider extends PanelProvider
             ->defaultAvatarProvider(LocalAvatarProvider::class)
             ->navigationGroups(['Comercial', 'Administración'])
             ->homeUrl(fn () => QuoteResource::getUrl('index'))
+            ->unsavedChangesAlerts()
             ->darkMode()
             ->defaultThemeMode(ThemeMode::Light)
             ->themeSwitcher(false)

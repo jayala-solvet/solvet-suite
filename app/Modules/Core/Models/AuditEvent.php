@@ -19,7 +19,7 @@ class AuditEvent extends Model
 
     public function label(): string
     {
-        return ['draft.saved' => 'Borrador guardado', 'quote.issued' => 'Presupuesto emitido',
+        return ['draft.deleted' => 'Borrador eliminado', 'draft.saved' => 'Borrador guardado', 'quote.issued' => 'Presupuesto emitido',
             'quote.accepted' => 'Aceptación registrada', 'quote.rejected' => 'Rechazo registrado',
             'quote.cancelled' => 'Anulación registrada'][$this->action] ?? $this->action;
     }

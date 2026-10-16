@@ -2,6 +2,16 @@
 
 ## Sin publicar
 
+### Carga, catálogo, pago y documento comercial
+
+- Catálogo opcional de productos/servicios con moneda, precio, IVA, código y disponibilidad; propuestas con ítems manuales o copiados y ajustables.
+- Alta de cliente inline, ítems compactos duplicables/contraíbles, importe por línea, guardado accesible al desplazarse y aviso de cambios sin guardar.
+- Pago contado/crédito con días validados, detalle de pago, entrega, garantía y términos generales configurables en Mi empresa.
+- Baja auditada de borradores sin número con confirmación; emitidos protegidos. Rutas y listados excluyen bajas.
+- PDF A4 pulido con cabecera compacta y secciones comerciales separadas, sin modificar archivos emitidos.
+- Migración aditiva nullable para datos nuevos y catálogo; sin dependencias ni cambios de numeración.
+
+
 ### Refinamiento visual con referencia Supabase / Refero
 
 - Modo oscuro con grises neutros por niveles, cabecera oscura integrada, separadores finos y superficies sin sombra decorativa. Se conserva el acento Solvet y la densidad operativa.

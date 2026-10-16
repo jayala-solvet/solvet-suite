@@ -23,9 +23,9 @@ No se verificó desde esta documentación el estado de red del laboratorio ni la
 
 ## Estado funcional actual
 
-Clientes; datos de emisor; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema.
+Clientes y alta inline; catálogo opcional de productos/servicios; datos de emisor y términos generales; acceso por roles; presupuestos PYG/USD con borrador, totales durante edición, pago contado/crédito, baja auditada de borradores, correlativo al emitir, PDF privado conservado, decisiones con evidencia e historial. Listado con pestañas, filtros, búsqueda, columnas y selección contextual. Modo claro/oscuro/sistema.
 
-No hay envío de correo, portal de aceptación, órdenes de trabajo, integración GLPI, catálogo, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. Tampoco hay administración web de usuarios, recuperación de contraseña ni MFA implementados; ver las prioridades en [seguridad](seguridad.md).
+No hay envío de correo, portal de aceptación, órdenes de trabajo, integración GLPI, revisiones, contabilidad ni facturación fiscal. No mostrar estas funciones como disponibles. Tampoco hay administración web de usuarios, recuperación de contraseña ni MFA implementados; ver las prioridades en [seguridad](seguridad.md).
 
 ## Identidad y experiencia
 
