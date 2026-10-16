@@ -56,3 +56,7 @@ Usuarios, roles, sesiones, login/fallos/logout, exportaciones, asignaciones y ve
 ## ACC-08 · Pruebas
 
 AccessSecurityTest cubre roles, accesos directos, alcance técnico, campos inyectados, reautenticación, último admin, suspensiones/reactivación/bajas, revocación, MFA/TOTP real, tokens/reutilización/vencimiento, cola cifrada, alertas, cabeceras/sesión y evidencia legal. Pruebas de dominio usan administradores ficticios ya enrolados; no deshabilitan MFA de producción. Los bloqueos concurrentes deben verificarse en PostgreSQL antes de publicación.
+
+### Errores de confirmación
+
+Alta y edición vinculan errores del servicio a data.<campo>. La contraseña de confirmación se vacía tras un error para que no viaje de vuelta en el estado de respuesta. Después de cinco fallos se conserva la espera de cinco minutos y se muestra el tiempo restante junto al campo. No se deshabilita la reautenticación ni se crea la cuenta cuando falla.
