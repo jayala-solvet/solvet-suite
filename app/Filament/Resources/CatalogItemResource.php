@@ -61,6 +61,10 @@ class CatalogItemResource extends Resource
                 TextInput::make('sku')->label('Código / SKU')->maxLength(50)->unique(ignoreRecord: true),
                 Select::make('unit')->label('Unidad de cotización')->options(['unit' => 'Unidad', 'hour' => 'Hora'])->default('unit')->required()->helperText('Para soporte N1/N2 utilizá Hora. Con historial de costos, cambiar unidad, tipo o moneda requiere otro ítem. Cambiar IVA desvincula el costo actual.'),
                 Select::make('kind')->label('Tipo')->options(['product' => 'Producto', 'service' => 'Servicio'])->default('service')->required(),
+                Toggle::make('can_purchase')->label('Se puede comprar')->default(true),
+                Toggle::make('can_sell')->label('Se puede vender')->default(true),
+                Toggle::make('track_stock')->label('Controlar stock')->default(false)
+                    ->helperText('Solo para bienes físicos. No crea stock ni movimientos hasta implementar Inventario.'),
                 Textarea::make('description')->label('Descripción para el presupuesto')->helperText('Si se deja vacía, se usará el nombre.')->maxLength(1000)->rows(3)->columnSpanFull(),
                 Select::make('currency')->label('Moneda')->options(['PYG' => 'Guaraníes (PYG)', 'USD' => 'Dólares (USD)'])->default('PYG')->required(),
                 TextInput::make('unit_price')->label('Precio con IVA incluido')->numeric()->minValue(0)->required()
