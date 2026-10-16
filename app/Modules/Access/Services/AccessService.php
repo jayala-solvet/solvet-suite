@@ -28,7 +28,10 @@ class AccessService
     public static function reauthenticate(User $actor, string $password): void
     {
         $key = 'sensitive:'.$actor->id.':'.request()->ip();
-        abort_if(RateLimiter::tooManyAttempts($key, 5), 429);
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages(['current_password' => "Demasiados intentos. Esperá {$seconds} segundos antes de volver a confirmar tu contraseña."]);
+        }
         if (! Hash::check($password, $actor->fresh()->password)) {
             RateLimiter::hit($key, 300);
             throw ValidationException::withMessages(['current_password' => 'La contraseña actual no es correcta.']);

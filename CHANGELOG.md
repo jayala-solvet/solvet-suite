@@ -99,3 +99,9 @@ Base inicial del producto. Docker Compose, núcleo por módulos, clientes, presu
 
 - Migración compatible de notificaciones a jsonb en PostgreSQL para consultas de Filament.
 - SECURITY_MFA_ENABLED=false suspende MFA sin eliminar factores; activo por defecto.
+
+## Validación del formulario de usuarios
+
+- Errores de servicio asociados a los campos reales del formulario de alta y edición.
+- La confirmación limitada informa segundos restantes en lugar de un HTTP 429 genérico; mantiene cinco intentos y bloqueo temporal.
+- Se vacía la contraseña de confirmación al devolver errores de validación.

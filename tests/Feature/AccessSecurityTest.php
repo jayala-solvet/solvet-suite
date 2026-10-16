@@ -317,6 +317,22 @@ class AccessSecurityTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'form-tech@example.test', 'role' => 'technician', 'is_active' => true]);
     }
 
+    public function test_user_form_shows_password_errors_and_retry_delay_then_allows_creation(): void
+    {
+        $form = Livewire::test(CreateUser::class)->fillForm([
+            'name' => 'Nuevo técnico', 'email' => 'retry-tech@example.test', 'role' => 'technician', 'status' => 'active', 'reason' => 'Alta de prueba desde interfaz', 'current_password' => 'incorrect-password',
+        ]);
+        for ($i = 0; $i < 5; $i++) {
+            $form->fillForm(['current_password' => 'incorrect-password'])->call('create')->assertHasFormErrors(['current_password']);
+            $this->assertNull($form->get('data.current_password'));
+        }
+        $form->fillForm(['current_password' => $this->password])->call('create')->assertHasFormErrors(['current_password'])->assertSee('Demasiados intentos');
+        $this->assertDatabaseMissing('users', ['email' => 'retry-tech@example.test']);
+        $this->travel(301)->seconds();
+        $form->fillForm(['current_password' => $this->password])->call('create')->assertHasNoFormErrors();
+        $this->assertDatabaseHas('users', ['email' => 'retry-tech@example.test']);
+    }
+
     public function test_argon2id_verifies_legacy_bcrypt_hashes(): void
     {
         $legacy = password_hash($this->password, PASSWORD_BCRYPT, ['cost' => 4]);
