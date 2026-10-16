@@ -23,7 +23,7 @@ class CatalogItem extends Model
 
     protected function casts(): array
     {
-        return ['price_minor' => 'decimal:0', 'is_active' => 'boolean'];
+        return ['price_minor' => 'decimal:0', 'is_active' => 'boolean', 'can_purchase' => 'boolean', 'can_sell' => 'boolean', 'track_stock' => 'boolean'];
     }
 
     protected function unitPrice(): Attribute
