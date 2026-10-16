@@ -15,13 +15,24 @@ class CreateUser extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         try {
-            return app(AccessService::class)->save(auth()->user(), $data, null, $data['current_password']);
+            $user = app(AccessService::class)->createWithPassword(auth()->user(), $data);
+            $this->data['new_password'] = null;
+            $this->data['new_password_confirmation'] = null;
+
+            return $user;
         } catch (ValidationException $exception) {
-            $this->data['current_password'] = null;
+            $this->data['new_password'] = null;
+            $this->data['new_password_confirmation'] = null;
             throw ValidationException::withMessages(
                 collect($exception->errors())->mapWithKeys(fn ($messages, $field) => ['data.'.$field => $messages])->all()
             );
         }
+    }
+
+    protected function onValidationError(ValidationException $exception): void
+    {
+        $this->data['new_password'] = null;
+        $this->data['new_password_confirmation'] = null;
     }
 
     protected function getRedirectUrl(): string

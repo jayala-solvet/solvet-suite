@@ -21,7 +21,7 @@ La matriz editable muestra únicamente acciones soportadas. Consultar compras im
 
 ## ACC-01 · Alta y edición
 
-Administración → Usuarios. Solo users.manage. Nombre, correo normalizado, rol, estado activo/suspendido/baja y motivo mínimo de diez caracteres. Se exige la contraseña actual del operador, con límite de intentos. El servicio acepta una lista explícita: no se acepta contraseña del usuario nuevo, session_version ni secretos MFA del formulario. La nueva contraseña es aleatoria y no se presenta: enviar invitación por correo con enlace de recuperación. No se crean cuentas compartidas.
+Administración → Usuarios. Solo users.manage. Nombre, correo normalizado, rol, estado activo/suspendido/baja y motivo mínimo de diez caracteres. En el alta se define y confirma la contraseña del nuevo usuario. La edición exige la contraseña actual del operador con límite de intentos. El servicio acepta una lista explícita y no acepta session_version ni secretos MFA del formulario. Las invitaciones por correo siguen disponibles como acción separada. No se crean cuentas compartidas.
 
 Edición y reactivación conservan IDs, referencias y auditoría. Baja lógica no borra presupuestos ni movimientos de ese usuario. Se comprueba bajo transacción/bloqueo del rol admin que quede al menos un administrador activo. No hay borrado físico web ni restablecimiento de MFA ajeno desde este formulario.
 
@@ -59,4 +59,8 @@ AccessSecurityTest cubre roles, accesos directos, alcance técnico, campos inyec
 
 ### Errores de confirmación
 
-Alta y edición vinculan errores del servicio a data.<campo>. La contraseña de confirmación se vacía tras un error para que no viaje de vuelta en el estado de respuesta. Después de cinco fallos se conserva la espera de cinco minutos y se muestra el tiempo restante junto al campo. No se deshabilita la reautenticación ni se crea la cuenta cuando falla.
+Alta y edición vinculan errores del servicio a data.<campo>. La contraseña de confirmación se vacía tras un error para que no viaje de vuelta en el estado de respuesta. Después de cinco fallos se conserva la espera de cinco minutos y se muestra el tiempo restante junto al campo. La reautenticación se conserva para edición y acciones sensibles; el alta usa la contraseña nueva validada según se detalla abajo.
+
+## Alta con contraseña definida
+
+El alta desde Usuarios permite definir y confirmar la contraseña del nuevo usuario, sin pedir la contraseña del administrador. Requiere users.manage y valida en servidor mínimo 12 caracteres, letras, números y símbolos (máximo 128). Se guarda únicamente su hash y se audita el alta sin credenciales. La edición, invitación y revocación conservan reautenticación. El envío de invitación sigue siendo opcional y no se dispara al crear. No se modifican contraseñas ni cuentas existentes.
