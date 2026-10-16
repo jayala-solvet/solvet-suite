@@ -6,6 +6,7 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 ## Qué funciona
 
+- Dashboard comercial con cotizado, aprobado, oportunidades vigentes y seguimiento, por período y moneda.
 - Acceso mediante usuario y contraseña; roles administrador, comercial y consulta.
 - Alta y edición de clientes; edición de datos de la empresa por administrador.
 - Presupuestos en PYG y USD con líneas manuales o catálogo opcional, cantidades, descuentos, IVA incluido e importes durante la carga.
@@ -22,7 +23,7 @@ Aplicación web modular para Solvet-IT. Primera entrega ejecutable: usuarios, cl
 
 Los botones de sol, luna y monitor permiten elegir **claro**, **oscuro** o **sistema** en el acceso y en la barra superior. La primera visita usa claro para conservar el diseño inicial. La elección se recuerda en ese navegador y dirección del sistema; no se sincroniza entre dispositivos. El historial sigue esa preferencia y los PDF conservan el diseño para compartir e imprimir.
 
-La base visual aprobada usa superficies neutras, cabecera grafito, Inter Variable local e iconografía compacta. El inicio abre Presupuestos, con filtros, pestañas y detalle completo; los formularios muestran totales durante la edición. Los componentes compartidos están en `resources/views/components/ui`.
+La base visual aprobada usa superficies neutras, cabecera grafito, Inter Variable local e iconografía compacta. El inicio abre Dashboard; Presupuestos conserva sus filtros, pestañas y detalle completo; los formularios muestran totales durante la edición. Los componentes compartidos están en `resources/views/components/ui`.
 
 La paleta usa tokens semánticos y pruebas de contraste. Ver [reglas de diseño](docs/diseno.md), [catálogo de componentes](docs/componentes-ui.md) y [comprobaciones de apariencia](docs/pruebas-apariencia.md).
 

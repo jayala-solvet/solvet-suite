@@ -54,3 +54,11 @@ Cambio de tokens y cabecera oscura, sin alterar el módulo comercial. Suite exis
 - Pint, enlaces locales y `git diff --check` revisados. Sin construcción Docker o prueba de concurrencia PostgreSQL en este entorno; deben validarse en el destino antes de producción.
 
 [Ejemplo visual del documento](ejemplos/presupuesto-condiciones.png) con datos ficticios; la fuente efectiva es la plantilla Blade, no la captura.
+
+## Dashboard comercial inicial · 16/10/2026
+
+- PHP 8.5 / SQLite: suite completa de 30 pruebas y 300 aserciones aprobadas. Casos nuevos: partición por estado/vigencia, período de emisión, moneda, exclusión de borradores/bajas/futuros, importes exactos grandes, cero, snapshot, seguimiento, filtros Livewire y autorización.
+- Chromium real: 12 estados, 488 comprobaciones de contraste de texto sin fallas detectadas, cero errores JavaScript. Escritorio 1512 px y móvil 390 px, claro/oscuro, PYG/USD, período completo y selección vacía; sin desbordamiento global. Inspección visual de las capturas y navegación a detalle y nuevo presupuesto verificadas.
+- Pint y diff revisados; CSS publicado desde la fuente. Sin migraciones o dependencias nuevas. No se accedió al laboratorio, ni se ejecutó Docker o PostgreSQL. No se simularon ganancias/cobros ni se modificaron documentos del usuario.
+
+La captura [dashboard-inicial.png](referencias/dashboard-inicial.png) muestra datos ficticios de QA; el cálculo efectivo es `CommercialDashboard`, según su [contrato](modulos/dashboard.md).

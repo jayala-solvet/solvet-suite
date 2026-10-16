@@ -2,8 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\Workspace;
-use App\Filament\Resources\QuoteResource;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Support\LocalAvatarProvider;
 use Filament\Enums\ThemeMode;
@@ -32,7 +32,7 @@ class OperationsPanelProvider extends PanelProvider
             ->favicon(asset('brand/solvet-it-logo.png'))->colors(['primary' => Color::hex('#3B647F')])->font('Inter Variable', url: asset('fonts/filament/filament/inter/index.css'), provider: LocalFontProvider::class)
             ->defaultAvatarProvider(LocalAvatarProvider::class)
             ->navigationGroups(['Comercial', 'Administración'])
-            ->homeUrl(fn () => QuoteResource::getUrl('index'))
+            ->homeUrl(fn () => Dashboard::getUrl())
             ->unsavedChangesAlerts()
             ->darkMode()
             ->defaultThemeMode(ThemeMode::Light)
@@ -42,7 +42,7 @@ class OperationsPanelProvider extends PanelProvider
             ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, fn () => view('components.theme-switcher'))
             ->sidebarCollapsibleOnDesktop()->sidebarWidth('14rem')->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->pages([Workspace::class])
+            ->pages([Dashboard::class, Workspace::class])
             ->middleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, AuthenticateSession::class, ShareErrorsFromSession::class, VerifyCsrfToken::class, SubstituteBindings::class, DisableBladeIconComponents::class, DispatchServingFilamentEvent::class])
             ->authMiddleware([Authenticate::class, EnsureActiveUser::class]);
     }
